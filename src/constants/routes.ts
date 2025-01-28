@@ -14,6 +14,10 @@ export const userRoutes = [
     {
         path: '/analytics',
         label: 'Analytics'
+    },
+    {
+         path: '/profile',
+        label: 'My Account'
     }
 ]
 

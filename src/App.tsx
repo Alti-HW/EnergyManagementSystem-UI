@@ -7,9 +7,6 @@ import Layout from './components/layout/Layout';
 import Dashboard from './components/dashboard/Dashboard';
 
 function App() {
-  const handleLogin = () => {
-    console.log("login")
-  }
   return (
     <BrowserRouter>
       <Routes>
@@ -21,6 +18,7 @@ function App() {
           <Route path="/reports" element={<div>Reports</div>} />
           <Route path="/analytics" element={<div>Analytics</div>} />
           <Route path="/userManagement" element={<div>User Management</div>} />
+          <Route path="/profile" element={<div>My Account</div>} />
         </Route>
 
       </Routes>

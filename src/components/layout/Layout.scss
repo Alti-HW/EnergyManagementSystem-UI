@@ -1,40 +1,12 @@
-// .logo {
-//     height: 36px;
-//     margin: 5px 0;
-// }
+.layoutWrapper{
+    margin: 0px 0 0 240px;
+    border-radius: 10px;
+    min-height: 100vh;
+    padding: 0 16px;
 
-// .appHeader {
-//     display: flex;
+    @media screen and (max-width: 767px) {
 
-//     &.css-ptdwpq-MuiPaper-root-MuiAppBar-root {
-//         background-color: #000;
-//         display: flex;
-//         flex-direction: row;
-//         padding: 0 20px;
-//     }
-// }
-
-// .menu {
-//     color: #fff;
-//     padding: 2px;
-//     text-decoration: none;
-//     padding: 0 10px;
-//     font-size: 14px;
-// }
-
-// .activeMenu {
-//     color: #0a3ddc;
-// }
-
-// .divider {
-//     background-color: #fff;
-// }
-
-// .closeDrawer {
-//     &.MuiButtonBase-root {
-//         position: absolute;
-//         right: 6px;
-//         top: 6px;
-//         margin: 0;
-//     }
-// }
+        margin: 48px 0 0 0;
+        
+    }
+}

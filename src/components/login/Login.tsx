@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from "react-router"
 import './Login.scss'
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { Button, Card, CardContent, Checkbox, TextField, Typography } from "@mui/material"
+import { Button, Card, CardContent, Checkbox, TextField } from "@mui/material"
 import React, { useEffect, useState } from "react";
 
 const Login = () => {

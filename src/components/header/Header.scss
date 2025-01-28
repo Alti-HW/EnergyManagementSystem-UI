@@ -1,18 +1,46 @@
 .logo {
-    height: 36px;
-    margin: 5px 0;
+    margin: 10px 24px 30px;
+}
+
+.mobileHeader {
+    &.MuiAppBar-root {
+        display: flex;
+        background-color: #4B5563;
+        flex-direction: row;
+        padding: 0px 16px;
+        align-items: center;
+
+        .logo {
+            margin: 0;
+            height: 30px;
+        }
+    }
+}
+
+.showDesktop {
+    display: block;
+
+    @media only screen and (max-width: 767px) {
+        display: none;
+    }
 }
 
 .appHeader {
     display: flex;
 
-    &.css-ptdwpq-MuiPaper-root-MuiAppBar-root {
-        background-color: #4B5563;
-        display: flex;
-        flex-direction: row;
-        padding: 0 20px;
-    }
+
+
+
 }
+
+// .menuIcon{
+//     &.MuiButtonBase-root {
+//         display: none;
+//         @media screen and (max-width : 767px) {
+//             display: inline;
+//         }
+//     }
+// }
 
 .menu {
     color: #fff;
@@ -36,5 +64,6 @@
         right: 6px;
         top: 6px;
         margin: 0;
+        padding: 0;
     }
 }

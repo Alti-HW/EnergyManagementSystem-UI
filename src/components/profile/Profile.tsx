@@ -18,7 +18,6 @@ const Profile = () => {
     };
 
     const open = Boolean(profileMenu);
-    const id = open ? 'simple-popover' : undefined;
     return (
         <div className="profile">
             <IconButton

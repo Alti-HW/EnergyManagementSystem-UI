@@ -1,58 +1,79 @@
 import { AppBar, Divider, Drawer, IconButton, MenuItem, MenuList } from "@mui/material"
-import { useState } from "react"
 import { NavLink, NavLinkRenderProps } from "react-router"
+import { adminRoutes, userRoutes } from "../../constants/routes";
 import MenuIcon from '@mui/icons-material/Menu';
 import ClearIcon from '@mui/icons-material/Clear';
-import Profile from "../profile/Profile";
-import { adminRoutes, userRoutes } from "../../constants/routes";
 import './Header.scss'
+import { useEffect, useState } from "react";
 
 
 const Header = () => {
+
     const [openDrawer, setOpenDrawer] = useState(false)
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 767)
 
     const handleActiveRoute = ({ isActive }: NavLinkRenderProps): string => {
         return `menu ${isActive ? 'activeMenu' : ''} `
     }
 
     const handleCloseDrawer = () => {
+        console.log('close called')
         setOpenDrawer(false)
     }
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 767)
+        }
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    console.log("isMobile", isMobile)
     return (
         <>
-            <AppBar position="static" className="appHeader" >
-                <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
-                    aria-label="open drawer"
-                    sx={{ mr: 2 }}
-                    onClick={() => setOpenDrawer(true)}
-                >
-                    <MenuIcon />
-                </IconButton>
-                <img className="logo" src="https://www.altimetrik.com/storage/2023/07/Altimetrik-logo_4.png" alt="Logo" />
-                <Profile />
-            </AppBar>
+            {isMobile &&
+                <AppBar className="mobileHeader" >
+                    <IconButton
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        aria-label="open drawer"
+                        sx={{ mr: 2 }}
+                        onClick={() => setOpenDrawer(true)}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+
+                    <img className="logo" src="https://www.altimetrik.com/storage/2023/07/Altimetrik-logo_4.png" alt="Logo" />
+                </AppBar>
+            }
+
             <Drawer
                 sx={{
                     width: '240px',
                     flexShrink: 0,
                     '& .MuiDrawer-paper': {
-                        width: '240px',
+                        width: isMobile ? '75%' : '240px',
                         boxSizing: 'border-box',
                         backgroundColor: '#4B5563',
                         color: '#fff',
                         bottom: 0,
-                        paddingTop: '24px',
-                        marginTop: '48px'
+                        borderRadius: isMobile ? 'none' : '10px',
+                        // margin: '0 0 0 8px'
                     },
                 }}
                 anchor="left"
-                open={openDrawer}
-                onClose={() => setOpenDrawer(false)}
+                open={isMobile ? openDrawer : true}
+                variant={isMobile ? 'temporary' : "persistent"}
+                onClose={handleCloseDrawer}
+
             >
-                <IconButton
+                {!isMobile && <img className="logo" src="https://www.altimetrik.com/storage/2023/07/Altimetrik-logo_4.png" alt="Logo" />}
+                {isMobile && <IconButton
                     size="small"
                     edge="start"
                     color="inherit"
@@ -63,10 +84,16 @@ const Header = () => {
                 >
                     <ClearIcon />
                 </IconButton>
-                <MenuList>
-                    {userRoutes.map(route => (
-                        <MenuItem key={route.path}>
-                            <NavLink onClick={handleCloseDrawer} className={handleActiveRoute} to={route.path}>{route.label}</NavLink>
+                }
+                <MenuList sx={{
+                    '&.MuiList-root': {
+                        marginTop: isMobile ? '32px' : '0'
+                    }
+                }}>
+                    {userRoutes.map(({ path, label }) => (
+                        <MenuItem key={path}>
+                            <NavLink onClick={handleCloseDrawer} className={handleActiveRoute} to={path}>
+                                {label}</NavLink>
                         </MenuItem>
                     )
                     )}
