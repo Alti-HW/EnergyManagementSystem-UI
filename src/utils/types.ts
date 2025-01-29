@@ -4,7 +4,7 @@ export interface Headers {
 export interface Options {
     method?: 'GET' | 'POST',
     headers?: Headers
-    data?: string
+    data?: any
 }
 export interface Request {
     url: string

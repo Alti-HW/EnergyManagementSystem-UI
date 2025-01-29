@@ -68,6 +68,7 @@ const BuildingEnergyChart = ({ buildingsData }: {buildingsData:any}) => {
 
                 )
             }}
+            onAxisClick={(event, data) => console.log(data)}
         />
     )
 }

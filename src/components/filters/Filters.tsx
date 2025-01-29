@@ -1,14 +1,13 @@
 import { Button, Drawer, MenuItem, TextField } from "@mui/material"
 import TuneIcon from '@mui/icons-material/Tune'
 import CloseIcon from '@mui/icons-material/Close'
-import { filterDetails, mockFloors } from "../../constants/mockFilters"
 import { useEffect, useState } from "react"
 import './Filters.scss'
-import { SelectedFilters } from "./types"
+import { FiltersProps, SelectedFilters } from "./types"
 
-const Filters = () => {
+const Filters = ({ buildingFilters, onApllyFilters, onClearFilters, defaultFilters }: FiltersProps) => {
     const [openFilters, setOpenFilters] = useState(false)
-    const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>()
+    const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>(defaultFilters)
 
     const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, filterId: string) => {
         let filtersObj = { ...selectedFilters }
@@ -16,22 +15,31 @@ const Filters = () => {
         setSelectedFilters({ ...filtersObj })
     }
     const hanldeFiltersClear = () => {
-        setSelectedFilters({})
+        setDefaultFilterValues()
+        if (onClearFilters)
+            onClearFilters()
     }
     const handleFiltersApply = () => {
         console.log('selected Filtes', selectedFilters)
         setOpenFilters(false)
+        if (onApllyFilters)
+            onApllyFilters(selectedFilters)
     }
 
-    useEffect(() => {
-        const toDay = new Date().toLocaleDateString('en-GB')
+    const setDefaultFilterValues = () => {
+        const toDay = new Date().toLocaleDateString('en-GB').split('/').reverse().join('-')
+
         setSelectedFilters({
             startDate: toDay,
             endDate: toDay,
-            buildingId: null,
+            buildingId: buildingFilters?.[0]?.buildingId,
             floorId: null
         })
-    }, [])
+    }
+
+    useEffect(() => {
+        setSelectedFilters(defaultFilters)
+    }, [defaultFilters])
     return (
         <div className='filtersWrapper'>
             <Button className='filtersBtn' onClick={() => setOpenFilters(true)}>
@@ -50,6 +58,7 @@ const Filters = () => {
                 className="filtersDrawer"
                 anchor="right"
                 open={openFilters}
+                onClose={() => setOpenFilters(false)}
             >
                 <div className='filtersHeading'>
                     <h2>Filters</h2>
@@ -88,19 +97,19 @@ const Filters = () => {
                             value={selectedFilters?.buildingId}
                             onChange={(event) => handleFilterChange(event, 'buildingId')}
                         >
-                            {filterDetails?.map((option) => (
+                            {buildingFilters?.map((option) => (
                                 <MenuItem
                                     sx={{ '&.MuiMenuItem-root': { fontSize: '12px' } }}
-                                    key={option.value}
-                                    value={option.value}
+                                    key={option.buildingId}
+                                    value={option.buildingId}
                                 >
-                                    {option.label}
+                                    {option.buildingName}
                                 </MenuItem>
                             ))}
                         </TextField>
                     </div>
-                    <div className='filterRow'>
-                        <label>Row</label>
+                    {/* <div className='filterRow'>
+                        <label>Floor number</label>
                         <TextField
                             select
                             className='inputElement'
@@ -123,7 +132,7 @@ const Filters = () => {
                                 </MenuItem>
                             ))}
                         </TextField>
-                    </div>
+                    </div> */}
                     {/* ))} */}
                 </div>
                 <div className='filtersFooter'>

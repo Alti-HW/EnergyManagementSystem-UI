@@ -33,7 +33,7 @@ const BuildingFloorWiseEnergyChart = ({ buildingFloorwiseData }: { buildingFloor
                 valueFormatter: unitsFormatter
             }]}
             dataset={buildingFloorwiseData}
-            height={300}
+            height={250}
             sx={{
                 [`.${axisClasses.left} .${axisClasses.label}`]: {
                     transform: 'translate(-10px, 0)',

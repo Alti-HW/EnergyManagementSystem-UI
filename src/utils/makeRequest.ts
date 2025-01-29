@@ -2,6 +2,17 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Options, Response } from './types';
 
+export const makeRequest = async (url: string, options: Options) => {
+    try {
+        const response = await axios(url, options);
+        return response.data
+    } catch (err) {
+        console.log('Error fetching data', err);
+    } finally {
+        console.log(false);
+    }
+}
+
 const useFetch = (url: string, options: Options = {}): Response => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -29,3 +40,4 @@ const useFetch = (url: string, options: Options = {}): Response => {
 };
 
 export default useFetch;
+

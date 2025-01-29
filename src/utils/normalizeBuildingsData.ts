@@ -1,5 +1,4 @@
 export const normalizeBuildingsData = (data: any) => {
-
     const dataset = data.map(({
         buildingName,
         buildingId,
