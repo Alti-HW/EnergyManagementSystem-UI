@@ -1,4 +1,3 @@
 export interface SelectedFilters {
-    id: string,
-    value: string
+   [key:string] : string | null
 }
