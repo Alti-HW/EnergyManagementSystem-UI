@@ -1,0 +1,66 @@
+{
+    "success": true,
+    "message": "Data retrieved successfully.",
+    "data": [
+        {
+            "buildingId": 1,
+            "buildingName": "Building 1",
+            "totalEnergyConsumedKwh": 42560.52,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 2,
+            "buildingName": "Building 2",
+            "totalEnergyConsumedKwh": 50247.06,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 3,
+            "buildingName": "Building 3",
+            "totalEnergyConsumedKwh": 42298.07,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 4,
+            "buildingName": "Building 4",
+            "totalEnergyConsumedKwh": 29862.72,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 5,
+            "buildingName": "Building 5",
+            "totalEnergyConsumedKwh": 45091.32,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 6,
+            "buildingName": "Building 6",
+            "totalEnergyConsumedKwh": 48982.47,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 7,
+            "buildingName": "Building 7",
+            "totalEnergyConsumedKwh": 34702.94,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 8,
+            "buildingName": "Building 8",
+            "totalEnergyConsumedKwh": 57000.16,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 9,
+            "buildingName": "Building 9",
+            "totalEnergyConsumedKwh": 58876.40,
+            "floorConsumptions": []
+        },
+        {
+            "buildingId": 10,
+            "buildingName": "Building 10",
+            "totalEnergyConsumedKwh": 47422.81,
+            "floorConsumptions": []
+        }
+    ]
+}

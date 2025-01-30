@@ -33,12 +33,9 @@ const Dashboard = () => {
       floorId: null
     })
   }
-  useEffect(() => {
-    setDefaultFilterValues()
-  }, [])
 
   useEffect(() => {
-    console.log('selectedFilters before', selectedFilters)
+    setDefaultFilterValues()
     getEnergyConsumptionData({
       startDate,
       endDate
@@ -68,7 +65,7 @@ const Dashboard = () => {
   const handleFiltersChange = (filters: SelectedFilters) => {
     setSelectedFilters(filters)
     if (selectedFilters.startDate !== filters.startDate ||
-      selectedFilters.endDate !== selectedFilters.endDate) {
+      selectedFilters.endDate !== filters.endDate) {
       getEnergyConsumptionData({
         startDate: filters.startDate,
         endDate: filters.endDate
@@ -109,8 +106,8 @@ const Dashboard = () => {
   }
 
   const getBuildingName = useMemo(() => {
-    return buildingFilters.find(building => building.buildingId == selectedFilters?.buildingId)?.buildingName
-  }, [selectedFilters.buildingId])
+    return buildingFilters.find(building => building.buildingId === selectedFilters?.buildingId)?.buildingName
+  }, [selectedFilters.buildingId, buildingFilters])
 
 
   const StyledText = styled("text")(({ theme }) => ({
