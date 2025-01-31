@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import Login from './components/login/Login';
 import Layout from './components/layout/Layout';
 import Dashboard from './components/dashboard/Dashboard';
+import UserManagementTable from './containers/user_managements';
 
 function App() {
   return (
@@ -17,8 +18,8 @@ function App() {
           <Route path="/alerts" element={<div> Alerts </div>} />
           <Route path="/reports" element={<div>Reports</div>} />
           <Route path="/analytics" element={<div>Analytics</div>} />
-          <Route path="/userManagement" element={<div>User Management</div>} />
           <Route path="/profile" element={<div>My Account</div>} />
+          <Route path="/userManagement" element={<UserManagementTable/>} />
         </Route>
 
       </Routes>
