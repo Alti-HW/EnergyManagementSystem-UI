@@ -1,10 +1,14 @@
 .layoutWrapper{
-    margin: 10px 0 0 240px;
+    margin: 10px 0 10px 220px;
     border-radius: 10px;
     min-height: 100vh;
     padding: 0 16px;
 
     @media screen and (max-width: 767px) {
         margin: 48px 0 0 0;
+    }
+
+    &.fullWidth{
+        margin: 10px 0 10px 60px; 
     }
 }

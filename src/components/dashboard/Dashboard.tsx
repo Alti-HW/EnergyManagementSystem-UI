@@ -1,166 +1,66 @@
 import './Dashboard.scss'
-import { Card } from '@mui/material';
-import Filters from '../filters/Filters';
-import { useEffect, useMemo, useState } from 'react';
-import { normalizeBuildingFloorwiseData, normalizeBuildingsData } from '../../utils/normalizeBuildingsData';
+import { useState } from 'react';
 import BuildingEnergyChart from './components/BuildingEnergyChart';
 import BuildingFloorWiseEnergyChart from './components/BuidingFloorWiseEnergyChart';
-import { normalizeFiltersData } from '../../utils/normalizeFiltersData';
-import { BuildingFilters, SelectedFilters } from '../filters/types';
-import { styled } from "@mui/material/styles";
-import { PieChart } from "@mui/x-charts/PieChart";
-import { useDrawingArea } from "@mui/x-charts/hooks";
-import { getEnergyConsumptionData } from '../../utils/dashboardAPIs';
+import DateRangeSelector from '../dateRangeSelector/DateRangeSelector';
+import TripleToggleButton from '../TrippleToggleButton/TrippleToggleButton';
+import { format } from 'date-fns';
+import BuildingCostChart from './components/BuildingCostChart';
+import Alerms from './components/Alerms';
+import DateFilters from './components/DateFilters';
+import BuidingFloorWiseOccupancyChart from './components/BuidingFloorWiseOccupancyChart';
 
-const today = new Date()
-const endDate = new Date(today).toLocaleDateString('en-GB').split('/').reverse().join('-')
-today.setDate(today.getDate() - 1)
-const startDate = new Date(today).toLocaleDateString('en-GB').split('/').reverse().join('-')
+const dateFormat = 'yyyy-MM-dd'
+const today = new Date('2025-01-01')
+const defaultEndDate = format(today, dateFormat)
+const defaultStartDate = format(today.setDate(today.getDate() - 1), dateFormat)
 
+const quickTimeFilters = [
+  { label: 'Today', value: 'today' },
+  { label: 'Month', value: 'month' },
+  { label: 'Year', value: 'year' },
+]
 
 const Dashboard = () => {
+  const [startDate, setStartDate] = useState(defaultStartDate)
+  const [endDate, setEndDate] = useState(defaultEndDate)
 
-  const [buildingsData, setBuildingsData] = useState([])
-  const [buildingFloorwiseData, setBuildingFloorwiseData] = useState([])
-  const [buildingFilters, setBuildingFilters] = useState<BuildingFilters[]>([])
-  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({})
-
-  const setDefaultFilterValues = () => {
-    setSelectedFilters({
-      startDate,
-      endDate,
-      buildingId: buildingFilters?.[0]?.buildingId,
-      floorId: null
-    })
-  }
-
-  useEffect(() => {
-    setDefaultFilterValues()
-    getEnergyConsumptionData({
-      startDate,
-      endDate
-    }).then(response => {
-      setBuildingsData(
-        normalizeBuildingsData(response.data)
-      )
-      const filtersData = normalizeFiltersData(response?.data)
-      setBuildingFilters(filtersData)
-      setSelectedFilters((presetFilters) => ({
-        ...presetFilters,
-        buildingId: filtersData?.[0].buildingId
-      }))
-      // Buildind Data floor wise by sending Building ID
-      getEnergyConsumptionData({
-        startDate,
-        endDate,
-        buildingId: filtersData?.[0].buildingId
-      }).then(floorwiseBuildingData => {
-        setBuildingFloorwiseData(
-          normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
-        )
-      })
-    })
-  }, [])
-
-  const handleFiltersChange = (filters: SelectedFilters) => {
-    setSelectedFilters(filters)
-    if (selectedFilters.startDate !== filters.startDate ||
-      selectedFilters.endDate !== filters.endDate) {
-      getEnergyConsumptionData({
-        startDate: filters.startDate,
-        endDate: filters.endDate
-      }).then(response => {
-        setBuildingsData(normalizeBuildingsData(response.data))
-      })
+  const handleToggleButtonChange = (active: string) => {
+    let start = new Date(defaultEndDate)
+    if (active === 'today') {
+      start.setDate(start.getDate() - 1)
     }
-    // Buildind Data floor wise by sending Building ID
-    getEnergyConsumptionData({
-      startDate: filters.startDate,
-      endDate: filters.endDate,
-      buildingId: filters.buildingId
-    }).then((floorwiseBuildingData) => {
-      setBuildingFloorwiseData(
-        normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
-      )
-    })
+    if (active === 'month') {
+      start.setMonth(start.getMonth() - 1)
+    }
+    if (active === 'year') {
+      start.setFullYear(start.getFullYear() - 1)
+    }
+    setStartDate(format(start, dateFormat))
+    setEndDate(defaultEndDate)
+  }
+  const handleDateRangeChange = (start: string, end: string) => {
+    setStartDate(start)
+    setEndDate(end)
   }
 
-  const handleClearFilters = () => {
-    setDefaultFilterValues()
-    getEnergyConsumptionData({
-      startDate,
-      endDate,
-    }).then(response => {
-      setBuildingsData(normalizeBuildingsData(response.data))
-    })
-    // Buildind Data floor wise by sending Building ID
-    getEnergyConsumptionData({
-      startDate,
-      endDate,
-      buildingId: buildingFilters?.[0].buildingId
-    }).then((floorwiseBuildingData) => {
-      setBuildingFloorwiseData(
-        normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
-      )
-    })
-  }
-
-  const getBuildingName = useMemo(() => {
-    return buildingFilters.find(building => building.buildingId === selectedFilters?.buildingId)?.buildingName
-  }, [selectedFilters.buildingId, buildingFilters])
-
-
-  const StyledText = styled("text")(({ theme }) => ({
-    fill: theme.palette.text.primary,
-    textAnchor: "middle",
-    dominantBaseline: "central",
-    fontSize: 20,
-  }));
-
-  function PieCenterLabel({ children }: { children: React.ReactNode }) {
-    const { width, height, left, top } = useDrawingArea();
-    return (
-      <StyledText x={left + width / 2} y={top + height / 2}>
-        {children}
-      </StyledText>
-    );
-  }
-
-  const data = [
-    { value: 100, label: "Buildin 1" },
-    { value: 200, label: "Buildin 2" },
-    { value: 120, label: "Buildin 3" },
-    { value: 80, label: "Buildin 4" },
-  ];
-
-  const size = {
-    width: 400,
-    height: 200,
-  };
-  console.log(selectedFilters)
   return (
     <section className='dashboardContainer'>
-      <Filters defaultFilters={selectedFilters} onClearFilters={handleClearFilters} buildingFilters={buildingFilters} onApllyFilters={handleFiltersChange} />
-      <div className='chartsWrapper'>
-        <Card className='buildingEnergy'>
-          <h2 className='heading'>Daily Energy use across Campus</h2>
-          {buildingsData.length > 0 &&
-            <BuildingEnergyChart buildingsData={buildingsData} />
-          }
-        </Card>
-        <Card className='buildingEnergy'>
-          <h2 className='heading'>Floor-Wise Energy consumption {getBuildingName} </h2>
-          {buildingFloorwiseData.length > 0 &&
-            <BuildingFloorWiseEnergyChart buildingFloorwiseData={buildingFloorwiseData} />
-          }
-        </Card>
+      <h1 className='dashboardTitle'>Energy Dashboard</h1>
+      <TripleToggleButton onChange={handleToggleButtonChange} options={quickTimeFilters} btnWidth='70px' />
+      <DateRangeSelector
+        onDateRangeChange={handleDateRangeChange}
+        defaultStartDate={defaultStartDate}
+        defaultEndDate={defaultEndDate}
+      />
+      <DateFilters />
 
-        <Card className="buildingEnergy">
-          <h2 className="heading">Energy Cost Breakdown by Building</h2>
-          <PieChart series={[{ data, innerRadius: 70 }]} {...size}>
-            <PieCenterLabel>Total: {"$500"}</PieCenterLabel>
-          </PieChart>
-        </Card>
+      <div className='chartsWrapper'>
+        <BuildingEnergyChart startDate={startDate} endDate={endDate} />
+        <BuildingCostChart startDate={startDate} endDate={endDate} />
+        <BuildingFloorWiseEnergyChart startDate={startDate} endDate={endDate} />
+        {/* <BuidingFloorWiseOccupancyChart startDate={startDate} endDate={endDate} /> */}
+        <Alerms />
 
       </div>
     </section>
