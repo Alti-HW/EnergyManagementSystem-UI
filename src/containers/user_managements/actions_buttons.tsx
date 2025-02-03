@@ -4,7 +4,8 @@ import { FilterList, Add } from '@mui/icons-material';
 
 const ActionButtons = (props:any) => {
     const {
-        handleAddUserModel
+        handleAddModel,
+        addLabel
     } = props
 
     return (
@@ -12,8 +13,8 @@ const ActionButtons = (props:any) => {
             <Button variant="outlined" startIcon={<FilterList />}>
                 Filters
             </Button>
-            <Button variant="contained" startIcon={<Add />} onClick={()=>handleAddUserModel(true)}>
-                Add user
+            <Button variant="contained" startIcon={<Add />} onClick={()=>handleAddModel(true)}>
+                {addLabel}
             </Button>
         </>
     )

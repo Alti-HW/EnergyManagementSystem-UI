@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Paper, Table, TableContainer, TableHead, TableRow, TableCell, Typography, Box, TableBody } from '@mui/material';
-import SearchBar from './search_bar';
-import ActionButtons from './actions_buttons';
-import UserRow from './user_row';
-import PaginationControls from './pagination_controls';
-import AddUser from './add_user'
-import { userActions } from '../../actions/users';
+import Roles from './roles.json'; // Assume role data is imported
+import SearchBar from '../search_bar';
+import ActionButtons from '../actions_buttons';
+import RoleRow from './roles_row'; // Assume this is a new component for rendering role rows
+import PaginationControls from '../pagination_controls';
+import AddRole from './add_role'; // Assume this is a new component for adding roles
 
-interface UserAccess {
-  access: string[];
+interface RoleData {
+  roleName: string;
+  description: string;
+  permissions: string[];
   dateAdded: string;
-  name: string;
 }
 
-const UserManagementTable: React.FC = () => {
+const RolesTable: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedUserIndex, setSelectedUserIndex] = useState<number | null>(null);
-  const [isAddUser, setIsAddUser] = React.useState(false);
+  const [selectedRoleIndex, setSelectedRoleIndex] = useState<number | null>(null);
+  const [isAddRole, setIsAddRole] = React.useState(false);
   const [page, setPage] = useState(1);
-  const [users,setUsers] = useState<any>([])
   const rowsPerPage = 10;
 
   const handleChangePage = (event: React.ChangeEvent<unknown>, newPage: number) => {
@@ -27,51 +27,44 @@ const UserManagementTable: React.FC = () => {
 
   const handleClick = (event: React.MouseEvent<HTMLElement>, index: number) => {
     setAnchorEl(event.currentTarget);
-    setSelectedUserIndex(index);
+    setSelectedRoleIndex(index);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
-    setSelectedUserIndex(null);
+    setSelectedRoleIndex(null);
   };
 
   const handleEdit = () => {
-    console.log('Edit user at index:', selectedUserIndex);
+    console.log('Edit role at index:', selectedRoleIndex);
     handleClose();
   };
 
   const handleDelete = () => {
-    console.log('Delete user at index:', selectedUserIndex);
+    console.log('Delete role at index:', selectedRoleIndex);
     handleClose();
   };
 
-  const handleAddUserModel = (flag: boolean) => {
-    setIsAddUser(flag)
-  }
-
-  useEffect(()=>{
-    userActions.getUsers().then((res)=>{
-      console.log(res)
-      setUsers(res)
-    })
-  },[])
+  const handleAddRoleModel = (flag: boolean) => {
+    setIsAddRole(flag);
+  };
 
   return (
     <div style={{ padding: '20px' }}>
       <Typography variant="h5" gutterBottom>
-        User Management 
+        Role Management
       </Typography>
       <Typography variant="body1" paragraph>
-        Manage your team members and their account permissions here.
+        Manage your system roles and their permissions here.
       </Typography>
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         <Typography variant="h5" gutterBottom>
-          All Users  <Box display="inline" sx={{color:"#817878"}}>{users.length}</Box>
+          All Roles <Box display="inline" sx={{ color: "#817878" }}>{Roles.length}</Box>
         </Typography>
         <Box display="flex" sx={{ gap: 2 }}>
           <SearchBar />
-          <ActionButtons handleAddModel={handleAddUserModel} addLabel="Add User" />
+          <ActionButtons handleAddModel={handleAddRoleModel} addLabel="Add Role" />
         </Box>
       </Box>
 
@@ -80,24 +73,21 @@ const UserManagementTable: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              {/* <TableCell>Role</TableCell> */}
-              <TableCell>Email</TableCell>
-              {/* <TableCell>Location</TableCell> */}
-              {/* <TableCell>Building</TableCell> */}
-              {/* <TableCell>Floor No</TableCell> */}
+              <TableCell>Role Name</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Permissions</TableCell>
               <TableCell>Date Added</TableCell>
-              {/* <TableCell>Actions</TableCell> */}
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.slice((page - 1) * rowsPerPage, page * rowsPerPage).map((row: any, index: number) => (
-              <UserRow
+            {Roles.slice((page - 1) * rowsPerPage, page * rowsPerPage).map((row: RoleData, index: number) => (
+              <RoleRow
                 key={index}
                 row={row}
                 index={index}
                 anchorEl={anchorEl}
-                selectedUserIndex={selectedUserIndex}
+                selectedRoleIndex={selectedRoleIndex}
                 handleClick={handleClick}
                 handleClose={handleClose}
                 handleEdit={handleEdit}
@@ -112,13 +102,13 @@ const UserManagementTable: React.FC = () => {
       <PaginationControls
         page={page}
         rowsPerPage={rowsPerPage}
-        totalItems={users.length}
+        totalItems={Roles.length}
         onChangePage={handleChangePage}
       />
 
-      <AddUser open={isAddUser} handleAddUserModel={handleAddUserModel} />
+      <AddRole open={isAddRole} handleAddRoleModel={handleAddRoleModel} />
     </div>
   );
 };
 
-export default UserManagementTable;
+export default RolesTable;

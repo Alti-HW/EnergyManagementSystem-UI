@@ -6,6 +6,7 @@ import Login from './components/login/Login';
 import Layout from './components/layout/Layout';
 import Dashboard from './components/dashboard/Dashboard';
 import UserManagementTable from './containers/user_managements';
+import RolesTable from './containers/user_managements/roles';
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
           <Route path="/reports" element={<div>Reports</div>} />
           <Route path="/analytics" element={<div>Analytics</div>} />
           <Route path="/profile" element={<div>My Account</div>} />
-          <Route path="/userManagement" element={<UserManagementTable/>} />
+          <Route path="/userManagement/users" element={<UserManagementTable/>} />
+          <Route path="/userManagement/roles" element={<RolesTable/>} />
         </Route>
 
       </Routes>

@@ -70,7 +70,7 @@ const UserRow: React.FC<UserRowProps> = ({
                     row.name
                 )}
             </TableCell>
-            <TableCell>
+            {/* <TableCell>
                 {isEditing ?
                     <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">Label</InputLabel>
@@ -83,11 +83,11 @@ const UserRow: React.FC<UserRowProps> = ({
                     :
                     <Chip sx={{ margin: "2px", fontWeight: 600 }} label={row.role} color={getRandomColor()} />
                 }
-            </TableCell>
+            </TableCell> */}
             <TableCell>{row.email}</TableCell>
-            <TableCell>{row.location}</TableCell>
-            <TableCell>{row.building}</TableCell>
-            <TableCell>{row.floor}</TableCell>
+            {/* <TableCell>{row.location}</TableCell> */}
+            {/* <TableCell>{row.building}</TableCell> */}
+            {/* <TableCell>{row.floor}</TableCell> */}
             <TableCell>{row.dateAdded}</TableCell>
             <TableCell>
                 {isEditing ?

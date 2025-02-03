@@ -5,18 +5,19 @@
 
 
 
-.chartsWrapper{
+.chartsWrapper {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
     box-sizing: border-box;
-
+    margin-top: 20px;
 }
 
 .buildingEnergy {
     padding: 10px;
     box-sizing: border-box;
     width: calc(50% - 8px);
+    min-height: 320px;
 
     &.css-1j74uew-MuiPaper-root-MuiCard-root {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -25,5 +26,32 @@
     .heading {
         text-align: center;
         font-size: 16px;
+    }
+
+    @media screen and (max-width: 767px) {
+        flex: 1;
+    }
+}
+
+.buildingChartTooltip {
+    background-color: #fff;
+    border: 1px solid #7b7a7a;
+    font-size: 12px;
+    border-radius: 4px;
+
+
+    .tooltipHeading,
+    .tooltipData {
+        padding: 10px;
+        display: inline-block;
+    }
+
+    .tooltipColor {
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+        display: inline-block;
+        content: '';
+        margin-right: 5px;
     }
 }

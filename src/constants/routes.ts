@@ -23,7 +23,11 @@ export const userRoutes = [
 
 export const adminRoutes = [
     {
-        path: '/userManagement',
+        path: '/userManagement/users',
         label: 'User Management'
+    },
+    {
+        path: '/userManagement/roles',
+        label: 'Roles'
     }
 ]

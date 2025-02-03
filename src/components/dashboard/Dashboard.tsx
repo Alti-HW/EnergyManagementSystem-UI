@@ -1,133 +1,168 @@
-import { axisClasses, BarChart, LineChart, PieChart } from '@mui/x-charts';
 import './Dashboard.scss'
-import { Card, Tooltip } from '@mui/material';
+import { Card } from '@mui/material';
 import Filters from '../filters/Filters';
-// const buildingsData = [
-//   { name: 'CNTC Presidential Tower', units: '100' },
-//   { name: 'Mantri DSK Pinnacle', units: '153' },
-//   { name: 'Brigade Exotica 1', units: '50' },
-//   { name: 'SNN Clermont 2', units: '200' },
-//   { name: 'Pashmina Waterfront Tower 1', units: '70' },
-// ]
+import { useEffect, useMemo, useState } from 'react';
+import { normalizeBuildingFloorwiseData, normalizeBuildingsData } from '../../utils/normalizeBuildingsData';
+import BuildingEnergyChart from './components/BuildingEnergyChart';
+import BuildingFloorWiseEnergyChart from './components/BuidingFloorWiseEnergyChart';
+import { normalizeFiltersData } from '../../utils/normalizeFiltersData';
+import { BuildingFilters, SelectedFilters } from '../filters/types';
+import { styled } from "@mui/material/styles";
+import { PieChart } from "@mui/x-charts/PieChart";
+import { useDrawingArea } from "@mui/x-charts/hooks";
+import { getEnergyConsumptionData } from '../../utils/dashboardAPIs';
 
-// const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-// const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-// const xLabels = [
-//   'Page A',
-//   'Page B',
-//   'Page C',
-//   'Page D',
-//   'Page E',
-//   'Page F',
-//   'Page G',
-// ];
+const today = new Date()
+const endDate = new Date(today).toLocaleDateString('en-GB').split('/').reverse().join('-')
+today.setDate(today.getDate() - 1)
+const startDate = new Date(today).toLocaleDateString('en-GB').split('/').reverse().join('-')
+
 
 const Dashboard = () => {
 
+  const [buildingsData, setBuildingsData] = useState([])
+  const [buildingFloorwiseData, setBuildingFloorwiseData] = useState([])
+  const [buildingFilters, setBuildingFilters] = useState<BuildingFilters[]>([])
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({})
 
-  // function valueFormatter(value: number | null) {
-  //   return `${value}mm`;
-  // }
+  const setDefaultFilterValues = () => {
+    setSelectedFilters({
+      startDate,
+      endDate,
+      buildingId: buildingFilters?.[0]?.buildingId,
+      floorId: null
+    })
+  }
+
+  useEffect(() => {
+    setDefaultFilterValues()
+    getEnergyConsumptionData({
+      startDate,
+      endDate
+    }).then(response => {
+      setBuildingsData(
+        normalizeBuildingsData(response.data)
+      )
+      const filtersData = normalizeFiltersData(response?.data)
+      setBuildingFilters(filtersData)
+      setSelectedFilters((presetFilters) => ({
+        ...presetFilters,
+        buildingId: filtersData?.[0].buildingId
+      }))
+      // Buildind Data floor wise by sending Building ID
+      getEnergyConsumptionData({
+        startDate,
+        endDate,
+        buildingId: filtersData?.[0].buildingId
+      }).then(floorwiseBuildingData => {
+        setBuildingFloorwiseData(
+          normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
+        )
+      })
+    })
+  }, [])
+
+  const handleFiltersChange = (filters: SelectedFilters) => {
+    setSelectedFilters(filters)
+    if (selectedFilters.startDate !== filters.startDate ||
+      selectedFilters.endDate !== filters.endDate) {
+      getEnergyConsumptionData({
+        startDate: filters.startDate,
+        endDate: filters.endDate
+      }).then(response => {
+        setBuildingsData(normalizeBuildingsData(response.data))
+      })
+    }
+    // Buildind Data floor wise by sending Building ID
+    getEnergyConsumptionData({
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+      buildingId: filters.buildingId
+    }).then((floorwiseBuildingData) => {
+      setBuildingFloorwiseData(
+        normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
+      )
+    })
+  }
+
+  const handleClearFilters = () => {
+    setDefaultFilterValues()
+    getEnergyConsumptionData({
+      startDate,
+      endDate,
+    }).then(response => {
+      setBuildingsData(normalizeBuildingsData(response.data))
+    })
+    // Buildind Data floor wise by sending Building ID
+    getEnergyConsumptionData({
+      startDate,
+      endDate,
+      buildingId: buildingFilters?.[0].buildingId
+    }).then((floorwiseBuildingData) => {
+      setBuildingFloorwiseData(
+        normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
+      )
+    })
+  }
+
+  const getBuildingName = useMemo(() => {
+    return buildingFilters.find(building => building.buildingId === selectedFilters?.buildingId)?.buildingName
+  }, [selectedFilters.buildingId, buildingFilters])
+
+
+  const StyledText = styled("text")(({ theme }) => ({
+    fill: theme.palette.text.primary,
+    textAnchor: "middle",
+    dominantBaseline: "central",
+    fontSize: 20,
+  }));
+
+  function PieCenterLabel({ children }: { children: React.ReactNode }) {
+    const { width, height, left, top } = useDrawingArea();
+    return (
+      <StyledText x={left + width / 2} y={top + height / 2}>
+        {children}
+      </StyledText>
+    );
+  }
+
+  const data = [
+    { value: 100, label: "Buildin 1" },
+    { value: 200, label: "Buildin 2" },
+    { value: 120, label: "Buildin 3" },
+    { value: 80, label: "Buildin 4" },
+  ];
+
+  const size = {
+    width: 400,
+    height: 200,
+  };
+  console.log(selectedFilters)
   return (
     <section className='dashboardContainer'>
-      <Filters />
+      <Filters defaultFilters={selectedFilters} onClearFilters={handleClearFilters} buildingFilters={buildingFilters} onApllyFilters={handleFiltersChange} />
       <div className='chartsWrapper'>
-        charts will come here
-        </div>
-        {/* <Card className='buildingEnergy'>
-          <h2 className='heading'>Daily Energy use across Campus</h2>
-          <BarChart
-            xAxis={[{
-              scaleType: 'band',
-              dataKey: 'name',
-              tickLabelPlacement: 'middle',
-              tickLabelStyle: {
-                fontSize: '8px'
-              },
-              valueFormatter: ((name) => {
-                return name.split(' ').join('\n')
-              }),
-              label: 'Building name',
-              labelStyle: { fontSize: '10px', fontWeight: '700' }
-            }]}
-            dataset={buildingsData}
-            yAxis={[{
-              label: 'Units consumed',
-              labelStyle: { fontSize: '10px', fontWeight: '700' },
-            }]}
-            series={[{ dataKey: 'units', label: 'No of units consumed', valueFormatter }]}
-            height={250}
-
-            sx={{
-              [`.${axisClasses.left} .${axisClasses.label}`]: {
-                transform: 'translate(-10px, 0)',
-              },
-              [`.MuiChartsAxis-label`]: {
-                transform: 'translateY(5px)',
-              },
-            }}
-            slotProps={{
-              legend: {
-                position: {
-                  vertical: 'top',
-                  horizontal: 'right',
-                },
-                itemMarkWidth: 10,
-                itemMarkHeight: 10,
-                labelStyle: {
-                  fontSize: '8px'
-                }
-              },
-            }}
-            slots={{
-              axisContent: () => (<Tooltip title="Delete">
-                <span> i am cstom tooltip</span>
-              </Tooltip>)
-            }}
-            tooltip={{ trigger: 'axis' }}
-          />
-        </Card>
         <Card className='buildingEnergy'>
           <h2 className='heading'>Daily Energy use across Campus</h2>
-          <LineChart
-            height={250}
-            series={[
-              { data: pData, label: 'pv' },
-              { data: uData, label: 'uv' },
-            ]}
-            xAxis={[{ scaleType: 'point', data: xLabels }]}
-          />
+          {buildingsData.length > 0 &&
+            <BuildingEnergyChart buildingsData={buildingsData} />
+          }
+        </Card>
+        <Card className='buildingEnergy'>
+          <h2 className='heading'>Floor-Wise Energy consumption {getBuildingName} </h2>
+          {buildingFloorwiseData.length > 0 &&
+            <BuildingFloorWiseEnergyChart buildingFloorwiseData={buildingFloorwiseData} />
+          }
+        </Card>
+
+        <Card className="buildingEnergy">
+          <h2 className="heading">Energy Cost Breakdown by Building</h2>
+          <PieChart series={[{ data, innerRadius: 70 }]} {...size}>
+            <PieCenterLabel>Total: {"$500"}</PieCenterLabel>
+          </PieChart>
         </Card>
 
       </div>
-
-
-      <LineChart
-        xAxis={[{ data: [1, 2, 3, 5, 8, 10] }]}
-        series={[
-          {
-            data: [2, 5.5, 2, 8.5, 1.5, 5],
-            area: true,
-          },
-        ]}
-        // width={800}
-        height={300}
-      />
-      <PieChart
-        series={[
-          {
-            innerRadius: 40,
-            outerRadius: 80,
-            data: [
-              { id: 0, value: 10, label: 'series A' },
-              { id: 1, value: 15, label: 'series B' },
-              { id: 2, value: 20, label: 'series C' },
-            ],
-          },
-        ]}
-        width={400}
-        height={300}
-      /> */}
     </section>
   )
 }
