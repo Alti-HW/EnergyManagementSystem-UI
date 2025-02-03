@@ -1,6 +1,11 @@
 .dashboardContainer {
-    // display: flex;
     position: relative;
+    background-color: #205C84;
+
+    .dashboardTitle{
+        color: #fff;
+        font-size: 20px;
+    }
 }
 
 
@@ -11,26 +16,53 @@
     flex-wrap: wrap;
     box-sizing: border-box;
     margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Defines 3 equal columns */
+    grid-gap: 10px;
 }
 
 .buildingEnergy {
     padding: 10px;
     box-sizing: border-box;
-    width: calc(50% - 8px);
     min-height: 320px;
 
     &.css-1j74uew-MuiPaper-root-MuiCard-root {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
+    .chartHeader{
+        display: flex;
+        align-items: center;
+        position: relative;
+        
+        h2{
+            margin-right: 10px;
+        }
+        .MuiButtonBase-root.MuiIconButton-root{
+            height: 16px;
+            width: 16px;
+            margin-right: 5px;
+        }
+    }
+
     .heading {
         text-align: center;
         font-size: 16px;
+        flex: 1;
+    }
+
+    .closeConfigIcon.MuiIconButton-root.MuiButtonBase-root{
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        right: 6px;
+        top: 6px;
     }
 
     @media screen and (max-width: 767px) {
         flex: 1;
     }
+
 }
 
 .buildingChartTooltip {
@@ -54,4 +86,18 @@
         content: '';
         margin-right: 5px;
     }
+}
+
+
+
+.MuiTooltip-tooltip.MuiTooltip-tooltipPlacementLeft{
+    background-color: transparent;
+    color: #000;
+    margin-right: 0;
+    padding: 2px;
+}
+
+.noAlermsText{
+    text-align: center;
+    font-size: 14px;
 }

@@ -2,12 +2,13 @@ import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { LineChart, axisClasses } from "@mui/x-charts"
 import ChartHeading from "./ChartHeading";
 import { useEffect, useMemo, useState } from "react";
-import { getBuildingsAndFloorsNames, getEnergyConsumptionData } from "../../../utils/dashboardAPIs";
+import { getBuildingsAndFloorsNames, getEnergyConsumptionData, getOccupancyData } from "../../../utils/dashboardAPIs";
 import { ChartProps } from "../types";
 import { normalizeBuildingFloorwiseData } from "../../../utils/normalizeBuildingsData";
 import FullView from "./FullView";
+import { normalizeBuildingOccupancy } from "../../../utils/normalizeBuildingOccupancy";
 
-const BuildingFloorWiseEnergyChart = ({ startDate, endDate }: ChartProps) => {
+const BuidingFloorWiseOccupancyChart = ({ startDate, endDate }: ChartProps) => {
     const [openFullViewModal, setOpenFullViewModal] = useState(false)
     const [buildingsAndFloorsNames, setBuildingsAndFloorsNames] = useState<any>([])
     const [buildingId, setBuildingId] = useState('')
@@ -48,15 +49,15 @@ const BuildingFloorWiseEnergyChart = ({ startDate, endDate }: ChartProps) => {
         }]}
         series={[
             {
-                dataKey: 'energyConsumedKwh',
-                label: 'SUM (units consumed)',
+                dataKey: 'metricValue',
+                label: 'Avg(Occupancy)',
                 area: true
             },
 
         ]}
 
         yAxis={[{
-            label: 'Units consumed',
+            label: 'Average (occupancy)',
             labelStyle: { fontSize: '10px', fontWeight: '700' },
             valueFormatter: unitsFormatter
         }]}
@@ -99,14 +100,15 @@ const BuildingFloorWiseEnergyChart = ({ startDate, endDate }: ChartProps) => {
 
     useEffect(() => {
         if (buildingId !== '') {
-            getEnergyConsumptionData({
+            getOccupancyData({
                 startDate,
                 endDate,
                 buildingId,
+                metricType: "peroccupancy",
                 // ...floorId !== '' && { floorId },
             }).then(floorwiseBuildingData => {
                 setBuildingFloorwiseData(
-                    normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
+                    normalizeBuildingOccupancy(floorwiseBuildingData?.data)
                 )
             })
         }
@@ -118,6 +120,8 @@ const BuildingFloorWiseEnergyChart = ({ startDate, endDate }: ChartProps) => {
         let floor = floorList?.find((floor: any) => floor.floorId === floorId)?.floorNumber
         return (`${building ? 'of building ' + building : ''} `)
     }, [buildingId, floorId])
+
+    console.log(buildingFloorwiseData)
     const FilterComponent = () => {
         return (
             <div style={{ padding: '10px' }}>
@@ -173,7 +177,7 @@ const BuildingFloorWiseEnergyChart = ({ startDate, endDate }: ChartProps) => {
     return (
         <Card className='buildingEnergy'>
             <ChartHeading
-                title={`Floor-Wise Energy consumption ${selectedBuildingName}`}
+                title={`Occupancy ${selectedBuildingName}`}
                 onExpandIconClick={handleChartFullView}
                 FilterComponent={FilterComponent}
 
@@ -187,4 +191,4 @@ const BuildingFloorWiseEnergyChart = ({ startDate, endDate }: ChartProps) => {
     )
 }
 
-export default BuildingFloorWiseEnergyChart
+export default BuidingFloorWiseOccupancyChart

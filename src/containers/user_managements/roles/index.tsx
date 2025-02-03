@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Paper, Table, TableContainer, TableHead, TableRow, TableCell, Typography, Box, TableBody } from '@mui/material';
 import Roles from './roles.json'; // Assume role data is imported
-import SearchBar from '../search_bar';
-import ActionButtons from '../actions_buttons';
+import SearchBar from '../users/search_bar';
+import ActionButtons from '../users/actions_buttons';
 import RoleRow from './roles_row'; // Assume this is a new component for rendering role rows
-import PaginationControls from '../pagination_controls';
+import PaginationControls from '../users/pagination_controls';
 import AddRole from './add_role'; // Assume this is a new component for adding roles
 
 interface RoleData {

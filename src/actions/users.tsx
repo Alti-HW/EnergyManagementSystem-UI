@@ -1,7 +1,5 @@
 import axios from "axios";
 import { users } from "../constants/apis";
-import Users from '../containers/users.json'; // Assume the user data is imported
-import { resolve } from "path";
 
 interface UserPayload {
     Id?: string;
@@ -15,27 +13,75 @@ interface UserPayload {
 }
 
 const getUsers = async (payload: UserPayload = {}) => {
-    // try {
-    //     const queryParams = new URLSearchParams(payload as any).toString();
+    try {
+        const queryParams = new URLSearchParams(payload as any).toString();
 
-    //     const response = await axios.get(`${users.allUsers}?${queryParams}`, {
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //     });
+        const response = await axios.get(`${users.allUsers}?${queryParams}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-    //     return response.data;
-    // } catch (err) {
-    //     console.error('Error fetching data', err);
-    // } finally {
-    //     console.log('Request completed');
-    // }
-    return new Promise((resolve)=>{
-        resolve(Users)
-    })
+        return response?.data || [];
+    } catch (err) {
+        console.error('Error fetching data', err);
+    } 
+}
 
+const getUserDetails = async (id: string) => {
+    try {
+
+        const response = await axios.get(`${users.getAUser}/${id}`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        return response?.data || {};
+    } catch (err) {
+        console.error('Error fetching data', err);
+    } 
+}
+
+const createUser = async (userData: any) => {
+    try {
+
+        const response = await axios.post(users.getAUser, userData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response) {
+            return response?.data || {};
+        } else {
+            new Error("User Creation Failed")
+        }
+    } catch (err) {
+        console.error('Error fetching data', err);
+    } 
+}
+
+const updateUser = async (userData: any) => {
+    try {
+
+        const response = await axios.put(users.getAUser, userData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response) {
+            return response?.data || {};
+        } else {
+            new Error("User Updation Failed")
+        }
+    } catch (err) {
+        console.error('Error fetching data', err);
+    } 
 }
 
 export const userActions = {
-    getUsers
+    getUsers,
+    getUserDetails,
+    createUser,
+    updateUser
 };
