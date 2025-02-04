@@ -8,10 +8,10 @@ WORKDIR /src
 COPY package.json package-lock.json ./
 
 # Ensure the latest @testing-library/react version is installed
-RUN npm install @testing-library/react@latest --legacy-peer-deps --save-dev
+
 
 # Install all other dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install --force
 
 # Copy the rest of the application code
 COPY . .
