@@ -11,7 +11,7 @@ COPY package.json package-lock.json ./
 RUN rm -rf node_modules package-lock.json
 
 
-RUN npm install 
+RUN npm install -g npm@11.1.0
 
 
 
