@@ -10,11 +10,10 @@ COPY package.json package-lock.json ./
 # Remove cached dependencies to avoid conflicts
 RUN rm -rf node_modules package-lock.json
 
-# Install dependencies using --legacy-peer-deps to avoid conflicts
-RUN npm install --legacy-peer-deps
 
-# Install latest webpack-dev-server to fix deprecation warnings
-RUN npm install webpack-dev-server@latest 
+RUN npm install 
+
+
 
 # Copy the rest of the application
 COPY . .
