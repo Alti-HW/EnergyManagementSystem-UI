@@ -26,7 +26,7 @@ RUN npm install --force
 RUN NODE_OPTIONS="--max-old-space-size=1024" npm run build
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Start the app
 CMD ["npm", "start
