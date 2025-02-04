@@ -14,7 +14,7 @@ RUN rm -rf node_modules package-lock.json
 RUN npm install --legacy-peer-deps
 
 # Install latest webpack-dev-server to fix deprecation warnings
-RUN npm install webpack-dev-server@latest --save-dev
+RUN npm install webpack-dev-server@latest 
 
 # Copy the rest of the application
 COPY . .
