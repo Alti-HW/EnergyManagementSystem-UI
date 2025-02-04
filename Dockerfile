@@ -20,7 +20,7 @@ RUN npm install --force --legacy-peer-deps
 COPY . .
 
 # Fix missing module errors (ajv issue)
-RUN npm dedupe && npm install
+RUN npm install --force
 
 # Build the React app
 RUN NODE_OPTIONS="--max-old-space-size=1024" npm run build
