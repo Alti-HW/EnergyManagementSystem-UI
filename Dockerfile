@@ -1,19 +1,22 @@
-# Use an official Node.js runtime as a parent image
+# Use an official Node.js runtime
 FROM node:18-alpine
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /src
 
-# Copy package.json and package-lock.json first (to leverage Docker caching)
+# Copy package.json and package-lock.json for better caching
 COPY package.json package-lock.json ./
 
-# Ensure the latest @testing-library/react version is installed
-RUN npm install @testing-library/react@latest --legacy-peer-deps --save-dev
+# Remove any cached dependencies
+RUN rm -rf node_modules package-lock.json
 
-# Install all other dependencies
+# Install the latest version of @testing-library/react
+RUN npm install @testing-library/react@latest --save-dev --legacy-peer-deps
+
+# Install all dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy the rest of the application code
+# Copy the rest of the application
 COPY . .
 
 # Build the React app
