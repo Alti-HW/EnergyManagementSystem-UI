@@ -1,25 +1,23 @@
-# Use a lightweight Node.js image
-FROM node:18-alpine
+# Use a stable Node.js 20 image (solves npm version conflict)
+FROM node:20-alpine
 
 # Set working directory
-WORKDIR /src
+WORKDIR /app
 
-# Copy package.json and package-lock.json first for better caching
+# Copy package.json and package-lock.json first (for caching)
 COPY package.json package-lock.json ./
 
 # Remove cached dependencies to avoid conflicts
 RUN rm -rf node_modules package-lock.json
 
-
-RUN npm install -g npm@11.1.0
-
-
+# Install dependencies (without forcing an npm upgrade)
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application
 COPY . .
 
-# Build the React app with limited memory usage
-RUN NODE_OPTIONS="--max-old-space-size=512" npm run build
+# Build the React app with optimized memory usage
+RUN NODE_OPTIONS="--max-old-space-size=1024" npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000
