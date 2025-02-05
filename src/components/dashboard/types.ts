@@ -8,6 +8,7 @@ export interface ChartHeadingProps{
 export interface ChartProps{
     startDate: string,
     endDate?: string | null
+    buildingsAndFloorsNames?: any
 }
 
 export interface FullViewProps {

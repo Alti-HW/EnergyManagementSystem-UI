@@ -3,9 +3,10 @@ export interface Option {
     value: string
 }
 
-export interface TripleToggleButtonProps {
+export interface ToggleButtonProps {
     onChange: (active: string) => void
     options: Option[]
     btnWidth?: string
     variant?: string
+    value?:string
 }

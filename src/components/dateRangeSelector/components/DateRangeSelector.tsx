@@ -4,10 +4,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
-import { DateRangeSelectorTypes } from "./types";
+import { DateFilterTypes } from "../types";
 import './DateRangeSelector.scss'
 
-const DateRangeSelector = ({ onDateRangeChange, defaultStartDate, defaultEndDate }: DateRangeSelectorTypes) => {
+const DateRangeSelector = ({ onDateRangeChange, defaultStartDate, defaultEndDate }: DateFilterTypes) => {
     const [startDate, setStartDate] = useState<Dayjs | null>(dayjs(defaultStartDate))
     const [endDate, setEndDate] = useState<Dayjs | null>(dayjs(defaultEndDate))
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);

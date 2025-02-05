@@ -5,6 +5,7 @@
     .dashboardTitle{
         color: #fff;
         font-size: 20px;
+        flex: 1;
     }
 }
 
@@ -25,6 +26,7 @@
     padding: 10px;
     box-sizing: border-box;
     min-height: 320px;
+    position: relative;
 
     &.css-1j74uew-MuiPaper-root-MuiCard-root {
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -100,4 +102,10 @@
 .noAlermsText{
     text-align: center;
     font-size: 14px;
+}
+
+.dateTimeSelectorWrapper{
+    margin-top: 16px;
+    display: flex;
+    gap: 16px;
 }

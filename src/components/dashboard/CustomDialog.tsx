@@ -9,12 +9,16 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import DataTable from "./DataTable";
 import { TableDataProps } from "./types";
+import Spinner from "./components/Spinner";
+import ErrorMessage from "./components/ErrorMessage";
 interface CustomDialogProps {
   open: boolean;
   onClose: () => void;
   title: string | null;
   label: string | null;
   data: TableDataProps[]
+  isLoading?: boolean
+  isError?: any
 }
 const CustomDialog: React.FC<CustomDialogProps> = ({
   open,
@@ -22,6 +26,8 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
   title,
   label,
   data,
+  isLoading,
+  isError
 }) => {
   console.log("asdfddd :", title);
   return (
@@ -40,10 +46,11 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
       </DialogTitle>
       <DialogContent>
         <Typography variant="body1"> {label}</Typography>
-        {data.length > 0 ?
+        {isLoading ?
+          <Spinner /> :
           <DataTable data={data} />
-          : <p>Loading data please wait</p>
         }
+        {isError && <ErrorMessage />}
       </DialogContent>
     </Dialog>
   );

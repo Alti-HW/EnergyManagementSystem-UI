@@ -27,8 +27,8 @@ export function useBarChartClick(data: ChartData[]): ClickState {
   const handleBarClick = (event: MouseEvent, item: BarItemIdentifier) => {
     event.preventDefault(); // Prevent default behavior (optional)
     if (item.dataIndex !== undefined) {
-      setSelectedLabel(data[item.dataIndex].buildingName); // Get correct label dynamically
-      setMenuPosition({ mouseX: event.clientX, mouseY: event.clientY });
+      // setSelectedLabel(data[item.dataIndex].buildingName); // Get correct label dynamically
+      // setMenuPosition({ mouseX: event.clientX, mouseY: event.clientY });
       setSelectedBuidlingId(data[item.dataIndex].buildingId)
     }
   };

@@ -1,18 +1,18 @@
 
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useState } from "react";
-import './TrippleToggleButton.scss'
-import { TripleToggleButtonProps } from "./types";
+import './ToggleButton.scss'
+import { ToggleButtonProps } from "./types";
 
 const defaultVariant = {
     backgroundColor: '#F0F0F0',
     borderRadius: '40px',
     padding: '5px 10px',
-    color: '#000',
+    color: '#0000008a',
     '.MuiToggleButtonGroup-grouped': {
-        color : '#000',
+        color : '#0000008a',
         lineHeight: '12px',
-        padding: '2px 4px'
+        padding: '4px'
     },
     '.Mui-selected': {
         color: '#192142',
@@ -42,8 +42,8 @@ const greenVariant = {
         }
     }
 }
-const TripleToggleButton = ({ onChange, options = [], variant = 'green', btnWidth = 'fit-content' }: TripleToggleButtonProps) => {
-    const [alignment, setAlignment] = useState(options?.[0]?.value);  // Default state
+const ToggleButtonSelector = ({ onChange, options = [], variant = 'green', btnWidth = 'fit-content', value }: ToggleButtonProps) => {
+    const [alignment, setAlignment] = useState(value ?? options?.[0]?.value);  // Default state
 
     const handleChange = (event: any, newAlignment: any) => {
         if (newAlignment !== null) {
@@ -54,7 +54,7 @@ const TripleToggleButton = ({ onChange, options = [], variant = 'green', btnWidt
 
     return (
         <ToggleButtonGroup
-            value={alignment}
+            value={value ?? alignment }
             exclusive
             onChange={handleChange}
             aria-label="text alignment"
@@ -64,7 +64,7 @@ const TripleToggleButton = ({ onChange, options = [], variant = 'green', btnWidt
             }}
         >
             {options.map(({ value, label }) => (
-                <ToggleButton sx={{ width: btnWidth }} key={value} value={value} aria-label={label}>
+                <ToggleButton sx={{ width: btnWidth, minWidth: '70px' }} key={value} value={value} aria-label={label}>
                     {label}
                 </ToggleButton>
             ))}
@@ -72,4 +72,4 @@ const TripleToggleButton = ({ onChange, options = [], variant = 'green', btnWidt
     );
 }
 
-export default TripleToggleButton
+export default ToggleButtonSelector

@@ -1,20 +1,26 @@
 import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { LineChart, axisClasses } from "@mui/x-charts"
+import { BarChart, axisClasses } from "@mui/x-charts"
 import ChartHeading from "./ChartHeading";
 import { useEffect, useMemo, useState } from "react";
-import { getBuildingsAndFloorsNames, getEnergyConsumptionData, getOccupancyData } from "../../../utils/dashboardAPIs";
 import { ChartProps } from "../types";
-import { normalizeBuildingFloorwiseData } from "../../../utils/normalizeBuildingsData";
 import FullView from "./FullView";
-import { normalizeBuildingOccupancy } from "../../../utils/normalizeBuildingOccupancy";
+import useAxios from "../hooks/useAxiosHook";
+import { buildingOccupancyURL, POST_REQ_HEADERS } from "../../../constants/apis";
+import Spinner from "./Spinner";
+import ErrorMessage from "./ErrorMessage";
+import { normalizeBuildingOccupancy } from "../../../utils/normalizeDashboardAPIData";
 
-const BuidingFloorWiseOccupancyChart = ({ startDate, endDate }: ChartProps) => {
+const BuidingFloorWiseOccupancyChart = ({ startDate, endDate, buildingsAndFloorsNames }: ChartProps) => {
     const [openFullViewModal, setOpenFullViewModal] = useState(false)
-    const [buildingsAndFloorsNames, setBuildingsAndFloorsNames] = useState<any>([])
     const [buildingId, setBuildingId] = useState('')
     const [floorId, setFloorId] = useState('')
     const [buildingFloorwiseData, setBuildingFloorwiseData] = useState([])
-
+    const {
+        data: buildingsFloorwiseRawData,
+        loading: isBuildingsFloorwiseDataLoading,
+        error: buildingsFloorwiseDataError,
+        fetchData: fetchBuildingFloorwiseData
+    } = useAxios(buildingOccupancyURL, 'POST', null, POST_REQ_HEADERS, false)
     const unitsFormatter = (num: number) => {
         const formatter = new Intl.NumberFormat('en-US', {
             notation: 'compact',  // Use compact notation (e.g., 1K, 1M, 1B, 1T)
@@ -37,89 +43,89 @@ const BuidingFloorWiseOccupancyChart = ({ startDate, endDate }: ChartProps) => {
         console.log(event)
         setFloorId(event.target.value)
     }
-    const renderChart = () => (<LineChart
-        xAxis={[{
-            dataKey: 'floorNumber',
-            tickLabelStyle: {
-                fontSize: '8px'
-            },
-            label: 'Floor Number',
-            labelStyle: { fontSize: '10px', fontWeight: '700' },
-            scaleType: 'point'
-        }]}
-        series={[
-            {
-                dataKey: 'metricValue',
-                label: 'Avg(Occupancy)',
-                area: true
-            },
 
-        ]}
-
-        yAxis={[{
-            label: 'Average (occupancy)',
-            labelStyle: { fontSize: '10px', fontWeight: '700' },
-            valueFormatter: unitsFormatter
-        }]}
-        dataset={buildingFloorwiseData}
-        height={250}
-        sx={{
-            [`.${axisClasses.left} .${axisClasses.label}`]: {
-                transform: 'translate(-10px, 0)',
-            },
-            [`.MuiChartsAxis-label`]: {
-                transform: 'translateY(5px)',
-            },
-        }}
-        grid={{ horizontal: true }}
-        slotProps={{
-            legend: {
-                position: {
-                    vertical: 'top',
-                    horizontal: 'right',
-                },
-                itemMarkWidth: 10,
-                itemMarkHeight: 10,
-                labelStyle: {
-                    fontSize: '8px'
-                }
-            },
-        }}
-        colors={['#59E2C2']}
-    />)
 
     useEffect(() => {
-        const fetchBuildingsAndFloorsNames = async () => {
-            const response = await getBuildingsAndFloorsNames()
-            setBuildingsAndFloorsNames(response.data)
-            setBuildingId(response?.data?.[0].buildingId)
-            // setFloorId(response?.data?.[0]?.floors?.[0]?.floorId)
-        }
-        fetchBuildingsAndFloorsNames()
-    }, [])
+        setBuildingId(buildingsAndFloorsNames?.[0]?.buildingId ?? '')
+    }, [buildingsAndFloorsNames])
 
     useEffect(() => {
         if (buildingId !== '') {
-            getOccupancyData({
+            fetchBuildingFloorwiseData({
                 startDate,
                 endDate,
                 buildingId,
-                metricType: "peroccupancy",
-                // ...floorId !== '' && { floorId },
-            }).then(floorwiseBuildingData => {
-                setBuildingFloorwiseData(
-                    normalizeBuildingOccupancy(floorwiseBuildingData?.data)
-                )
+                ...floorId !== '' && { floorId },
+                metricType: "peroccupancy"
             })
         }
     }, [buildingId, floorId, startDate, endDate])
+    useEffect(() => {
+        console.log('buildingsFloorwiseRawData', buildingsFloorwiseRawData)
+        setBuildingFloorwiseData(
+            normalizeBuildingOccupancy(buildingsFloorwiseRawData?.data, floorId !== '')
+        )
+    }, [buildingsFloorwiseRawData])
 
-    const floorList = useMemo(() => buildingsAndFloorsNames.find((building: any) => building.buildingId === buildingId)?.floors, [buildingId, buildingsAndFloorsNames])
+    const floorList = useMemo(() => buildingsAndFloorsNames?.find((building: any) => building.buildingId === buildingId)?.floors, [buildingId, buildingsAndFloorsNames])
     const selectedBuildingName = useMemo(() => {
-        let building = buildingsAndFloorsNames.find((building: any) => building.buildingId === buildingId)?.name
+        let building = buildingsAndFloorsNames?.find((building: any) => building.buildingId === buildingId)?.name
         let floor = floorList?.find((floor: any) => floor.floorId === floorId)?.floorNumber
-        return (`${building ? 'of building ' + building : ''} `)
+        return (`${building ? 'of ' + building : ''} `)
     }, [buildingId, floorId])
+
+    const renderChart = (fullscreen?: boolean) => (
+        <>
+            {isBuildingsFloorwiseDataLoading ?
+                <Spinner /> :
+                buildingsFloorwiseDataError ?
+                    <ErrorMessage /> :
+                    <BarChart
+                        xAxis={[{
+                            scaleType: 'band',
+                            dataKey: 'x',
+                            tickLabelPlacement: 'middle',
+                            tickLabelStyle: {
+                                fontSize: '8px'
+                            },
+                            label: floorId !== '' ? 'Date & Time' : 'Floor number',
+                            labelStyle: { fontSize: '10px', fontWeight: '700' }
+                        }]}
+                        dataset={buildingFloorwiseData}
+                        yAxis={[{
+                            label: 'Units consumed per Person',
+                            labelStyle: { fontSize: '10px', fontWeight: '700' },
+                            valueFormatter: unitsFormatter
+                        }]}
+                        series={[{ dataKey: 'y', label: 'Units consumed / SUM(Occupancy)' }]}
+
+                        height={fullscreen ? 600 : 250}
+                        sx={{
+                            [`.${axisClasses.left} .${axisClasses.label}`]: {
+                                transform: 'translate(-10px, 0)',
+                            },
+                            [`.MuiChartsAxis-label`]: {
+                                transform: 'translateY(5px)',
+                            },
+                        }}
+                        slotProps={{
+                            legend: {
+                                position: {
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                },
+                                itemMarkWidth: 10,
+                                itemMarkHeight: 10,
+                                labelStyle: {
+                                    fontSize: '8px'
+                                }
+                            },
+                        }}
+                        colors={['#59E2C2']}
+                    />
+            }
+        </>
+    )
 
     console.log(buildingFloorwiseData)
     const FilterComponent = () => {
@@ -177,7 +183,7 @@ const BuidingFloorWiseOccupancyChart = ({ startDate, endDate }: ChartProps) => {
     return (
         <Card className='buildingEnergy'>
             <ChartHeading
-                title={`Occupancy ${selectedBuildingName}`}
+                title={`Occupant specific energy utilization ${selectedBuildingName}`}
                 onExpandIconClick={handleChartFullView}
                 FilterComponent={FilterComponent}
 
@@ -185,7 +191,7 @@ const BuidingFloorWiseOccupancyChart = ({ startDate, endDate }: ChartProps) => {
             {renderChart()}
 
             <FullView open={openFullViewModal} onClose={closeChartFullView}>
-                {renderChart()}
+                {renderChart(true)}
             </FullView>
         </Card>
     )

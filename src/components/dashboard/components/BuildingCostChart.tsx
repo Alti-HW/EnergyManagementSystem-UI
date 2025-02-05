@@ -1,30 +1,36 @@
-import {  Card, styled } from "@mui/material"
-import {PieChart, axisClasses, useDrawingArea } from "@mui/x-charts"
+import { Card, styled } from "@mui/material"
+import { PieChart, axisClasses, useDrawingArea } from "@mui/x-charts"
 import { useEffect, useState } from "react";
 import ChartHeading from "./ChartHeading";
 import { ChartProps } from "../types";
-import { getEnergyConsumptionData } from "../../../utils/dashboardAPIs";
-// import { normalizeBuildingsData } from "../../../utils/normalizeBuildingsData";
-import { normalizeBuildingCostData } from "../../../utils/normalizeBuildingCostData";
 import FullView from "./FullView";
+import useAxios from "../hooks/useAxiosHook";
+import { buildingsDataURL, POST_REQ_HEADERS } from "../../../constants/apis";
+import Spinner from "./Spinner";
+import ErrorMessage from "./ErrorMessage";
+import { normalizeBuildingCostData } from "../../../utils/normalizeDashboardAPIData";
 
 
 const BuildingCostChart = ({ startDate, endDate }: ChartProps) => {
     const [openFullViewModal, setOpenFullViewModal] = useState(false)
-    const [buildingsData, setBuildingsData] = useState([])
+    const [buildingsCostData, setBuildingsCostData] = useState([])
     const [totalcost, setTotalcost] = useState(0)
-
+    const {
+        data: buildingsRawData,
+        loading: isBuildingsDataLoading,
+        error: buildingsDataError,
+        fetchData: fetchBuildingsData
+    } = useAxios(buildingsDataURL, 'POST', null, POST_REQ_HEADERS, false)
 
     useEffect(() => {
-        const fetData = async () => {
-            const response = await getEnergyConsumptionData({ startDate, endDate })
-            const { dataset, totalcost: cost } = normalizeBuildingCostData(response.data)
-            setBuildingsData(dataset)
-            setTotalcost(cost)
-
-        }
-        fetData()
+        fetchBuildingsData({ startDate, endDate })
     }, [startDate, endDate])
+
+    useEffect(() => {
+        const { dataset, totalcost: cost } = normalizeBuildingCostData(buildingsRawData?.data)
+        setBuildingsCostData(dataset)
+        setTotalcost(cost)
+    }, [buildingsRawData])
 
     const handleChartFullView = () => {
         setOpenFullViewModal(true)
@@ -48,49 +54,55 @@ const BuildingCostChart = ({ startDate, endDate }: ChartProps) => {
             </StyledText>
         );
     }
-    const renderChart = () => (
-
-        <PieChart
-            series={[{ data: buildingsData, innerRadius: 70 }]}
-            dataset={buildingsData}
-            xAxis={[{
-                scaleType: 'band',
-                dataKey: 'buildingName',
-                tickLabelPlacement: 'middle',
-                tickLabelStyle: {
-                    fontSize: '8px'
-                },
-                valueFormatter: ((name) => {
-                    return name.split(' ').join('\n')
-                }),
-                label: 'Building name',
-                labelStyle: { fontSize: '10px', fontWeight: '700' }
-            }]}
-            height={250}
-            sx={{
-                [`.${axisClasses.left} .${axisClasses.label}`]: {
-                    transform: 'translate(-10px, 0)',
-                },
-                [`.MuiChartsAxis-label`]: {
-                    transform: 'translateY(5px)',
-                },
-            }}
-            slotProps={{
-                legend: {
-                    position: {
-                        vertical: 'top',
-                        horizontal: 'right',
-                    },
-                    itemMarkWidth: 10,
-                    itemMarkHeight: 10,
-                    labelStyle: {
-                        fontSize: '8px'
-                    }
-                },
-            }}
-        >
-            {buildingsData?.length > 0 && <PieCenterLabel >Total: {Math.round(totalcost)}</PieCenterLabel>}
-        </PieChart>
+    const renderChart = (fullscreen?: boolean) => (
+        <>
+            {isBuildingsDataLoading ?
+                <Spinner /> :
+                buildingsDataError ?
+                    <ErrorMessage /> :
+                    <PieChart
+                        series={[{ data: buildingsCostData, innerRadius: fullscreen ? 220 : 70 }]}
+                        dataset={buildingsCostData}
+                        xAxis={[{
+                            scaleType: 'band',
+                            dataKey: 'buildingName',
+                            tickLabelPlacement: 'middle',
+                            tickLabelStyle: {
+                                fontSize: '8px'
+                            },
+                            valueFormatter: ((name) => {
+                                return name.split(' ').join('\n')
+                            }),
+                            label: 'Building name',
+                            labelStyle: { fontSize: '10px', fontWeight: '700' }
+                        }]}
+                        height={fullscreen ? 600 : 250}
+                        sx={{
+                            [`.${axisClasses.left} .${axisClasses.label}`]: {
+                                transform: 'translate(-10px, 0)',
+                            },
+                            [`.MuiChartsAxis-label`]: {
+                                transform: 'translateY(5px)',
+                            },
+                        }}
+                        slotProps={{
+                            legend: {
+                                position: {
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                },
+                                itemMarkWidth: 10,
+                                itemMarkHeight: 10,
+                                labelStyle: {
+                                    fontSize: '8px'
+                                }
+                            },
+                        }}
+                    >
+                        {buildingsCostData?.length > 0 && <PieCenterLabel >Total: {Math.round(totalcost)}</PieCenterLabel>}
+                    </PieChart>
+            }
+        </>
     )
 
     return (
@@ -99,7 +111,7 @@ const BuildingCostChart = ({ startDate, endDate }: ChartProps) => {
             {renderChart()}
             {openFullViewModal &&
                 <FullView open={openFullViewModal} onClose={closeChartFullView}>
-                    {renderChart()}
+                    {renderChart(true)}
                 </FullView>
             }
         </Card>
