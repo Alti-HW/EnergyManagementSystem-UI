@@ -34,9 +34,21 @@ export const userRoutes = [
 ];
 
 export const adminRoutes = [
-  {
-    path: "/userManagement",
-    label: "User Management",
-    Icon: SupervisedUserCircleIcon,
-  },
-];
+    {
+        path: '/userManagement',
+        label: 'User Management',
+        Icon: SupervisedUserCircleIcon,
+        subRoutes: [
+            {
+                path: '/userManagement/users',
+                label: 'Users',
+                Icon: SupervisedUserCircleIcon
+            },
+            {
+                path: '/userManagement/roles',
+                label: 'Roles',
+                Icon: SupervisedUserCircleIcon
+            }
+        ]
+    }
+]
