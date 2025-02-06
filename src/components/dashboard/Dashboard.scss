@@ -1,103 +1,105 @@
 .dashboardContainer {
-    position: relative;
-    background-color: #205C84;
+  position: relative;
+  background-color: #205c84;
 
-    .dashboardTitle{
-        color: #fff;
-        font-size: 20px;
-    }
+  .dashboardTitle {
+    color: #fff;
+    font-size: 20px;
+    flex: 1;
+  }
 }
 
-
-
 .chartsWrapper {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    box-sizing: border-box;
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Defines 3 equal columns */
-    grid-gap: 10px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Defines 3 equal columns */
+  grid-gap: 10px;
 }
 
 .buildingEnergy {
-    padding: 10px;
-    box-sizing: border-box;
-    min-height: 320px;
+  padding: 10px;
+  box-sizing: border-box;
+  min-height: 320px;
+  position: relative;
 
-    &.css-1j74uew-MuiPaper-root-MuiCard-root {
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  &.css-1j74uew-MuiPaper-root-MuiCard-root {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .chartHeader {
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    h2 {
+      margin-right: 10px;
     }
-
-    .chartHeader{
-        display: flex;
-        align-items: center;
-        position: relative;
-        
-        h2{
-            margin-right: 10px;
-        }
-        .MuiButtonBase-root.MuiIconButton-root{
-            height: 16px;
-            width: 16px;
-            margin-right: 5px;
-        }
+    .MuiButtonBase-root.MuiIconButton-root {
+      height: 16px;
+      width: 16px;
+      margin-right: 5px;
     }
+  }
 
-    .heading {
-        text-align: center;
-        font-size: 16px;
-        flex: 1;
-    }
+  .heading {
+    text-align: center;
+    font-size: 16px;
+    flex: 1;
+  }
 
-    .closeConfigIcon.MuiIconButton-root.MuiButtonBase-root{
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        right: 6px;
-        top: 6px;
-    }
+  .closeConfigIcon.MuiIconButton-root.MuiButtonBase-root {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 6px;
+    top: 6px;
+  }
 
-    @media screen and (max-width: 767px) {
-        flex: 1;
-    }
-
+  @media screen and (max-width: 767px) {
+    flex: 1;
+  }
 }
 
 .buildingChartTooltip {
-    background-color: #fff;
-    border: 1px solid #7b7a7a;
-    font-size: 12px;
-    border-radius: 4px;
+  background-color: #fff;
+  border: 1px solid #7b7a7a;
+  font-size: 12px;
+  border-radius: 4px;
 
+  .tooltipHeading,
+  .tooltipData {
+    padding: 10px;
+    display: inline-block;
+  }
 
-    .tooltipHeading,
-    .tooltipData {
-        padding: 10px;
-        display: inline-block;
-    }
-
-    .tooltipColor {
-        width: 10px;
-        height: 10px;
-        border-radius: 5px;
-        display: inline-block;
-        content: '';
-        margin-right: 5px;
-    }
+  .tooltipColor {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    content: "";
+    margin-right: 5px;
+  }
 }
 
-
-
-.MuiTooltip-tooltip.MuiTooltip-tooltipPlacementLeft{
-    background-color: transparent;
-    color: #000;
-    margin-right: 0;
-    padding: 2px;
+.MuiTooltip-tooltip.MuiTooltip-tooltipPlacementLeft {
+  background-color: transparent;
+  color: #000;
+  margin-right: 0;
+  padding: 2px;
 }
 
-.noAlermsText{
-    text-align: center;
-    font-size: 14px;
+.noAlermsText {
+  text-align: center;
+  font-size: 14px;
+}
+
+.dateTimeSelectorWrapper {
+  margin-top: 16px;
+  display: flex;
+  gap: 16px;
 }

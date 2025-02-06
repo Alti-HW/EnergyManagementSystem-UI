@@ -1,46 +1,42 @@
 .logoWrapper {
-    margin: 10px 0 30px 16px;
-    display: flex;
+  margin: 10px 0 30px 16px;
+  display: flex;
 
-    .logo {
-        width: 160px;
-        flex: 1;
-    }
+  .logo {
+    width: 160px;
+    flex: 1;
+  }
 
-    button {
-        margin: 0;
-    }
+  button {
+    margin: 0;
+  }
 }
 
 .mobileHeader {
-    &.MuiAppBar-root {
-        display: flex;
-        background-color: #4B5563;
-        flex-direction: row;
-        padding: 0px 16px;
-        align-items: center;
+  &.MuiAppBar-root {
+    display: flex;
+    background-color: #4b5563;
+    flex-direction: row;
+    padding: 0px 16px;
+    align-items: center;
 
-        .logo {
-            margin: 0;
-            height: 30px;
-        }
+    .logo {
+      margin: 0;
+      height: 30px;
     }
+  }
 }
 
 .showDesktop {
-    display: block;
+  display: block;
 
-    @media only screen and (max-width: 767px) {
-        display: none;
-    }
+  @media only screen and (max-width: 767px) {
+    display: none;
+  }
 }
 
 .appHeader {
-    display: flex;
-
-
-
-
+  display: flex;
 }
 
 // .menuIcon{
@@ -53,27 +49,27 @@
 // }
 
 .menu {
-    color: #fff;
-    padding: 2px;
-    text-decoration: none;
-    padding: 0 10px;
-    font-size: 14px;
+  color: #fff;
+  padding: 2px;
+  text-decoration: none;
+  padding: 0 10px;
+  font-size: 14px;
 }
 
 .activeMenu {
-    color: #3f9af4;
+  color: #3f9af4;
 }
 
 .divider {
-    background-color: #fff;
+  background-color: #fff;
 }
 
 .closeDrawer {
-    &.MuiButtonBase-root {
-        position: absolute;
-        right: 6px;
-        top: 6px;
-        margin: 0;
-        padding: 0;
-    }
+  &.MuiButtonBase-root {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    margin: 0;
+    padding: 0;
+  }
 }

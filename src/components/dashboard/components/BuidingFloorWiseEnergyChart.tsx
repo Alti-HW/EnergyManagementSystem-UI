@@ -1,190 +1,242 @@
 import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { LineChart, axisClasses } from "@mui/x-charts"
+import { LineChart, axisClasses } from "@mui/x-charts";
 import ChartHeading from "./ChartHeading";
 import { useEffect, useMemo, useState } from "react";
-import { getBuildingsAndFloorsNames, getEnergyConsumptionData } from "../../../utils/dashboardAPIs";
 import { ChartProps } from "../types";
-import { normalizeBuildingFloorwiseData } from "../../../utils/normalizeBuildingsData";
 import FullView from "./FullView";
+import { buildingsDataURL, POST_REQ_HEADERS } from "../../../constants/apis";
+import useAxios from "../hooks/useAxiosHook";
+import Spinner from "./Spinner";
+import ErrorMessage from "./ErrorMessage";
+import { normalizeBuildingFloorwiseData } from "../../../utils/normalizeDashboardAPIData";
 
-const BuildingFloorWiseEnergyChart = ({ startDate, endDate }: ChartProps) => {
-    const [openFullViewModal, setOpenFullViewModal] = useState(false)
-    const [buildingsAndFloorsNames, setBuildingsAndFloorsNames] = useState<any>([])
-    const [buildingId, setBuildingId] = useState('')
-    const [floorId, setFloorId] = useState('')
-    const [buildingFloorwiseData, setBuildingFloorwiseData] = useState([])
+const BuildingFloorWiseEnergyChart = ({
+  startDate,
+  endDate,
+  buildingsAndFloorsNames = [],
+}: ChartProps) => {
+  const [openFullViewModal, setOpenFullViewModal] = useState(false);
+  const [buildingId, setBuildingId] = useState("");
+  const [floorId, setFloorId] = useState("");
+  const [buildingFloorwiseData, setBuildingFloorwiseData] = useState([]);
 
-    const unitsFormatter = (num: number) => {
-        const formatter = new Intl.NumberFormat('en-US', {
-            notation: 'compact',  // Use compact notation (e.g., 1K, 1M, 1B, 1T)
-            compactDisplay: 'short',  // Use the short version (e.g., 1K instead of 1 thousand)
-        })
-        return formatter.format(num);
+  const {
+    data: buildingsFloorwiseRawData,
+    loading: isBuildingsFloorwiseDataLoading,
+    error: buildingsFloorwiseDataError,
+    fetchData: fetchBuildingFloorwiseData,
+  } = useAxios(buildingsDataURL, "POST", null, POST_REQ_HEADERS, false);
+
+  const unitsFormatter = (num: number) => {
+    const formatter = new Intl.NumberFormat("en-US", {
+      notation: "compact", // Use compact notation (e.g., 1K, 1M, 1B, 1T)
+      compactDisplay: "short", // Use the short version (e.g., 1K instead of 1 thousand)
+    });
+    return formatter.format(num);
+  };
+
+  useEffect(() => {
+    setBuildingId(buildingsAndFloorsNames?.[0]?.buildingId ?? "");
+  }, [buildingsAndFloorsNames]);
+
+  useEffect(() => {
+    if (buildingId !== "") {
+      fetchBuildingFloorwiseData({
+        startDate,
+        endDate,
+        buildingId,
+        ...(floorId !== "" && { floorId }),
+      });
     }
-    const handleChartFullView = () => {
-        setOpenFullViewModal(true)
-    }
-    const closeChartFullView = () => {
-        setOpenFullViewModal(false)
-    }
-    const handleBuidlingIdChange = (event: any) => {
-        console.log(event)
-        setBuildingId(event.target.value)
-        setFloorId('')
-    }
-    const handleFloorIdChange = (event: any) => {
-        console.log(event)
-        setFloorId(event.target.value)
-    }
-    const renderChart = () => (<LineChart
-        xAxis={[{
-            dataKey: 'floorNumber',
-            tickLabelStyle: {
-                fontSize: '8px'
-            },
-            label: 'Floor Number',
-            labelStyle: { fontSize: '10px', fontWeight: '700' },
-            scaleType: 'point'
-        }]}
-        series={[
+  }, [buildingId, floorId, startDate, endDate]);
+
+  useEffect(() => {
+    setBuildingFloorwiseData(
+      normalizeBuildingFloorwiseData(
+        buildingsFloorwiseRawData?.data?.[0],
+        floorId !== ""
+      )
+    );
+  }, [buildingsFloorwiseRawData]);
+
+  const handleChartFullView = () => {
+    setOpenFullViewModal(true);
+  };
+  const closeChartFullView = () => {
+    setOpenFullViewModal(false);
+  };
+  const handleBuidlingIdChange = (event: any) => {
+    setBuildingId(event.target.value);
+    setFloorId("");
+  };
+  const handleFloorIdChange = (event: any) => {
+    setFloorId(event.target.value);
+  };
+
+  const floorList = useMemo(() => {
+    return buildingsAndFloorsNames?.find(
+      (building: any) => building.buildingId === buildingId
+    )?.floors;
+  }, [buildingId, buildingsAndFloorsNames]);
+
+  const selectedBuildingName = useMemo(() => {
+    let building = buildingsAndFloorsNames?.find(
+      (building: any) => building.buildingId === buildingId
+    )?.name;
+    let floor = floorList?.find(
+      (floor: any) => floor.floorId === floorId
+    )?.floorNumber;
+    return `${floor ? "for floor " + floor : ""}${
+      building ? " of " + building : ""
+    }`;
+  }, [buildingId, floorId]);
+
+  const renderChart = (fullscreen?: boolean) => (
+    <>
+      {isBuildingsFloorwiseDataLoading ? (
+        <Spinner />
+      ) : buildingsFloorwiseDataError ? (
+        <ErrorMessage />
+      ) : (
+        <LineChart
+          xAxis={[
             {
-                dataKey: 'energyConsumedKwh',
-                label: 'SUM (units consumed)',
-                area: true
+              dataKey: "x",
+              tickLabelStyle: {
+                fontSize: "8px",
+              },
+              label: floorId !== "" ? "Date & Time" : "Floor number",
+              labelStyle: { fontSize: "10px", fontWeight: "700" },
+              scaleType: "point",
             },
-
-        ]}
-
-        yAxis={[{
-            label: 'Units consumed',
-            labelStyle: { fontSize: '10px', fontWeight: '700' },
-            valueFormatter: unitsFormatter
-        }]}
-        dataset={buildingFloorwiseData}
-        height={250}
-        sx={{
+          ]}
+          series={[
+            {
+              dataKey: "y",
+              label: "SUM (units consumed)",
+              area: true,
+            },
+          ]}
+          yAxis={[
+            {
+              label: "Units consumed",
+              labelStyle: { fontSize: "10px", fontWeight: "700" },
+              valueFormatter: unitsFormatter,
+            },
+          ]}
+          dataset={buildingFloorwiseData}
+          height={fullscreen ? 600 : 250}
+          sx={{
             [`.${axisClasses.left} .${axisClasses.label}`]: {
-                transform: 'translate(-10px, 0)',
+              transform: "translate(-10px, 0)",
             },
             [`.MuiChartsAxis-label`]: {
-                transform: 'translateY(5px)',
+              transform: "translateY(5px)",
             },
-        }}
-        grid={{ horizontal: true }}
-        slotProps={{
+          }}
+          grid={{ horizontal: true }}
+          slotProps={{
             legend: {
-                position: {
-                    vertical: 'top',
-                    horizontal: 'right',
-                },
-                itemMarkWidth: 10,
-                itemMarkHeight: 10,
-                labelStyle: {
-                    fontSize: '8px'
-                }
+              position: {
+                vertical: "top",
+                horizontal: "right",
+              },
+              itemMarkWidth: 10,
+              itemMarkHeight: 10,
+              labelStyle: {
+                fontSize: "8px",
+              },
             },
-        }}
-        colors={['#59E2C2']}
-    />)
+          }}
+          colors={["#59E2C2"]}
+        />
+      )}
+    </>
+  );
 
-    useEffect(() => {
-        const fetchBuildingsAndFloorsNames = async () => {
-            const response = await getBuildingsAndFloorsNames()
-            setBuildingsAndFloorsNames(response.data)
-            setBuildingId(response?.data?.[0].buildingId)
-            // setFloorId(response?.data?.[0]?.floors?.[0]?.floorId)
-        }
-        fetchBuildingsAndFloorsNames()
-    }, [])
-
-    useEffect(() => {
-        if (buildingId !== '') {
-            getEnergyConsumptionData({
-                startDate,
-                endDate,
-                buildingId,
-                // ...floorId !== '' && { floorId },
-            }).then(floorwiseBuildingData => {
-                setBuildingFloorwiseData(
-                    normalizeBuildingFloorwiseData(floorwiseBuildingData?.data?.[0])
-                )
-            })
-        }
-    }, [buildingId, floorId, startDate, endDate])
-
-    const floorList = useMemo(() => buildingsAndFloorsNames.find((building: any) => building.buildingId === buildingId)?.floors, [buildingId, buildingsAndFloorsNames])
-    const selectedBuildingName = useMemo(() => {
-        let building = buildingsAndFloorsNames.find((building: any) => building.buildingId === buildingId)?.name
-        let floor = floorList?.find((floor: any) => floor.floorId === floorId)?.floorNumber
-        return (`${building ? 'of building ' + building : ''} `)
-    }, [buildingId, floorId])
-    const FilterComponent = () => {
-        return (
-            <div style={{ padding: '10px' }}>
-                <FormControl fullWidth>
-                    <InputLabel sx={{ fontSize: '12px' }} id="building-id-label">Building</InputLabel>
-                    <Select
-                        labelId="building-id-label"
-                        id="building-id"
-                        value={buildingId}
-                        label="Building"
-                        onChange={handleBuidlingIdChange}
-                        sx={{ minWidth: '150px', mb: '20px', fontSize: '12px' }}
-                        MenuProps={{
-                            PaperProps: {
-                                style: {
-                                    maxHeight: 200,
-                                    overflowY: 'auto',
-                                },
-                            },
-                        }}
-                    >
-                        {buildingsAndFloorsNames.map((building: any) => (
-                            <MenuItem sx={{ fontSize: '12px' }} key={building.buildingId} value={building.buildingId}>{building.name}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <FormControl fullWidth>
-                    <InputLabel sx={{ fontSize: '12px' }} id="floor-id-label">Floor</InputLabel>
-                    <Select
-                        labelId="floor-id-label"
-                        id="floor-id"
-                        value={floorId}
-                        label="Floor"
-                        onChange={handleFloorIdChange}
-                        sx={{ minWidth: '150px', fontSize: '12px' }}
-                        MenuProps={{
-                            PaperProps: {
-                                style: {
-                                    maxHeight: 200,
-                                    overflowY: 'auto',
-                                },
-                            },
-                        }}
-                    >
-                        {floorList.map((floor: any) => (
-                            <MenuItem sx={{ fontSize: '12px' }} key={floor.floorId} value={floor.floorId}>{floor.floorNumber}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </div>
-        )
-    }
+  console.log(buildingId, "buildingId");
+  const FilterComponent = () => {
     return (
-        <Card className='buildingEnergy'>
-            <ChartHeading
-                title={`Floor-Wise Energy consumption ${selectedBuildingName}`}
-                onExpandIconClick={handleChartFullView}
-                FilterComponent={FilterComponent}
+      <div style={{ padding: "10px" }}>
+        <FormControl fullWidth>
+          <InputLabel sx={{ fontSize: "12px" }} id="building-id-label">
+            Building
+          </InputLabel>
+          <Select
+            labelId="building-id-label"
+            id="building-id"
+            value={buildingId}
+            label="Building"
+            onChange={handleBuidlingIdChange}
+            sx={{ minWidth: "150px", mb: "20px", fontSize: "12px" }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 200,
+                  overflowY: "auto",
+                },
+              },
+            }}
+          >
+            {buildingsAndFloorsNames?.map((building: any) => (
+              <MenuItem
+                sx={{ fontSize: "12px" }}
+                key={building.buildingId}
+                value={building.buildingId}
+              >
+                {building.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl fullWidth>
+          <InputLabel sx={{ fontSize: "12px" }} id="floor-id-label">
+            Floor
+          </InputLabel>
+          <Select
+            labelId="floor-id-label"
+            id="floor-id"
+            value={floorId}
+            label="Floor"
+            onChange={handleFloorIdChange}
+            sx={{ minWidth: "150px", fontSize: "12px" }}
+            MenuProps={{
+              PaperProps: {
+                style: {
+                  maxHeight: 200,
+                  overflowY: "auto",
+                },
+              },
+            }}
+          >
+            {floorList.map((floor: any) => (
+              <MenuItem
+                sx={{ fontSize: "12px" }}
+                key={floor.floorId}
+                value={floor.floorId}
+              >
+                {floor.floorNumber}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </div>
+    );
+  };
+  return (
+    <Card className="buildingEnergy">
+      <ChartHeading
+        title={`Floor-Wise Energy consumption ${selectedBuildingName}`}
+        onExpandIconClick={handleChartFullView}
+        FilterComponent={FilterComponent}
+      />
+      {renderChart()}
 
-            />
-            {renderChart()}
+      <FullView open={openFullViewModal} onClose={closeChartFullView}>
+        {renderChart(true)}
+      </FullView>
+    </Card>
+  );
+};
 
-            <FullView open={openFullViewModal} onClose={closeChartFullView}>
-                {renderChart()}
-            </FullView>
-        </Card>
-    )
-}
-
-export default BuildingFloorWiseEnergyChart
+export default BuildingFloorWiseEnergyChart;

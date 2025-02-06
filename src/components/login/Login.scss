@@ -1,94 +1,92 @@
 .loginContainer {
-    // background-color: #4B5563;
-    height: 100vh;
-    margin: 0;
-    padding: 24px;
-    box-sizing: border-box;
+  // background-color: #4B5563;
+  height: 100vh;
+  margin: 0;
+  padding: 24px;
+  box-sizing: border-box;
 
-    .mainHeading {
-        text-align: center;
-        color: #fff;
-    }
+  .mainHeading {
+    text-align: center;
+    color: #fff;
+  }
 
-    .subHeading {
-        color: #fff;
-        text-align: center;
-    }
+  .subHeading {
+    color: #fff;
+    text-align: center;
+  }
 
-    .loginWrapper {
+  .loginWrapper {
+    position: relative;
+  }
+
+  .login {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+
+    .formWrapper {
+      display: flex;
+      flex-direction: column;
+
+      // #B91C1C
+      .formElement {
+        margin-bottom: 16px;
         position: relative;
-    }
 
-    .login {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        font-size: 14px;
-
-        .formWrapper {
-            display: flex;
-            flex-direction: column;
-
-            // #B91C1C
-            .formElement {
-                margin-bottom: 16px;
-                position: relative;
-
-                .inputelement {
-                    width: 100%;
-                }
-
-                label,
-                input {
-                    font-size: 14px;
-                }
-
-                .errorMsg {
-                    color: #B91C1C;
-                    font-size: 12px;
-                }
-
-                .formActionIcons {
-                    font-size: 14px;
-                    position: absolute;
-                    right: 0;
-                    bottom: 7px;
-                }
-
-                &.errorFormElement {
-
-                    label,
-                    input {
-                        color: #B91C1C;
-                    }
-                }
-
-            }
-
-            .signInBtn {
-                margin-top: 16px;
-
-                button {
-                    width: 100%;
-                }
-            }
-
-            .forgotPassword {
-                display: flex;
-
-                .checkbox {
-                    padding: 0;
-                }
-
-                .forgotPasswordBtn {
-                    text-align: right;
-                    flex: 1;
-                    text-decoration: none;
-                    color: #000;
-                    font-size: 14px;
-                }
-            }
+        .inputelement {
+          width: 100%;
         }
+
+        label,
+        input {
+          font-size: 14px;
+        }
+
+        .errorMsg {
+          color: #b91c1c;
+          font-size: 12px;
+        }
+
+        .formActionIcons {
+          font-size: 14px;
+          position: absolute;
+          right: 0;
+          bottom: 7px;
+        }
+
+        &.errorFormElement {
+          label,
+          input {
+            color: #b91c1c;
+          }
+        }
+      }
+
+      .signInBtn {
+        margin-top: 16px;
+
+        button {
+          width: 100%;
+        }
+      }
+
+      .forgotPassword {
+        display: flex;
+
+        .checkbox {
+          padding: 0;
+        }
+
+        .forgotPasswordBtn {
+          text-align: right;
+          flex: 1;
+          text-decoration: none;
+          color: #000;
+          font-size: 14px;
+        }
+      }
     }
+  }
 }
