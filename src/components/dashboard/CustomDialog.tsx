@@ -16,9 +16,9 @@ interface CustomDialogProps {
   onClose: () => void;
   title: string | null;
   label: string | null;
-  data: TableDataProps[]
-  isLoading?: boolean
-  isError?: any
+  data: TableDataProps[];
+  isLoading?: boolean;
+  isError?: any;
 }
 const CustomDialog: React.FC<CustomDialogProps> = ({
   open,
@@ -27,7 +27,7 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
   label,
   data,
   isLoading,
-  isError
+  isError,
 }) => {
   console.log("asdfddd :", title);
   return (
@@ -46,10 +46,7 @@ const CustomDialog: React.FC<CustomDialogProps> = ({
       </DialogTitle>
       <DialogContent>
         <Typography variant="body1"> {label}</Typography>
-        {isLoading ?
-          <Spinner /> :
-          <DataTable data={data} />
-        }
+        {isLoading ? <Spinner /> : <DataTable data={data} />}
         {isError && <ErrorMessage />}
       </DialogContent>
     </Dialog>

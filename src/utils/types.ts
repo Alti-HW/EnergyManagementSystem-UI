@@ -1,18 +1,18 @@
 export interface Headers {
-    [key: string]: string
+  [key: string]: string;
 }
 export interface Options {
-    method?: 'GET' | 'POST',
-    headers?: Headers
-    data?: any
+  method?: "GET" | "POST";
+  headers?: Headers;
+  data?: any;
 }
 export interface Request {
-    url: string
-    options: Options
+  url: string;
+  options: Options;
 }
 
-export interface Response{
-    loading: boolean,
-    data :any,
-    error: string | null
+export interface Response {
+  loading: boolean;
+  data: any;
+  error: string | null;
 }

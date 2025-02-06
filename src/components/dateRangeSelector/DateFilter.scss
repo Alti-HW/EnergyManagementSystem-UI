@@ -1,21 +1,21 @@
 .dateRange {
-    &.MuiButton-root {
-        background-color: #192142;
-        color: #fff;
-        margin-left: 10px;               
-        padding: 5px 10px;
-        text-transform: none;
-        height: fit-content;
-        min-width: fit-content;
+  &.MuiButton-root {
+    background-color: #192142;
+    color: #fff;
+    margin-left: 10px;
+    padding: 5px 10px;
+    text-transform: none;
+    height: fit-content;
+    min-width: fit-content;
 
-        &.Mui-disabled {
-            opacity: 0.5;
-            color: #fff;
-        }
+    &.Mui-disabled {
+      opacity: 0.5;
+      color: #fff;
     }
+  }
 }
 
-.boxSelecorHeading{
-    font-size: 16px;
-    margin: 0 0 16px 0;
+.boxSelecorHeading {
+  font-size: 16px;
+  margin: 0 0 16px 0;
 }
