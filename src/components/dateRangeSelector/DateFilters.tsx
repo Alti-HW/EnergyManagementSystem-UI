@@ -1,4 +1,4 @@
-import { Box, Button, Paper, Popover } from "@mui/material";
+import { Box, Button, Paper, Popover, TextField } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import ToggleButtonSelector from "../ToggleButton/ToggleButton";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -12,7 +12,7 @@ import {
   timeFilters,
 } from "../../constants/staticDateFilters";
 import dayjs, { Dayjs } from "dayjs";
-import { DateFilterTypes } from "./types";
+import { CustomTimeFields, DateFilterTypes } from "./types";
 import "./DateFilter.scss";
 import Selector from "./components/Selector";
 import DateTimeSelector from "./components/DateTimeSelector";
@@ -20,6 +20,7 @@ import {
   periodCalculatorForLastSelector,
   periodCalculatorForRelativeSelector,
 } from "../../utils/dateFiltersUtils";
+import CustomDateSelector from "./customdate.selector";
 
 const DateFilters = ({
   onDateRangeChange,
@@ -36,6 +37,7 @@ const DateFilters = ({
   const [lastSelector, setLastSelector] = useState("");
   const [relativeSelector, setRelativeSelector] = useState("currentDay");
   const [btnLabel, setBtnLabel] = useState("");
+  const [customTime, setCustomTime] = useState<CustomTimeFields>({ day: '0', hours: '0', minutes: '5', seconds: '0' });
 
   const startDateRef = useRef<any>(null);
   const endDateRef = useRef<any>(null);
@@ -54,6 +56,7 @@ const DateFilters = ({
 
   const handleViewChange = (filter: string) => {
     setActiveView(filter);
+    setLastSelector("");
   };
   const handleTimefilterChange = (filter: string) => {
     setTimeFilterValue(filter);
@@ -99,9 +102,8 @@ const DateFilters = ({
           "DD/MM/YYYY"
         )}`;
     }
-    let label = `${
-      timeFilterValue === "relative" ? "Relative" : "History"
-    } - ${text}`;
+    let label = `${timeFilterValue === "relative" ? "Relative" : "History"
+      } - ${text}`;
     setBtnLabel(label);
   };
   const handleUpdate = () => {
@@ -114,11 +116,13 @@ const DateFilters = ({
   };
 
   const lastSelectorChange = (value: string) => {
-    const { start, end } = periodCalculatorForLastSelector(value);
+    if (value != "custom") {
+      const { start, end } = periodCalculatorForLastSelector(value);
+      setRelativeSelector("");
+      setStartDate(dayjs(start));
+      setEndDate(dayjs(end));
+    }
     setLastSelector(value);
-    setRelativeSelector("");
-    setStartDate(dayjs(start));
-    setEndDate(dayjs(end));
   };
   const relativeSelectorChange = (value: string) => {
     setRelativeSelector(value);
@@ -143,6 +147,29 @@ const DateFilters = ({
   useEffect(() => {
     updateBtnLabel();
   }, []);
+
+  const handleChangeCustomDate = (field: any, value: string) => {
+    setCustomTime({ ...customTime, [field]: value });
+    const start = calculateLastTime({ ...customTime, [field]: value })
+    setStartDate(dayjs(start));
+    setEndDate(dayjs(new Date()));
+  };
+
+  const calculateLastTime = (time: any): any => {
+    const days = parseInt(time.day, 10);
+    const hours = parseInt(time.hours, 10);
+    const minutes = parseInt(time.minutes, 10);
+    const seconds = parseInt(time.seconds, 10);
+
+    const now = new Date();
+    now.setDate(now.getDate() - days);
+    now.setHours(now.getHours() - hours);
+    now.setMinutes(now.getMinutes() - minutes);
+    now.setSeconds(now.getSeconds() - seconds);
+    console.log(now)
+    return now.toString()
+  };
+
   return (
     <>
       <Button className="dateRange" onClick={handleTimeFiltersOpen}>
@@ -212,6 +239,10 @@ const DateFilters = ({
                 value={lastSelector}
               />
             )}
+            {lastSelector === "custom" && (
+              <CustomDateSelector customTime={customTime} onChange={handleChangeCustomDate} />
+            )}
+
             {activeView === "relative" && (
               <Selector
                 options={relativeFilterOptions}

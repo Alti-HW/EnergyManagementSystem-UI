@@ -1,6 +1,6 @@
 import { Card, styled } from "@mui/material";
 import { PieChart, axisClasses, useDrawingArea } from "@mui/x-charts";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChartHeading from "./ChartHeading";
 import { ChartProps } from "../types";
 import FullView from "./FullView";
@@ -14,6 +14,7 @@ const BuildingCostChart = ({ startDate, endDate }: ChartProps) => {
   const [openFullViewModal, setOpenFullViewModal] = useState(false);
   const [buildingsCostData, setBuildingsCostData] = useState([]);
   const [totalcost, setTotalcost] = useState(0);
+  const chartRef = useRef(null);
   const {
     data: buildingsRawData,
     loading: isBuildingsDataLoading,
@@ -60,7 +61,7 @@ const BuildingCostChart = ({ startDate, endDate }: ChartProps) => {
     );
   }
   const renderChart = (fullscreen?: boolean) => (
-    <>
+    <div   ref={chartRef}>
       {isBuildingsDataLoading ? (
         <Spinner />
       ) : buildingsDataError ? (
@@ -114,7 +115,7 @@ const BuildingCostChart = ({ startDate, endDate }: ChartProps) => {
           )}
         </PieChart>
       )}
-    </>
+    </div>
   );
 
   return (
@@ -122,6 +123,7 @@ const BuildingCostChart = ({ startDate, endDate }: ChartProps) => {
       <ChartHeading
         title="Energy cost breakdown by Building"
         onExpandIconClick={handleChartFullView}
+        chartRef={chartRef}
       />
       {renderChart()}
       {openFullViewModal && (

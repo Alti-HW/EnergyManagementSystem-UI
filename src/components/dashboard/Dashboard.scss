@@ -16,7 +16,8 @@
   box-sizing: border-box;
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Defines 3 equal columns */
+  grid-template-columns: repeat(3, 1fr);
+  /* Defines 3 equal columns */
   grid-gap: 10px;
 }
 
@@ -34,10 +35,14 @@
     display: flex;
     align-items: center;
     position: relative;
+    // background-color: #cfd2d6;
+    // margin: -10px -10px 0px -10px;
+    // padding: 0px 5px 0px 5px;
 
     h2 {
       margin-right: 10px;
     }
+
     .MuiButtonBase-root.MuiIconButton-root {
       height: 16px;
       width: 16px;
@@ -46,7 +51,7 @@
   }
 
   .heading {
-    text-align: center;
+    // text-align: center;
     font-size: 16px;
     flex: 1;
   }

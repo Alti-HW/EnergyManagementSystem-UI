@@ -1,49 +1,153 @@
 import {
   Box,
   IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
+  Menu,
+  MenuItem,
+  Typography,
 } from "@mui/material";
 import CropFreeIcon from "@mui/icons-material/CropFree";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Arrow for submenu
 import { ChartHeadingProps } from "../types";
-import { useEffect, useRef, useState } from "react";
-import { ClearIcon } from "@mui/x-date-pickers";
+import { useEffect, useState } from "react";
+import { jsPDF } from "jspdf";
+
 
 const ChartHeading = ({
   title,
   onExpandIconClick,
   FilterComponent,
+  chartRef
 }: ChartHeadingProps) => {
-  const [showExportOptionsMenu, setShowExportOptionsMenu] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [showConfig, setShowConfig] = useState(false);
-  const menuRef = useRef<HTMLElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(null);
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleConfigIconClick = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    setShowConfig(true);
+  const handleConfigIconClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget); // Open the config menu
   };
 
-  const listOfOptions = ["PDF", "IMG", "CSV"];
-  const handleExportMenuOpen = () => {
-    setShowExportOptionsMenu(true);
-    setShowFilters(false);
+  const handleExportMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setExportAnchorEl(event.currentTarget); // Open Export submenu
   };
+
+  const stringifyStylesheet = (stylesheet: any) =>
+    stylesheet.cssRules
+      ? Array.from(stylesheet.cssRules)
+        .map((rule: any) => rule.cssText || '')
+        .join('\n')
+      : ''
+
+  const getStyles = () =>
+    Array.from(document.styleSheets)
+      .map(s => stringifyStylesheet(s))
+      .join("\n")
+
+  const getDefs = () => {
+    const styles = getStyles()
+
+    return `<defs><style type=\"text/css\"><![CDATA[${styles}}]]></style></defs>`
+  }
+
+  const download = (format: "PNG" | "JPG" | "PDF") => {
+    const svgElems = chartRef?.current.querySelectorAll('svg[class$="MuiChartsSurface-root"]');
+
+    if (!svgElems || svgElems?.length === 0) {
+      console.log("No svg chart found in container");
+      return;
+    }
+
+    const svgElem = svgElems[0];
+
+    // Adding styles to the SVG
+    const defs = getDefs();
+    svgElem.insertAdjacentHTML("afterbegin", defs);
+
+    const output = {
+      name: `chart.${format.toLowerCase()}`,
+      width: svgElem.clientWidth,
+      height: svgElem.clientHeight,
+    };
+
+    const uriData = `data:image/svg+xml;base64,${btoa(new XMLSerializer().serializeToString(svgElem))}`;
+    const img = new Image();
+    img.src = uriData;
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      [canvas.width, canvas.height] = [output.width, output.height];
+
+      const ctx: any = canvas.getContext("2d");
+
+      // Apply white background only for JPG and PDF export
+      if (format === "JPG" || format === "PDF") {
+        ctx.fillStyle = "white"; // Set the background to white
+        ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill canvas with white color
+      }
+
+      // Draw the image onto the canvas
+      ctx.drawImage(img, 0, 0, output.width, output.height);
+
+      // Prepare for download
+      const a = document.createElement("a");
+      const quality = 1.0; // Can be adjusted for JPEG quality
+
+      if (format === "PNG") {
+        a.href = canvas.toDataURL("image/png", quality); // PNG format
+      } else if (format === "JPG") {
+        a.href = canvas.toDataURL("image/jpeg", quality); // JPEG format
+      } else if (format === "PDF") {
+        // For PDF, use jsPDF to generate the document
+        const doc = new jsPDF();
+
+        // Get the page width and height of PDF
+        const pageWidth = doc.internal.pageSize.width;
+        const pageHeight = doc.internal.pageSize.height;
+
+        // Calculate the scale factor to fit the chart within the PDF page
+        const scaleFactor = Math.min(pageWidth / output.width, pageHeight / output.height);
+
+        // Calculate the new scaled width and height to fit within the page
+        const scaledWidth = output.width * scaleFactor;
+        const scaledHeight = output.height * scaleFactor;
+
+        // Add a white background for the PDF page
+        doc.setFillColor(255, 255, 255); // White background
+        doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+        // Add the image to the PDF, scaled to fit within the page
+        doc.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, scaledWidth, scaledHeight);
+
+        // Save the PDF
+        doc.save("energy-consumption-chart.pdf");
+        return;
+      }
+
+      // Download the image (PNG or JPG)
+      a.download = output.name;
+      a.append(canvas);
+      a.click();
+      a.remove();
+    };
+
+    resetAnchors()
+  };
+
+  const resetAnchors = () => {
+    setAnchorEl(null); // Close the main menu
+    setExportAnchorEl(null); // Close the export submenu
+    setFilterAnchorEl(null)
+  }
+
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      // setShowConfig(false);
-      // setShowFilters(false)
-      // setShowExportOptionsMenu(false)
+    if (anchorEl && !anchorEl.contains(event.target as Node) && exportAnchorEl && !exportAnchorEl.contains(event.target as Node)) {
+      resetAnchors()
     }
   };
-  const handleFiltersOpen = () => {
-    setShowFilters(true);
-    setShowExportOptionsMenu(false);
+
+  const handleFiltersOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setFilterAnchorEl(event.currentTarget);
   };
 
   useEffect(() => {
@@ -52,142 +156,93 @@ const ChartHeading = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   return (
     <div className="chartHeader">
       <h2 className="heading">{title}</h2>
-      <div>
+      <Box display="flex" flexWrap="nowrap" gap="10px">
         <IconButton
           size="small"
           edge="start"
           color="inherit"
-          aria-label="close date range selector"
-          onClick={handleConfigIconClick}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        <IconButton
-          size="small"
-          edge="start"
-          color="inherit"
-          aria-label="close date range selector"
+          aria-label="expand chart"
           onClick={onExpandIconClick}
         >
           <CropFreeIcon />
         </IconButton>
-        <div></div>
-        {showConfig && (
-          <Box
-            sx={{
-              boxShadow:
-                "0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)",
-              padding: "10px",
-              borderRadius: "4px",
-              right: 0,
-              top: "1px",
-              position: "absolute",
-              bgcolor: "background.paper",
-              zIndex: 1,
-              p: 0,
-              pt: "24px",
-            }}
-            ref={menuRef}
-          >
-            <IconButton
-              size="small"
-              edge="start"
-              color="inherit"
-              aria-label="close date range selector"
-              sx={{ mr: 2 }}
-              onClick={() => setShowConfig(false)}
-              className="closeConfigIcon"
-            >
-              <ClearIcon />
-            </IconButton>
-            <List sx={{ p: 0 }}>
-              <ListItem sx={{ cursor: "pointer" }} disablePadding>
-                <ListItemButton
-                  sx={{ width: "100%", position: "relative" }}
-                  onClick={handleExportMenuOpen}
-                >
-                  <ListItemText
-                    primary="Export as"
-                    sx={{ "& .MuiTypography-root": { fontSize: "12px" } }}
-                  />
-                  {showExportOptionsMenu && (
-                    <Box
-                      sx={{
-                        boxShadow:
-                          "0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)",
-                        padding: "10px",
-                        borderRadius: "4px",
-                        top: "-1px",
-                        position: "absolute",
-                        bgcolor: "background.paper",
-                        zIndex: 1,
-                        p: 0,
-                        left: "-1px",
-                        right: "unset",
-                        transform: "translateX(-100%)",
-                      }}
-                    >
-                      <List sx={{ p: 0 }}>
-                        {listOfOptions.map((ele) => (
-                          <ListItem sx={{ cursor: "pointer" }} disablePadding>
-                            <ListItemButton
-                              onClick={() => setShowExportOptionsMenu(false)}
-                            >
-                              <ListItemText
-                                sx={{
-                                  "& .MuiTypography-root": { fontSize: "12px" },
-                                }}
-                              >
-                                {ele}
-                              </ListItemText>
-                            </ListItemButton>
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Box>
-                  )}
-                </ListItemButton>
-              </ListItem>
-              {FilterComponent && (
-                <ListItem
-                  sx={{ cursor: "pointer", position: "relative" }}
-                  disablePadding
-                >
-                  <ListItemButton onClick={handleFiltersOpen}>
-                    <ListItemText
-                      primary="Filters"
-                      sx={{ "& .MuiTypography-root": { fontSize: "12px" } }}
-                    />
-                    {showFilters && (
-                      <Box
-                        sx={{
-                          boxShadow:
-                            "0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)",
-                          padding: "10px",
-                          borderRadius: "4px",
-                          top: "-1px",
-                          position: "absolute",
-                          bgcolor: "background.paper",
-                          zIndex: 1,
-                          p: 0,
-                          left: "-1px",
-                          right: "unset",
-                          transform: "translateX(-100%)",
-                        }}
-                      >
-                        <FilterComponent />
-                      </Box>
-                    )}
-                  </ListItemButton>
-                </ListItem>
-              )}
-            </List>
-          </Box>
+
+        <IconButton
+          size="small"
+          edge="start"
+          color="inherit"
+          aria-label="open config menu"
+          onClick={handleConfigIconClick}
+        >
+          <MoreVertIcon />
+        </IconButton>
+      </Box>
+
+      {/* Main Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        {/* Export Menu */}
+        <MenuItem onClick={handleExportMenuOpen}>
+          <Typography variant="body2">Export as</Typography>
+          <KeyboardArrowDownIcon sx={{ ml: 1 }} /> {/* Arrow for submenu */}
+        </MenuItem>
+
+        {/* Submenu for Export Options */}
+        <Menu
+          anchorEl={exportAnchorEl}
+          open={Boolean(exportAnchorEl)}
+          onClose={() => resetAnchors()}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+        >
+          <MenuItem onClick={() => download("PNG")}>
+            <Typography variant="body2">PNG</Typography>
+          </MenuItem>
+          <MenuItem onClick={() => download("JPG")}>
+            <Typography variant="body2">JPG</Typography>
+          </MenuItem>
+          <MenuItem onClick={() => download("PDF")}>
+            <Typography variant="body2">PDF</Typography>
+          </MenuItem>
+        </Menu>
+
+        {/* Filter Menu */}
+        {FilterComponent && (
+          <>
+            <MenuItem onClick={handleFiltersOpen}>
+              <Typography variant="body2">Filters</Typography>
+            </MenuItem>
+              <Menu
+                anchorEl={filterAnchorEl}
+                open={Boolean(filterAnchorEl)}
+                onClose={() => resetAnchors()}
+              >
+                  <FilterComponent />
+              </Menu>
+          </>
         )}
-      </div>
+      </Menu>
     </div>
   );
 };
