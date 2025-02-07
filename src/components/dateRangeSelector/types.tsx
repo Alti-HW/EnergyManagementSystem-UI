@@ -22,3 +22,10 @@ export interface DateTimeSelectorProps {
   onChange: (date: Dayjs | null) => void;
   value: Dayjs | null;
 }
+
+export interface CustomTimeFields {
+  day: string;
+  hours: string;
+  minutes: string;
+  seconds: string;
+}

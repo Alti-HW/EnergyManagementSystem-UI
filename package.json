@@ -20,6 +20,7 @@
     "cra-template-typescript": "1.2.0",
     "date-fns": "^2.28.0",
     "dayjs": "^1.11.13",
+    "jspdf": "^2.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^7.1.3",

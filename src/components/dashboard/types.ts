@@ -2,6 +2,7 @@ export interface ChartHeadingProps {
   title: string;
   onExpandIconClick: () => void;
   FilterComponent?: any;
+  chartRef?: any
 }
 
 export interface ChartProps {

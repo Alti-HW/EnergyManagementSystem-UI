@@ -1,7 +1,7 @@
 import { Card, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { LineChart, axisClasses } from "@mui/x-charts";
 import ChartHeading from "./ChartHeading";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChartProps } from "../types";
 import FullView from "./FullView";
 import { buildingsDataURL, POST_REQ_HEADERS } from "../../../constants/apis";
@@ -19,6 +19,7 @@ const BuildingFloorWiseEnergyChart = ({
   const [buildingId, setBuildingId] = useState("");
   const [floorId, setFloorId] = useState("");
   const [buildingFloorwiseData, setBuildingFloorwiseData] = useState([]);
+  const chartRef = useRef(null);
 
   const {
     data: buildingsFloorwiseRawData,
@@ -92,7 +93,7 @@ const BuildingFloorWiseEnergyChart = ({
   }, [buildingId, floorId]);
 
   const renderChart = (fullscreen?: boolean) => (
-    <>
+    <div ref={chartRef}>
       {isBuildingsFloorwiseDataLoading ? (
         <Spinner />
       ) : buildingsFloorwiseDataError ? (
@@ -151,7 +152,7 @@ const BuildingFloorWiseEnergyChart = ({
           colors={["#59E2C2"]}
         />
       )}
-    </>
+    </div>
   );
 
   console.log(buildingId, "buildingId");
@@ -229,6 +230,7 @@ const BuildingFloorWiseEnergyChart = ({
         title={`Floor-Wise Energy consumption ${selectedBuildingName}`}
         onExpandIconClick={handleChartFullView}
         FilterComponent={FilterComponent}
+        chartRef={chartRef}
       />
       {renderChart()}
 

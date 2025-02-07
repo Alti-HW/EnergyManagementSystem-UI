@@ -13,6 +13,7 @@ export const lastFilterOptions = [
   { label: "1 Day", value: "1day" },
   { label: "7 Days", value: "7day" },
   { label: "30 Days", value: "30day" },
+  { label: "Custom", value: "custom" },
 ];
 
 export const relativeFilterOptions = [
