@@ -1,6 +1,6 @@
 import { Card } from "@mui/material";
 import { BarChart, axisClasses } from "@mui/x-charts";
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import ChartHeading from "./ChartHeading";
 import { ChartProps } from "../types";
 import FullView from "./FullView";
@@ -19,6 +19,7 @@ import Spinner from "./Spinner";
 const BuildingEnergyChart = ({ startDate, endDate }: ChartProps) => {
   const [openFullViewModal, setOpenFullViewModal] = useState(false);
   const [buildingsData, setBuildingsData] = useState([]);
+  const chartRef = useRef(null);
   const {
     selectedLabel,
     menuPosition,
@@ -89,7 +90,7 @@ const BuildingEnergyChart = ({ startDate, endDate }: ChartProps) => {
   ];
 
   const renderChart = (fullscreen?: boolean) => (
-    <>
+    <div ref={chartRef}>
       {isBuildingsDataLoading ? (
         <Spinner />
       ) : buildingsDataError ? (
@@ -170,13 +171,14 @@ const BuildingEnergyChart = ({ startDate, endDate }: ChartProps) => {
           />
         </>
       )}
-    </>
+    </div>
   );
   return (
     <Card className="buildingEnergy">
       <ChartHeading
         title="Daily Energy usage"
         onExpandIconClick={handleChartFullView}
+        chartRef={chartRef}
       />
       {renderChart()}
       <FullView open={openFullViewModal} onClose={closeChartFullView}>
