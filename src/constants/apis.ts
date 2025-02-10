@@ -1,6 +1,10 @@
 export const users = {
   allUsers: "http://localhost:5000/api/Users/Users",
   getAUser: "http://localhost:5000/api/Users",
+  avaialbleRolesForUser: "http://localhost:5000/api/RollMapping/user",
+  assignedRolesForUser: "http://localhost:5000/api/RollMapping/user",
+  addRolesToUsers: "http://localhost:5000/api/RollMapping/user",
+  removeRolesFromUser: "http://localhost:5000/api/RollMapping/user"
 };
 
 export const buildingsDataURL =

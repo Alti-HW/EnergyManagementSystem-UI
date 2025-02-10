@@ -19,4 +19,5 @@ export interface UserTableProps {
   onSelectAll: (e: any) => void;
   selectAll: boolean;
   selectedUsers: string[];
+  usersRolesList: any
 }
