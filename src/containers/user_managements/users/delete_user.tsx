@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   IconButton,
-  Modal,
   Paper,
   Typography,
 } from "@mui/material";
@@ -14,16 +13,18 @@ import CloseIcon from "@mui/icons-material/Close";
 interface EditUserProps {
   onCancel: () => void;
   user: any;
+  fetchUsers: any
 }
-const DeleteUser = ({ onCancel, user }: EditUserProps) => {
+const DeleteUser = ({ onCancel, user, fetchUsers }: EditUserProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState("");
   const handleSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsLoading(true);
     userActions
-      .deleteUser({ id: user?.id })
+      .deleteAUser(user?.id)
       .then((response) => {
+        fetchUsers()
         setResponseMessage("User Updation successfully!");
       })
       .catch((error) => {
@@ -106,8 +107,8 @@ const DeleteUser = ({ onCancel, user }: EditUserProps) => {
           {responseMessage === ""
             ? "Delete"
             : responseMessage.includes("success")
-            ? "Continue"
-            : "Cancel"}
+              ? "Continue"
+              : "Cancel"}
         </Button>
       </Box>
     </Box>

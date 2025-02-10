@@ -19,8 +19,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import UserRow from "./user_row";
-import PaginationControls from "./pagination_controls";
 import { useState } from "react";
 import UserAvatar from "./user_avatar";
 import { format, parseISO } from "date-fns";
@@ -37,6 +35,7 @@ const UsersTable = ({
   selectAll,
   onSelectAll,
   selectedUsers,
+  usersRolesList
 }: UserTableProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -57,7 +56,8 @@ const UsersTable = ({
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  console.log(users);
+
+
   return (
     <>
       <TableContainer
@@ -125,182 +125,180 @@ const UsersTable = ({
             <TableBody>
               {total <= 0
                 ? [1, 2, 3].map((index) => (
-                    <TableRow key={index}>
-                      <TableCell sx={{ padding: 0.5 }}>
-                        <Checkbox sx={{ transform: "scale(0.8)" }} />
-                      </TableCell>
-                      <TableCell sx={{ padding: 0.5, width: "30%" }}>
-                        <Skeleton variant="text" width="150px" />
-                      </TableCell>
-                      <TableCell sx={{ padding: 0.5, width: "30%" }}>
-                        <Skeleton variant="text" width="60px" />
-                      </TableCell>
-                      <TableCell sx={{ padding: 0.5, width: "20%" }}>
-                        <Skeleton variant="text" width="60px" />
-                      </TableCell>
-                      <TableCell sx={{ padding: 0.5 }}>
-                        <Skeleton variant="text" width="60px" />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                : users
-                    ?.slice(
-                      page * rowsPerPage,
-                      page * rowsPerPage + rowsPerPage
-                    )
-                    .map(
-                      (row: any, index: number) =>
-                        row.email && (
-                          <>
-                            <TableRow
-                              sx={{ cursor: "pointer" }}
-                              onClick={(e) => {
-                                var element = e.target as HTMLElement;
-                                console.log(element.tagName, e.currentTarget);
-                                if (element?.tagName !== "INPUT")
-                                  handleRowClick(index);
-                              }}
-                            >
-                              <TableCell
-                                sx={{
-                                  padding: 0.5,
-                                  width: "45px",
-                                  textAlign: "center",
-                                }}
-                              >
-                                <Checkbox
-                                  sx={{ transform: "scale(0.8)" }}
-                                  checked={
-                                    selectAll ||
-                                    selectedUsers?.indexOf(row?.id) !== -1
-                                  }
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    onSelect(e, row?.id);
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell
-                                sx={{
-                                  padding: "8px 4px",
-                                  width: "30%",
-                                  boxSizing: "border-box",
-                                }}
-                              >
-                                <UserAvatar
-                                  firstName={row.firstName}
-                                  lastName={row.lastName}
-                                  email={row.email}
-                                />
-                              </TableCell>
-                              <TableCell
-                                sx={{ padding: "8px 4px", width: "30%" }}
-                              >
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    gap: "8px",
-                                    flexWrap: "wrap",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                  }}
-                                >
-                                  <Chip
-                                    label="Chip"
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{ fontSize: "12px" }}
-                                  />
-                                  <Chip
-                                    label="Chip Outlined ww"
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{ fontSize: "12px" }}
-                                  />
-
-                                  <Chip
-                                    label="Ch"
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{ fontSize: "12px" }}
-                                  />
-                                </Box>
-                              </TableCell>
-                              <TableCell
-                                sx={{
-                                  padding: 0.5,
-                                  width: "20%",
-                                  boxSizing: "border-box",
-                                  fontSize: "12px",
-                                }}
-                              >
-                                {format(
-                                  parseISO(row.created),
-                                  "yyyy-MM-dd HH:mm"
-                                )}
-                              </TableCell>
-                              <TableCell
-                                sx={{ padding: 0.5, textAlign: "center" }}
-                              >
-                                <IconButton
-                                  sx={{ color: "#192142" }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onUserEdit(index);
-                                  }}
-                                >
-                                  <BorderColorIcon
-                                    sx={{ width: "12px", height: "12px" }}
-                                  />
-                                </IconButton>
-                                <IconButton
-                                  sx={{ color: "#192142" }}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onUserDelete(index);
-                                  }}
-                                >
-                                  <DeleteOutlineIcon
-                                    sx={{ width: "16px", height: "16px" }}
-                                  />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                            <TableRow
+                  <TableRow key={index}>
+                    <TableCell sx={{ padding: 0.5 }}>
+                      <Checkbox sx={{ transform: "scale(0.8)" }} />
+                    </TableCell>
+                    <TableCell sx={{ padding: 0.5, width: "30%" }}>
+                      <Skeleton variant="text" width="150px" />
+                    </TableCell>
+                    <TableCell sx={{ padding: 0.5, width: "30%" }}>
+                      <Skeleton variant="text" width="60px" />
+                    </TableCell>
+                    <TableCell sx={{ padding: 0.5, width: "20%" }}>
+                      <Skeleton variant="text" width="60px" />
+                    </TableCell>
+                    <TableCell sx={{ padding: 0.5 }}>
+                      <Skeleton variant="text" width="60px" />
+                    </TableCell>
+                  </TableRow>
+                ))
+                : users && users?.length > 0 && users
+                  ?.slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage
+                  )
+                  .map(
+                    (row: any, index: number) =>
+                      row.email && (
+                        <>
+                          <TableRow
+                            sx={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                              var element = e.target as HTMLElement;
+                              console.log(element.tagName, e.currentTarget);
+                              if (element?.tagName !== "INPUT")
+                                handleRowClick(index);
+                            }}
+                          >
+                            <TableCell
                               sx={{
-                                display:
-                                  activeRowIndex === index
-                                    ? "table-row"
-                                    : "none",
+                                padding: 0.5,
+                                width: "45px",
+                                textAlign: "center",
                               }}
                             >
-                              <TableCell colSpan={5}>
-                                <Collapse in={activeRowIndex === index}>
-                                  <Box>
-                                    <Typography sx={{ fontSize: "16px" }}>
-                                      Details
-                                    </Typography>
-                                    <List sx={{ pt: 0 }}>
-                                      <ListItem sx={{ pb: 0 }}>
-                                        First Name : {row.firstName}
-                                      </ListItem>
-                                      <ListItem sx={{ pb: 0 }}>
-                                        Last Name : {row.lastName}
-                                      </ListItem>
-                                      <ListItem sx={{ pb: 0 }}>
-                                        User Name : {row.username}
-                                      </ListItem>
-                                      <ListItem sx={{ pb: 0 }}>
-                                        List of Role : {row?.role?.toString()}
-                                      </ListItem>
-                                    </List>
-                                  </Box>
-                                </Collapse>
-                              </TableCell>
-                            </TableRow>
-                          </>
-                        )
-                    )}
+                              <Checkbox
+                                sx={{ transform: "scale(0.8)" }}
+                                checked={
+                                  selectAll ||
+                                  selectedUsers?.indexOf(row?.id) !== -1
+                                }
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  onSelect(e, row?.id);
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell
+                              sx={{
+                                padding: "8px 4px",
+                                width: "30%",
+                                boxSizing: "border-box",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
+                              }}
+                            >
+                              <UserAvatar
+                                firstName={row.firstName}
+                                lastName={row.lastName}
+                                email={row.email}
+                              />
+                            </TableCell>
+                            <TableCell
+                              sx={{ padding: "8px 4px", width: "30%" }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  gap: "8px",
+                                  flexWrap: "wrap",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                {usersRolesList.has(row.id) ? usersRolesList.get(row.id).map((role: any, index: number) => (
+                                  <Chip
+                                    key={index}
+                                    label={role.name} // Adjust this based on the actual data structure of 'role'
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{ fontSize: "12px" }}
+                                  />
+                                )) :
+                                  <Skeleton variant="text" width="100px" />
+                                }
+
+                              </Box>
+                            </TableCell>
+                            <TableCell
+                              sx={{
+                                padding: 0.5,
+                                width: "20%",
+                                boxSizing: "border-box",
+                                fontSize: "12px",
+                              }}
+                            >
+                              {format(
+                                parseISO(row.created),
+                                "yyyy-MM-dd HH:mm"
+                              )}
+                            </TableCell>
+                            <TableCell
+                              sx={{ padding: 0.5, textAlign: "center" }}
+                            >
+                              <IconButton
+                                sx={{ color: "#192142" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onUserEdit(index);
+                                }}
+                              >
+                                <BorderColorIcon
+                                  sx={{ width: "12px", height: "12px" }}
+                                />
+                              </IconButton>
+                              <IconButton
+                                sx={{ color: "#192142" }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onUserDelete(index);
+                                }}
+                              >
+                                <DeleteOutlineIcon
+                                  sx={{ width: "16px", height: "16px" }}
+                                />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow
+                            sx={{
+                              display:
+                                activeRowIndex === index
+                                  ? "table-row"
+                                  : "none",
+                            }}
+                          >
+                            <TableCell colSpan={5}>
+                              <Collapse in={activeRowIndex === index}>
+                                <Box>
+                                  <Typography sx={{ fontSize: "16px" }}>
+                                    Details
+                                  </Typography>
+                                  <List sx={{ pt: 0 }}>
+                                    <ListItem sx={{ pb: 0 }}>
+                                      First Name : {row.firstName}
+                                    </ListItem>
+                                    <ListItem sx={{ pb: 0 }}>
+                                      Last Name : {row.lastName}
+                                    </ListItem>
+                                    <ListItem sx={{ pb: 0 }}>
+                                      User Name : {row.username}
+                                    </ListItem>
+                                    <ListItem sx={{ pb: 0 }}>
+                                      List of Role : {usersRolesList.has(row.id) ? usersRolesList.get(row.id).map((role: any, index: number) => (
+                                        <Chip label={role.name} variant="outlined" />
+                                      )) : ""}
+                                    </ListItem>
+                                  </List>
+                                </Box>
+                              </Collapse>
+                            </TableCell>
+                          </TableRow>
+                        </>
+                      )
+                  )}
             </TableBody>
             <TableFooter>
               <TableRow>

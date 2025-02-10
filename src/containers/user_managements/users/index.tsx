@@ -223,15 +223,15 @@ const UserManagementTable: React.FC = () => {
       />
 
       {openAddUserModal && <AddUser onCancel={handleAddUserModalClose} />}
-      {openEditUserModal && (
+      {/* {openEditUserModal && (
         <EditUser onCancel={() => setOpenEditUserModal(false)} />
-      )}
-      {openDeleteUserModal && (
+      )} */}
+      {/* {openDeleteUserModal && (
         <DeleteUser
           user={selectedUser}
           onCancel={() => setOpenDeleteUserModal(false)}
         />
-      )}
+      )} */}
     </Box>
   );
 };
