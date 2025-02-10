@@ -38,12 +38,13 @@ interface User {
 
 const UserManagementTable: React.FC = () => {
   const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+
   const [users, setUsers] = useState<User[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
   const navigate = useNavigate();
-  const rowsPerPage = 10;
   const [openAddUserModal, setOpenAddUserModal] = useState(false);
 
   const [searchText, setSearchText] = useState("");

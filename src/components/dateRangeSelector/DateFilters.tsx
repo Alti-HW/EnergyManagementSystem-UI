@@ -37,7 +37,12 @@ const DateFilters = ({
   const [lastSelector, setLastSelector] = useState("");
   const [relativeSelector, setRelativeSelector] = useState("currentDay");
   const [btnLabel, setBtnLabel] = useState("");
-  const [customTime, setCustomTime] = useState<CustomTimeFields>({ day: '0', hours: '0', minutes: '5', seconds: '0' });
+  const [customTime, setCustomTime] = useState<CustomTimeFields>({
+    day: "0",
+    hours: "0",
+    minutes: "5",
+    seconds: "0",
+  });
 
   const startDateRef = useRef<any>(null);
   const endDateRef = useRef<any>(null);
@@ -102,8 +107,9 @@ const DateFilters = ({
           "DD/MM/YYYY"
         )}`;
     }
-    let label = `${timeFilterValue === "relative" ? "Relative" : "History"
-      } - ${text}`;
+    let label = `${
+      timeFilterValue === "relative" ? "Real time" : "History"
+    } - ${text}`;
     setBtnLabel(label);
   };
   const handleUpdate = () => {
@@ -150,7 +156,7 @@ const DateFilters = ({
 
   const handleChangeCustomDate = (field: any, value: string) => {
     setCustomTime({ ...customTime, [field]: value });
-    const start = calculateLastTime({ ...customTime, [field]: value })
+    const start = calculateLastTime({ ...customTime, [field]: value });
     setStartDate(dayjs(start));
     setEndDate(dayjs(new Date()));
   };
@@ -166,8 +172,8 @@ const DateFilters = ({
     now.setHours(now.getHours() - hours);
     now.setMinutes(now.getMinutes() - minutes);
     now.setSeconds(now.getSeconds() - seconds);
-    console.log(now)
-    return now.toString()
+    console.log(now);
+    return now.toString();
   };
 
   return (
@@ -240,7 +246,10 @@ const DateFilters = ({
               />
             )}
             {lastSelector === "custom" && (
-              <CustomDateSelector customTime={customTime} onChange={handleChangeCustomDate} />
+              <CustomDateSelector
+                customTime={customTime}
+                onChange={handleChangeCustomDate}
+              />
             )}
 
             {activeView === "relative" && (

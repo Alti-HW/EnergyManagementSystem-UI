@@ -62,7 +62,9 @@ const User = ({
         {getInitials()} {/* Display the initials */}
       </Avatar>
       <Box sx={{ ml: 1 }}>
-        <Typography sx={{ fontSize: "12px", color: "#000" }}>
+        <Typography
+          sx={{ fontSize: "12px", color: "#000", wordBreak: "break-all" }}
+        >
           {`${firstName} ${lastName}`}
         </Typography>
         <Typography sx={{ fontSize: "10px", color: "#777a7a" }}>

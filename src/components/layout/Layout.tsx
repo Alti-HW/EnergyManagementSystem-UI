@@ -16,7 +16,7 @@ const Layout = () => {
       <Header onMenuExpand={onMenuExpand} />
       <Box
         sx={{
-          padding: !isMenuMinimized ? "0 16px 0 236px" : "0 16px 0 76px",
+          padding: !isMenuMinimized ? "0 0 0 220px" : "0 0 0 60px",
           minHeight: "100vh",
           backgroundColor:
             location.pathname === "/dashboard" ? "#205c84" : "background.paper",

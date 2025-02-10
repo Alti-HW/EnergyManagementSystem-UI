@@ -11,6 +11,9 @@ import UserRoles from "./containers/user_managements/user_details/roles";
 import UserLayoutTabs from "./containers/user_managements/user_details/user_layout";
 import AddUser from "./containers/user_managements/users/add_user";
 import LoginPage from "./components/login/LoginPage";
+import UserManagement from "./containers/user_managements/UserManagement";
+import Users from "./containers/user_managements/users/users";
+import Roles from "./containers/user_managements/roles/roles";
 
 function App() {
   return (
@@ -24,10 +27,12 @@ function App() {
           <Route path="/reports" element={<div>Reports</div>} />
           <Route path="/analytics" element={<div>Analytics</div>} />
           <Route path="/profile" element={<div>My Account</div>} />
-          <Route
-            path="/userManagement/users"
-            element={<UserManagementTable />}
-          />
+          <Route element={<UserManagement />}>
+            <Route path="/userManagement/users" index element={<Users />} />
+            <Route path="/userManagement/roles" element={<Roles />} />
+          </Route>
+        </Route>
+        {/* <Route path="/userManagement/users" element={<UserManagementTable />}>
           <Route path="/userManagement/user" element={<UserLayoutTabs />}>
             <Route
               path="/userManagement/user/:userid/settings"
@@ -40,7 +45,7 @@ function App() {
           </Route>
           <Route path="/userManagement/user/add_user" element={<AddUser />} />
           <Route path="/userManagement/roles" element={<RolesTable />} />
-        </Route>
+        </Route> */}
       </Routes>
     </BrowserRouter>
   );

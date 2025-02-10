@@ -20,8 +20,12 @@ const SearchBar = ({
     }}
     style={{ width: "300px", fontSize: "14px" }}
     sx={{
+      backgroundColor: "background.paper",
       "& .MuiInputLabel-root, & .MuiOutlinedInput-input": {
         fontSize: "14px",
+      },
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderWidth: 0,
       },
     }}
     onChange={onChange}

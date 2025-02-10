@@ -1,7 +1,7 @@
 export const users = {
-    allUsers: 'http://localhost:7082/api/Users/Users',
-    getAUser: 'http://localhost:7082/api/Users'
-}
+  allUsers: "http://localhost:5000/api/Users/Users",
+  getAUser: "http://localhost:5000/api/Users",
+};
 
 export const buildingsDataURL =
   "http://localhost:5000/api/Energy/energy-consumption";
