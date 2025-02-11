@@ -52,10 +52,11 @@ const createUser = async (userData: any) => {
     if (response) {
       return response?.data || {};
     } else {
-      new Error("User Creation Failed");
+      throw new Error("User Creation Failed");
     }
   } catch (err) {
     console.error("Error fetching data", err);
+    throw err
   }
 };
 
@@ -139,32 +140,50 @@ const removeRolesFromUser = async (userData: any) => {
     const response = await axios.delete(users.removeRolesFromUser, {
       data: userData,
     });
-    
+
     if (response && response.data) {
-      return response.data; 
+      return response.data;
     } else {
       throw new Error("Failed to remove roles from user");
     }
   } catch (err) {
     console.error("Error removing roles from user:", err);
-    throw err; 
+    throw err;
   }
 };
 
 const deleteAUser = async (id: any) => {
   try {
     const response = await axios.delete(`${users.getAUser}/${id}`);
-    
+
     if (response && response.data) {
-      return response.data; 
+      return response.data;
     } else {
       throw new Error("Failed to remove roles from user");
     }
   } catch (err) {
     console.error("Error removing roles from user:", err);
-    throw err; 
+    throw err;
   }
 };
+
+const userLogin = async (userData: any) => {
+  try {
+    const response = await axios.post(users.userLogin, userData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response) {
+      return response?.data || {};
+    } else {
+      new Error(" Failed");
+    }
+  } catch (err) {
+    console.error("Error fetching data", err);
+  }
+};
+
 
 
 export const userActions = {
@@ -176,5 +195,6 @@ export const userActions = {
   getAssignedRolesForUser,
   addRolesToUser,
   removeRolesFromUser,
-  deleteAUser
+  deleteAUser,
+  userLogin
 };

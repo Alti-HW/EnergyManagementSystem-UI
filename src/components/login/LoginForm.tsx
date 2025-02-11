@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa"; // Importing icons for email and password fields
-import { NavLink, useNavigate } from "react-router";
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => void;
@@ -9,12 +8,10 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  let navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onLogin(email, password);
-    navigate("/dashboard");
   };
 
   return (

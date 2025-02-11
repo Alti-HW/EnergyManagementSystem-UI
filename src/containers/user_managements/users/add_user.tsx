@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   CircularProgress,
@@ -18,6 +18,7 @@ import { useNavigate } from "react-router";
 import { userActions } from "../../../actions/users";
 import Spinner from "../../../components/dashboard/components/Spinner";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckboxesTags from '../roles/multi_select'
 
 // Define types for form fields
 interface IUserForm {
@@ -25,6 +26,7 @@ interface IUserForm {
   lastName: string;
   username: string;
   email: string;
+  id?: string
 }
 
 interface AddUser {
@@ -32,7 +34,7 @@ interface AddUser {
   onSubmit?: () => void;
 }
 
-const AddUser: React.FC<AddUser> = ({ onCancel, onSubmit = () => {} }) => {
+const AddUser: React.FC<AddUser> = ({ onCancel, onSubmit = () => { } }) => {
   // State for form data
   const [formData, setFormData] = useState<IUserForm>({
     firstName: "",
@@ -103,18 +105,18 @@ const AddUser: React.FC<AddUser> = ({ onCancel, onSubmit = () => {} }) => {
           });
           setIsLoading(false);
         }
-      } catch (error) {
-        setResponseMessage("Error while creating user. Please try again.");
+      } catch (error: any) {
+        setResponseMessage(error?.response?.data?.ErrorMessage || "Error while creating user. Please try again.");
       } finally {
-        setTimeout(() => {
-          setIsLoading(false);
-          onSubmit();
-        }, 3000);
+        setIsLoading(false);
+        onSubmit();
       }
     } else {
       setResponseMessage("Please fill in all required fields correctly.");
     }
   };
+
+
 
   return (
     <Paper

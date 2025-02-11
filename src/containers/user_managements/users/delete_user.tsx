@@ -31,9 +31,7 @@ const DeleteUser = ({ onCancel, user, fetchUsers }: EditUserProps) => {
         setResponseMessage("Error on Updating User!");
       })
       .finally(() => {
-        setTimeout(() => {
           setIsLoading(false);
-        }, 3000);
       });
   };
   return (

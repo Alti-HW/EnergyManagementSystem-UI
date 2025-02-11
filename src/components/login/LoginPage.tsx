@@ -4,12 +4,21 @@ import "./LoginPage.scss";
 import google from "./assets/google.png";
 import sso from "./assets/sso.png";
 import microsoft from "./assets/microsoft.png";
+import { userActions } from "../../actions/users";
 
 const LoginPage: React.FC = () => {
   const handleLogin = (email: string, password: string) => {
     console.log("Logged in with email:", email, "and password:", password);
+    loginUser(email, password)
     // Here you can add actual login logic (e.g., API calls)
   };
+
+  const loginUser = (username: string, password: string) => {
+    userActions.userLogin({
+      email: username,
+      password
+    })
+  }
 
   return (
     <div className="login-page">

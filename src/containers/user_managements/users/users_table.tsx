@@ -270,7 +270,7 @@ const UsersTable = ({
                                   : "none",
                             }}
                           >
-                            <TableCell colSpan={5}>
+                            {/* <TableCell colSpan={5}>
                               <Collapse in={activeRowIndex === index}>
                                 <Box>
                                   <Typography sx={{ fontSize: "16px" }}>
@@ -294,7 +294,7 @@ const UsersTable = ({
                                   </List>
                                 </Box>
                               </Collapse>
-                            </TableCell>
+                            </TableCell> */}
                           </TableRow>
                         </>
                       )

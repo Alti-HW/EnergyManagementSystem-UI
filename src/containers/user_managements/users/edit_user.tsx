@@ -24,6 +24,7 @@ import UserAvatar from "./user_avatar";
 import { useEffect, useMemo, useState } from "react";
 import { userActions } from "../../../actions/users";
 import RoleMap from "./roles.map";
+import rolesActions from "../../../actions/roles";
 
 interface EditUserProps {
   onCancel: () => void;
@@ -98,7 +99,7 @@ const EditUser = ({ onCancel, user, usersRolesList, fetchUsers }: EditUserProps)
   };
 
   useEffect(() => {
-    userActions.getAvailableRolesForUser(user.id).then((res: any) => {
+    rolesActions.getAllRoles().then((res: any) => {
       setAvailableRoles(res?.data || []);
     })
   }, [])
@@ -294,7 +295,7 @@ const EditUser = ({ onCancel, user, usersRolesList, fetchUsers }: EditUserProps)
             Roles mapping
           </Typography>
           <FormControl sx={{ width: "70%" }}>
-            <RoleMap roles={[...availableRoles]} userSelectedRoles={userSelectedRoles} onRoleChange={onRoleChange} />
+            <RoleMap roles={availableRoles} userSelectedRoles={userSelectedRoles} onRoleChange={onRoleChange} />
           </FormControl>
         </Box>
       </Stack>
