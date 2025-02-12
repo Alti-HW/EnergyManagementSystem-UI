@@ -10,6 +10,7 @@ export const userRoutes = [
     path: "/dashboard",
     label: "Dashboard",
     Icon: DashboardIcon,
+    type: "dashboard",
   },
   {
     path: "/alerts",
@@ -50,5 +51,44 @@ export const adminRoutes = [
         Icon: SupervisedUserCircleIcon,
       },
     ],
+  },
+];
+
+export const supportedRoutes = [
+  {
+    path: "/userManagement/users",
+    label: "User Management",
+    Icon: SupervisedUserCircleIcon,
+    type: "userManagement",
+  },
+  {
+    path: "/dashboard",
+    label: "Dashboard",
+    Icon: DashboardIcon,
+    type: "dashboard",
+  },
+  {
+    path: "/alerts",
+    label: "Alerts",
+    Icon: AddAlertIcon,
+    type: "alerts",
+  },
+  {
+    path: "/reports",
+    label: "Reports",
+    Icon: ReportIcon,
+    type: "reports",
+  },
+  {
+    path: "/analytics",
+    label: "Analytics",
+    Icon: AnalyticsIcon,
+    type: "analytics",
+  },
+  {
+    path: "/profile",
+    label: "My Account",
+    Icon: PersonIcon,
+    type: "profile",
   },
 ];

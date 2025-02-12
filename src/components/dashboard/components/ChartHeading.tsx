@@ -1,10 +1,4 @@
-import {
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import CropFreeIcon from "@mui/icons-material/CropFree";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Arrow for submenu
@@ -12,18 +6,24 @@ import { ChartHeadingProps } from "../types";
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 
-
 const ChartHeading = ({
   title,
   onExpandIconClick,
   FilterComponent,
-  chartRef
+  chartRef,
+  exportOptions = [],
 }: ChartHeadingProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(null);
-  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
+  const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(
+    null
+  );
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(
+    null
+  );
 
-  const handleConfigIconClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleConfigIconClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
     setAnchorEl(event.currentTarget); // Open the config menu
   };
 
@@ -34,23 +34,25 @@ const ChartHeading = ({
   const stringifyStylesheet = (stylesheet: any) =>
     stylesheet.cssRules
       ? Array.from(stylesheet.cssRules)
-        .map((rule: any) => rule.cssText || '')
-        .join('\n')
-      : ''
+          .map((rule: any) => rule.cssText || "")
+          .join("\n")
+      : "";
 
   const getStyles = () =>
     Array.from(document.styleSheets)
-      .map(s => stringifyStylesheet(s))
-      .join("\n")
+      .map((s) => stringifyStylesheet(s))
+      .join("\n");
 
   const getDefs = () => {
-    const styles = getStyles()
+    const styles = getStyles();
 
-    return `<defs><style type=\"text/css\"><![CDATA[${styles}}]]></style></defs>`
-  }
+    return `<defs><style type=\"text/css\"><![CDATA[${styles}}]]></style></defs>`;
+  };
 
   const download = (format: "PNG" | "JPG" | "PDF") => {
-    const svgElems = chartRef?.current.querySelectorAll('svg[class$="MuiChartsSurface-root"]');
+    const svgElems = chartRef?.current.querySelectorAll(
+      'svg[class$="MuiChartsSurface-root"]'
+    );
 
     if (!svgElems || svgElems?.length === 0) {
       console.log("No svg chart found in container");
@@ -69,7 +71,9 @@ const ChartHeading = ({
       height: svgElem.clientHeight,
     };
 
-    const uriData = `data:image/svg+xml;base64,${btoa(new XMLSerializer().serializeToString(svgElem))}`;
+    const uriData = `data:image/svg+xml;base64,${btoa(
+      new XMLSerializer().serializeToString(svgElem)
+    )}`;
     const img = new Image();
     img.src = uriData;
 
@@ -105,7 +109,10 @@ const ChartHeading = ({
         const pageHeight = doc.internal.pageSize.height;
 
         // Calculate the scale factor to fit the chart within the PDF page
-        const scaleFactor = Math.min(pageWidth / output.width, pageHeight / output.height);
+        const scaleFactor = Math.min(
+          pageWidth / output.width,
+          pageHeight / output.height
+        );
 
         // Calculate the new scaled width and height to fit within the page
         const scaledWidth = output.width * scaleFactor;
@@ -116,7 +123,14 @@ const ChartHeading = ({
         doc.rect(0, 0, pageWidth, pageHeight, "F");
 
         // Add the image to the PDF, scaled to fit within the page
-        doc.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, scaledWidth, scaledHeight);
+        doc.addImage(
+          canvas.toDataURL("image/png"),
+          "PNG",
+          0,
+          0,
+          scaledWidth,
+          scaledHeight
+        );
 
         // Save the PDF
         doc.save("energy-consumption-chart.pdf");
@@ -130,19 +144,23 @@ const ChartHeading = ({
       a.remove();
     };
 
-    resetAnchors()
+    resetAnchors();
   };
 
   const resetAnchors = () => {
     setAnchorEl(null); // Close the main menu
     setExportAnchorEl(null); // Close the export submenu
-    setFilterAnchorEl(null)
-  }
-
+    setFilterAnchorEl(null);
+  };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (anchorEl && !anchorEl.contains(event.target as Node) && exportAnchorEl && !exportAnchorEl.contains(event.target as Node)) {
-      resetAnchors()
+    if (
+      anchorEl &&
+      !anchorEl.contains(event.target as Node) &&
+      exportAnchorEl &&
+      !exportAnchorEl.contains(event.target as Node)
+    ) {
+      resetAnchors();
     }
   };
 
@@ -158,8 +176,13 @@ const ChartHeading = ({
   }, []);
 
   return (
-    <div className="chartHeader">
-      <h2 className="heading">{title}</h2>
+    <Box sx={{ display: "flex", alignItems: "center", position: "relative" }}>
+      <Typography
+        component={"h2"}
+        sx={{ marginRight: "10px", fontSize: "16px", flex: 1 }}
+      >
+        {title}
+      </Typography>
       <Box display="flex" flexWrap="nowrap" gap="10px">
         <IconButton
           size="small"
@@ -167,6 +190,11 @@ const ChartHeading = ({
           color="inherit"
           aria-label="expand chart"
           onClick={onExpandIconClick}
+          sx={{
+            height: "16px",
+            width: "16px",
+            marginRight: "5px",
+          }}
         >
           <CropFreeIcon />
         </IconButton>
@@ -177,6 +205,11 @@ const ChartHeading = ({
           color="inherit"
           aria-label="open config menu"
           onClick={handleConfigIconClick}
+          sx={{
+            height: "16px",
+            width: "16px",
+            marginRight: "5px",
+          }}
         >
           <MoreVertIcon />
         </IconButton>
@@ -216,15 +249,11 @@ const ChartHeading = ({
             horizontal: "left",
           }}
         >
-          <MenuItem onClick={() => download("PNG")}>
-            <Typography variant="body2">PNG</Typography>
-          </MenuItem>
-          <MenuItem onClick={() => download("JPG")}>
-            <Typography variant="body2">JPG</Typography>
-          </MenuItem>
-          <MenuItem onClick={() => download("PDF")}>
-            <Typography variant="body2">PDF</Typography>
-          </MenuItem>
+          {exportOptions?.map((option: any) => (
+            <MenuItem onClick={() => download(option)}>
+              <Typography variant="body2">{option}</Typography>
+            </MenuItem>
+          ))}
         </Menu>
 
         {/* Filter Menu */}
@@ -233,17 +262,17 @@ const ChartHeading = ({
             <MenuItem onClick={handleFiltersOpen}>
               <Typography variant="body2">Filters</Typography>
             </MenuItem>
-              <Menu
-                anchorEl={filterAnchorEl}
-                open={Boolean(filterAnchorEl)}
-                onClose={() => resetAnchors()}
-              >
-                  <FilterComponent />
-              </Menu>
+            <Menu
+              anchorEl={filterAnchorEl}
+              open={Boolean(filterAnchorEl)}
+              onClose={() => resetAnchors()}
+            >
+              <FilterComponent />
+            </Menu>
           </>
         )}
       </Menu>
-    </div>
+    </Box>
   );
 };
 

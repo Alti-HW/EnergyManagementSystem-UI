@@ -9,6 +9,7 @@ import useAxios from "../hooks/useAxiosHook";
 import Spinner from "./Spinner";
 import ErrorMessage from "./ErrorMessage";
 import { normalizeBuildingFloorwiseData } from "../../../utils/normalizeDashboardAPIData";
+import EnergyDashboardScrollBar from "./ScrollBar";
 
 const BuildingFloorWiseEnergyChart = ({
   startDate,
@@ -235,7 +236,8 @@ const BuildingFloorWiseEnergyChart = ({
       {renderChart()}
 
       <FullView open={openFullViewModal} onClose={closeChartFullView}>
-        {renderChart(true)}
+        {/* {renderChart(true)} */}
+        <EnergyDashboardScrollBar />
       </FullView>
     </Card>
   );

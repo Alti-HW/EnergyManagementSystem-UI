@@ -1,8 +1,7 @@
 import React from "react";
 
-import { IconButton, Menu, MenuItem } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import "./Profile.scss";
+import { Box, IconButton, Menu, MenuItem } from "@mui/material";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 
 const Profile = () => {
   const [profileMenu, setProfileMenu] =
@@ -20,7 +19,7 @@ const Profile = () => {
 
   const open = Boolean(profileMenu);
   return (
-    <div className="profile">
+    <Box className="profile" sx={{ position: "relative" }}>
       <IconButton
         size="large"
         edge="start"
@@ -31,8 +30,9 @@ const Profile = () => {
         aria-expanded={open ? "true" : undefined}
         onClick={handleProfileMenuOpen}
         className="profileIcon"
+        sx={{ position: "absolute", right: 0 }}
       >
-        <AccountCircleIcon />
+        <PersonOutlineOutlinedIcon />
       </IconButton>
       <Menu
         id="profile-menu"
@@ -42,11 +42,19 @@ const Profile = () => {
         MenuListProps={{
           "aria-labelledby": "basic-button",
         }}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "right",
+        }}
       >
         <MenuItem onClick={handleProfileMenuClose}>My account</MenuItem>
         <MenuItem onClick={handleProfileMenuClose}>Logout</MenuItem>
       </Menu>
-    </div>
+    </Box>
   );
 };
 
