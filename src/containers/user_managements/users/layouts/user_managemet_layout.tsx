@@ -2,7 +2,7 @@ import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router";
 
-const UserManagement = () => {
+const UserManagementLayout = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(
     location?.pathname?.includes("users") ? "users" : "roles"
@@ -13,7 +13,7 @@ const UserManagement = () => {
   };
   return (
     <Box sx={{ padding: "16px", bgcolor: "#F6F7FB", minHeight: "100vh" }}>
-      <Typography sx={{ fontSize: "20px" }}>User Management</Typography>
+      <Typography variant="h6" sx={{ color: "#6e6e6e" }}>User Management</Typography>
       <Tabs
         value={activeTab}
         onChange={handleTabChange}
@@ -50,4 +50,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default UserManagementLayout;

@@ -29,7 +29,7 @@ const UserAvatar = ({
       </Avatar>
       <Box sx={{ ml: 1 }}>
         <Typography
-          sx={{ fontSize: "12px", color: "#000", wordBreak: "break-all" }}
+          sx={{ fontSize: "12px", color: "#000", wordBreak: "break-all", fontWeight: "600" }}
         >
           {`${firstName} ${lastName}`}
         </Typography>

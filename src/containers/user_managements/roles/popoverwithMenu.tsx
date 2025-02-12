@@ -44,7 +44,7 @@ const PopoverWithMenu = ({ index, onRoleEdit, onRoleDelete }: any) => {
           horizontal: "right",
         }}
       >
-        <MenuItem
+        {/* <MenuItem
           sx={{ fontSize: "14px" }}
           onClick={(event) => {
             event.stopPropagation();
@@ -53,7 +53,7 @@ const PopoverWithMenu = ({ index, onRoleEdit, onRoleDelete }: any) => {
           }}
         >
           Edit Role
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           sx={{ fontSize: "14px" }}
           onClick={(event) => {

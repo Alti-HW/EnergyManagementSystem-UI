@@ -109,3 +109,15 @@
   display: flex;
   gap: 16px;
 }
+
+::-webkit-scrollbar {
+  width: .5em;
+  height: .5em;
+}
+
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+  border-radius: 12px;
+}

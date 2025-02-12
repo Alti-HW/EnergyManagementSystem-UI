@@ -11,26 +11,26 @@ export const userRoutes = [
     label: "Dashboard",
     Icon: DashboardIcon,
   },
-  {
-    path: "/alerts",
-    label: "Alerts",
-    Icon: AddAlertIcon,
-  },
-  {
-    path: "/reports",
-    label: "Reports",
-    Icon: ReportIcon,
-  },
-  {
-    path: "/analytics",
-    label: "Analytics",
-    Icon: AnalyticsIcon,
-  },
-  {
-    path: "/profile",
-    label: "My Account",
-    Icon: PersonIcon,
-  },
+  // {
+  //   path: "/alerts",
+  //   label: "Alerts",
+  //   Icon: AddAlertIcon,
+  // },
+  // {
+  //   path: "/reports",
+  //   label: "Reports",
+  //   Icon: ReportIcon,
+  // },
+  // {
+  //   path: "/analytics",
+  //   label: "Analytics",
+  //   Icon: AnalyticsIcon,
+  // },
+  // {
+  //   path: "/profile",
+  //   label: "My Account",
+  //   Icon: PersonIcon,
+  // },
 ];
 
 export const adminRoutes = [
