@@ -1,20 +1,32 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import Header from "../header/Header";
 
 import "./Layout.scss";
 import { useState } from "react";
+import { Box } from "@mui/material";
+import Profile from "../profile/Profile";
 
-const Layout = () => {
+const Layout = ({ menuOptions }: any) => {
   const [isMenuMinimized, setIsMenuMinimized] = useState(false);
+  const location = useLocation();
   const onMenuExpand = (flag: boolean) => {
     setIsMenuMinimized(flag);
   };
   return (
     <div className="">
-      <Header onMenuExpand={onMenuExpand} />
-      <div className={`layoutWrapper ${isMenuMinimized ? "fullWidth" : ""}`}>
+      <Header onMenuExpand={onMenuExpand} menuOptions={menuOptions} />
+      <Box
+        sx={{
+          padding: !isMenuMinimized ? "0 0 0 220px" : "0 0 0 60px",
+          minHeight: "100vh",
+          backgroundColor:
+            location.pathname === "/dashboard" ? "#205c84" : "background.paper",
+        }}
+        className={`layoutWrapper ${isMenuMinimized ? "fullWidth" : ""}`}
+      >
+        <Profile />
         <Outlet />
-      </div>
+      </Box>
       <footer></footer>
     </div>
   );

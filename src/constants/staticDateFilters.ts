@@ -37,7 +37,7 @@ export const relativeFilterOptions = [
 ];
 
 export const timeFilters = [
-  { label: "Relative", value: "relative" },
+  { label: "Real time", value: "relative" },
   { label: "History", value: "history" },
 ];
 

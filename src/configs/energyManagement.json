@@ -1,0 +1,75 @@
+{
+  "containers": [
+    {
+      "type": "dashboard",
+      "name": "Dashboard",
+      "title": "Energy Dashboard",
+      "components": [
+        {
+          "type": "chart",
+          "chartType": "bar",
+          "title": "Energy usage 11",
+          "dataApi": "http://localhost:5050/api/Energy/energy-consumption",
+          "dataApiReqFormat": {
+            "startDate": "date",
+            "endDate": "date"
+          },
+          "xAxisKey": "buildingName",
+          "xAxisLabel": "Building name",
+          "yAxisKey": "totalEnergyConsumedKwh",
+          "yAxisLabel": "Units consumed",
+          "yAxisDataFormatter": "number",
+          "xAxisDataFormatter": "string",
+          "apiMethod": "POST",
+          "filters": [
+            {
+              "filterType": "date",
+              "filterValues": ["1d", "1w", "1d", "1w", "1d", "1w", "1d", "1w"]
+            },
+            {
+              "filterType": "dropdown",
+              "filterValues": [{ "label": "buildingis", "value": "building1" }],
+              "filterName": ""
+            }
+          ],
+          "exportOptions": ["PDF", "JPG", "PDF"],
+          "enableScrollbar": "false"
+        },
+        {
+          "type": "chart",
+          "chartType": "pie",
+          "title": "Energy usage",
+          "dataApi": "http://localhost:5050/api/Energy/energy-consumption",
+          "xAxisKey": "buildingName",
+          "xAxisLabel": "Building name",
+          "yAxisKey": "totalEnergyConsumedKwh",
+          "yAxisLabel": "Units consumed"
+        },
+        {
+          "type": "chart",
+          "chartType": "line",
+          "title": "Energy usage",
+          "dataApi": "http://localhost:5050/api/Energy/energy-consumption",
+          "xAxisKey": "buildingName",
+          "xAxisLabel": "Building name",
+          "yAxisKey": "totalEnergyConsumedKwh",
+          "yAxisLabel": "Units consumed"
+        },
+        {
+          "type": "alarms",
+          "title": "Alarms"
+        }
+      ]
+    },
+    {
+      "type": "alerts",
+      "name": "alerts",
+      "title": "Alerts"
+    },
+    {
+      "type": "userManagement",
+      "name": "userManagement",
+      "title": "User Management"
+    }
+  ]
+}

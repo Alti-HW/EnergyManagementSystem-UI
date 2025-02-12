@@ -18,20 +18,22 @@ import axios from "axios";
 interface ResponsiveDialogProps {
   open: boolean;
   onCancel: () => void;
-  onRoleCreation: () => void;
+  onRoleUpdate: () => void;
+  role: any;
 }
 
-const AddNewRole: React.FC<ResponsiveDialogProps> = ({
+const EditRole: React.FC<ResponsiveDialogProps> = ({
   open,
   onCancel = () => {},
-  onRoleCreation = () => {},
+  onRoleUpdate = () => {},
+  role = {},
 }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [isLoading, setIsLoading] = React.useState(false);
   const [roleData, setRoleData] = React.useState<any>({
-    roleName: "",
-    roleDescription: "",
+    roleName: role?.name ?? "",
+    roleDescription: role?.description ?? "",
   });
   const [responseMessage, setResponseMessage] = React.useState<string>("");
   const handleSubmit = () => {
@@ -51,7 +53,7 @@ const AddNewRole: React.FC<ResponsiveDialogProps> = ({
           },
         }
       );
-      onRoleCreation();
+      onRoleUpdate();
       setResponseMessage(updated?.data?.message);
     };
     try {
@@ -84,7 +86,7 @@ const AddNewRole: React.FC<ResponsiveDialogProps> = ({
       }}
     >
       <Box sx={{ display: "flex", mb: 2, minWidth: 500 }}>
-        <Typography sx={{ fontSize: "16px", flex: 1 }}>Add New Role</Typography>
+        <Typography sx={{ fontSize: "16px", flex: 1 }}>Edit Role</Typography>
 
         <IconButton
           sx={{
@@ -225,11 +227,11 @@ const AddNewRole: React.FC<ResponsiveDialogProps> = ({
           loading={isLoading}
           loadingPosition="end"
         >
-          Create Role
+          Save Changes
         </Button>
       </Box>
     </Dialog>
   );
 };
 
-export default AddNewRole;
+export default EditRole;
