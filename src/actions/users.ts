@@ -70,25 +70,13 @@ const updateUser = async (userData: any) => {
     if (response) {
       return response?.data || {};
     } else {
-      new Error("User Updation Failed");
+      throw new Error("User Updation Failed");
     }
   } catch (err) {
     console.error("Error fetching data", err);
+    throw err
   }
 };
-
-// const deleteUser = async (userData: any) => {
-//   try {
-//     const response = await axios.delete(users.getAUser, userData);
-//     if (response) {
-//       return response?.data || {};
-//     } else {
-//       new Error("User Updation Failed");
-//     }
-//   } catch (err) {
-//     console.error("Error fetching data", err);
-//   }
-// };
 
 const getAvailableRolesForUser = async (id: string) => {
   try {

@@ -14,7 +14,10 @@ export const users = {
 
 // Role API Endpoint
 export const roles = {
-  allRoles: `${baseURL}/api/roles/list`
+  allRoles: `${baseURL}/api/roles/list`,
+  editRoles:`${baseURL}/api/roles/create`,
+  deleteRole:`${baseURL}/api/roles/delete`,
+  getPermissions:`${baseURL}/api/permissions/list`
 };
 
 // Building Data API Endpoints
