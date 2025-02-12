@@ -1,84 +1,96 @@
 import { Alert, Box, Button, Snackbar, Typography } from "@mui/material";
 import RolesTable from "./roles_table";
-import { permissionsMockData, rolesMockData } from "./mockData";
 import { useEffect, useState } from "react";
 import AddNewRole from "./add_role";
 import axios from "axios";
 import EditRole from "./edit_role";
-import DeleteRole from "./delete_role";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useConfirmationDialog } from "../../../components/ui_components/confirmation_dialog.ui";
+import { useLoader } from "../../../components/ui_components/full_page_loader.ui";
+import rolesActions from "../../../actions/roles";
+import { useSnackbar } from "../../../components/ui_components/alert.ui";
+import FeatureAccessControl from "../../../authorization/feature.access.control";
+import userAccess from "../../../authorization/user.access.constants";
 
 const Roles = () => {
   const [openModal, setOpenModal] = useState(false);
   const [roleAction, setRoleAction] = useState("");
-  const [rolesList, setRolesList] = useState([]);
+  const [rolesList, setRolesList] = useState<any>([]);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [responseMessage, setResponseMessage] = useState("");
+  const [permissions, setPermissions] = useState([])
+  const { openDialog } = useConfirmationDialog();
+  const { showLoader, hideLoader } = useLoader();
+  const { showSnackbar } = useSnackbar()
+
   const handleOpenModal = () => {
     setRoleAction("add");
     setOpenModal(true);
   };
   const handleCloseModal = (event?: any, message?: string) => {
     setRoleAction("");
-    setOpenModal(false);
-    console.log(message);
-    if (message) {
-      setResponseMessage(message);
-    }
+    setOpenModal(false)
   };
   const fetchRoles = async () => {
-    const roles = await axios.get("http://localhost:5000/api/roles/list");
-    console.log(roles);
-    setRolesList(roles?.data?.data);
+    const roles = await rolesActions.getAllRoles();
+
+    setRolesList(roles?.data);
   };
 
   const refetchRoles = () => {
     fetchRoles();
-    console.log("re call happended");
   };
+
+  const fetchPermissions = async () => {
+    const perms = await rolesActions.getAllPermissions()
+    setPermissions(perms?.data)
+  }
+
+  useEffect(() => {
+    refetchRoles()
+    fetchPermissions()
+  }, [])
 
   const handleEditRole = (index: number) => {
     setActiveIndex(index);
     setRoleAction("edit");
     setOpenModal(true);
-    console.log("edit handler called");
   };
-  const handleDeleteRole = (index: number) => {
-    setActiveIndex(index);
-    setRoleAction("delete");
-    setOpenModal(true);
+  const handleDeleteRole = async (index: number) => {
+    // rolesList[activeIndex]
+    const userResponse = await openDialog(
+      `Do you really want to delete selected users`, // message
+      'Delete User' // title
+    );
+    if (userResponse) {
+      try {
+        showLoader()
+        await rolesActions.deletRole(rolesList[index].id)
+        fetchRoles()
+        showSnackbar("Role deleted", "success");
+      } catch (error) {
+        showSnackbar("Failed to create role", "error");
+      }
+      finally {
+        hideLoader()
+      }
+    }
   };
-  useEffect(() => {
-    fetchRoles();
-  }, []);
-  console.log(
-    rolesList,
-    activeIndex,
-    rolesList[activeIndex],
-    roleAction,
-    openModal && roleAction === "edit"
-  );
   return (
     <Box sx={{ p: 4, backgroundColor: "transparent" }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-        <Typography sx={{ flex: 1 }}>Roles {rolesList?.length}</Typography>
-        <Button
-          sx={{
-            fontSize: "14px",
-            textTransform: "none",
-            backgroundColor: "#192142",
-            color: "#fff",
-            padding: "5px 8px",
-            height: "35px",
-            ml: 2,
-          }}
-          onClick={handleOpenModal}
-        >
-          Add role
-        </Button>
+        <Typography sx={{ flex: 1, color: "#6e6e6e" }}>Roles </Typography>
+        <FeatureAccessControl requiredRoles={userAccess.ADD_ROLE}>
+          <Button
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={handleOpenModal}
+          >
+            Create Role
+          </Button>
+        </FeatureAccessControl>
       </Box>
       <RolesTable
         roles={rolesList}
-        permissions={permissionsMockData}
+        permissions={permissions}
         onRoleEdit={handleEditRole}
         onRoleDelete={handleDeleteRole}
       />
@@ -87,6 +99,7 @@ const Roles = () => {
           open={true}
           onCancel={handleCloseModal}
           onRoleCreation={refetchRoles}
+          permissions={permissions}
         />
       )}
       {openModal && roleAction === "edit" && (
@@ -97,25 +110,6 @@ const Roles = () => {
           role={rolesList[activeIndex]}
         />
       )}
-      {openModal && roleAction === "delete" && (
-        <DeleteRole
-          open={true}
-          onCancel={handleCloseModal}
-          onRoleDeletion={refetchRoles}
-          role={rolesList[activeIndex]}
-        />
-      )}
-      <Snackbar
-        open={responseMessage !== ""}
-        autoHideDuration={3000}
-        key={"top" + "right"}
-        onClose={() => setResponseMessage("")}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
-          {responseMessage}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

@@ -15,11 +15,15 @@ export default function RoleMap(props: any) {
     userSelectedRoles = [],
     onRoleChange,
     multiple = false, // Default is true (multiple selection)
+    newMode = false
   } = props;
 
   const [selectedRoles, setSelectedRoles] = React.useState<any[]>([]);
 
   React.useEffect(() => {
+    if (newMode) {
+      return
+    }
     if (multiple) {
       const selectedOptions = roles.filter((role: any) =>
         userSelectedRoles.some((selectedRole: any) => selectedRole.id === role.id)
@@ -27,7 +31,7 @@ export default function RoleMap(props: any) {
       setSelectedRoles(selectedOptions);
     } else {
       const selectedOptions = roles.filter((role: any) =>
-        userSelectedRoles[0].id === role.id
+        userSelectedRoles[0]?.id === role?.id
       );
       // If not multiple, assume userSelectedRoles is a single object
       setSelectedRoles(selectedOptions?.length > 0 ? selectedOptions[0] : []);
@@ -39,12 +43,12 @@ export default function RoleMap(props: any) {
       setSelectedRoles(!newSelectedRoles ? [] : newSelectedRoles);
       const newlySelected = newSelectedRoles.filter(
         (newRole: any) =>
-          !userSelectedRoles.find((oldRole: any) => oldRole.id === newRole.id)
+          !userSelectedRoles.find((oldRole: any) => oldRole?.id === newRole?.id)
       );
 
       const untickedRoles = userSelectedRoles.filter(
         (oldRole: any) =>
-          !newSelectedRoles.find((newRole: any) => newRole.id === oldRole.id)
+          !newSelectedRoles.find((newRole: any) => newRole?.id === oldRole?.id)
       );
 
       if (onRoleChange) {
@@ -56,8 +60,8 @@ export default function RoleMap(props: any) {
         ? [newSelectedRoles] // Wrap in an array for consistency
         : [];
 
-      const untickedRoles = newSelectedRoles?.id !== userSelectedRoles[0].id
-        ? [userSelectedRoles[0]] // If userSelectedRoles is not empty, consider it
+      const untickedRoles = newSelectedRoles?.id !== userSelectedRoles[0]?.id
+        ? userSelectedRoles.length === 1 ? [userSelectedRoles[0]] : [] // If userSelectedRoles is not empty, consider it
         : [];
 
       if (onRoleChange) {
@@ -68,6 +72,7 @@ export default function RoleMap(props: any) {
 
   return (
     <Autocomplete
+      fullWidth
       id="checkboxes-tags-demo"
       options={roles}
       disableCloseOnSelect={multiple}

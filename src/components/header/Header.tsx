@@ -20,12 +20,14 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { HeaderProps } from "./types";
 import "./Header.scss";
+import { useUser } from "../../context/user.context";
 
 const Header = ({ onMenuExpand }: HeaderProps) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
   const [isMenuMinimized, setIsMenuMinimized] = useState(false);
   const [openSubNav, setOpenSubNav] = useState<{ [key: string]: boolean }>({});
+  const { user } = useUser();
 
   const handleActiveRoute = (
     { isActive, href }: any,
@@ -75,6 +77,11 @@ const Header = ({ onMenuExpand }: HeaderProps) => {
       onMenuExpand(isMenuMinimized);
     }
   }, [isMenuMinimized]);
+
+  const isUserHasPermittedToRoutes = (permissions: any) => {
+    if (permissions.length <= 0) return true
+    return permissions?.some((role: string) => user?.resource_access?.EMS?.roles?.includes(role));
+  }
 
   return (
     <>
@@ -152,7 +159,8 @@ const Header = ({ onMenuExpand }: HeaderProps) => {
         <MenuList
           sx={{ "&.MuiList-root": { marginTop: isMobile ? "32px" : "0" } }}
         >
-          {userRoutes.map(({ path, label, Icon }) => (
+          {userRoutes.map(({ path, label, Icon, permissions }) => (
+            isUserHasPermittedToRoutes(permissions) &&
             <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
               <NavLink
                 onClick={handleCloseDrawer}
@@ -177,7 +185,8 @@ const Header = ({ onMenuExpand }: HeaderProps) => {
             </MenuItem>
           ))}
           <Divider className="divider" />
-          {adminRoutes.map(({ path, label, Icon, subRoutes }) => (
+          {adminRoutes.map(({ path, label, Icon, subRoutes, permissions }) => (
+            isUserHasPermittedToRoutes(permissions) &&
             <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
               <NavLink
                 onClick={handleCloseDrawer}

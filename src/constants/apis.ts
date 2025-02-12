@@ -1,5 +1,6 @@
 // Base URL defined dynamically, can be set via environment variables or defaults
 const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000"; // Default to localhost if not set
+const baseURL2 = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050";
 
 // Users API Endpoints
 export const users = {
@@ -10,17 +11,21 @@ export const users = {
   addRolesToUsers: `${baseURL}/api/RollMapping/user`,
   removeRolesFromUser: `${baseURL}/api/RollMapping/user`,
   userLogin: `${baseURL}/api/auth/login`,
+  inviteUser: `${baseURL}/api/users/invite`
 };
 
 // Role API Endpoint
 export const roles = {
-  allRoles: `${baseURL}/api/roles/list`
+  allRoles: `${baseURL}/api/roles/list`,
+  editRoles: `${baseURL}/api/roles/create`,
+  deleteRole: `${baseURL}/api/roles/delete`,
+  getPermissions: `${baseURL}/api/permissions/list`
 };
 
 // Building Data API Endpoints
-export const buildingsDataURL = `${baseURL}/api/Energy/energy-consumption`;
-export const buidlingsAndFloorsNamesURL = `${baseURL}/api/Building/GetAllBuildingsWithFloors`;
-export const buildingOccupancyURL = `${baseURL}/api/Energy/GetMetrics`;
+export const buildingsDataURL = `${baseURL2}/api/Energy/energy-consumption`;
+export const buidlingsAndFloorsNamesURL = `${baseURL2}/api/Building/GetAllBuildingsWithFloors`;
+export const buildingOccupancyURL = `${baseURL2}/api/Energy/GetMetrics`;
 
 // POST Request Headers
 export const POST_REQ_HEADERS = {

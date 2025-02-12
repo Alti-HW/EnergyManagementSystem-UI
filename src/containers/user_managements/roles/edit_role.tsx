@@ -11,9 +11,14 @@ import {
   Typography,
   Alert,
   Snackbar,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
+import { permissionsMockData } from "./mockData";
+import rolesActions from "../../../actions/roles";
+import { useSnackbar } from "../../../components/ui_components/alert.ui";
 
 interface ResponsiveDialogProps {
   open: boolean;
@@ -24,8 +29,8 @@ interface ResponsiveDialogProps {
 
 const EditRole: React.FC<ResponsiveDialogProps> = ({
   open,
-  onCancel = () => {},
-  onRoleUpdate = () => {},
+  onCancel = () => { },
+  onRoleUpdate = () => { },
   role = {},
 }) => {
   const theme = useTheme();
@@ -35,47 +40,28 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
     roleName: role?.name ?? "",
     roleDescription: role?.description ?? "",
   });
-  const [responseMessage, setResponseMessage] = React.useState<string>("");
-  const handleSubmit = () => {
+  const { showSnackbar } = useSnackbar();
+
+
+  const handleSubmit = async () => {
     setIsLoading(true);
-    const updateRole = async () => {
-      const updated: any = await axios.post(
-        "http://localhost:5000/api/roles/create",
-        {
-          name: roleData?.roleName,
-          description: roleData?.roleDescription,
-          composite: true,
-          clientRole: true,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      onRoleUpdate();
-      setResponseMessage(updated?.data?.message);
-    };
     try {
-      updateRole();
+      let res = await rolesActions.updateRole(roleData)
+      onRoleUpdate();
+      showSnackbar(res.message, "success");
+      onCancel()
     } catch (err) {
-      setResponseMessage("Error Unable to create role");
+      showSnackbar("Error on role updation", "error");
     } finally {
       setIsLoading(false);
-      console.log("compleated");
-      setRoleData({
-        roleName: "",
-        roleDescription: "",
-      });
     }
   };
 
-  console.log(responseMessage);
   return (
     <Dialog
       fullScreen={fullScreen}
       open={open}
-      onClose={onCancel}
+      onClose={() => onCancel()}
       aria-labelledby="add-role-dialog"
       sx={{
         "& .MuiDialog-paper": {
@@ -99,20 +85,6 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
           <CloseIcon sx={{ width: "20px", height: "20px", color: "#000" }} />
         </IconButton>
       </Box>
-      <Snackbar
-        open={responseMessage !== ""}
-        autoHideDuration={3000}
-        onClose={() => setResponseMessage("")}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          severity={responseMessage.includes("success") ? "success" : "error"}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {responseMessage}
-        </Alert>
-      </Snackbar>
 
       <DialogContent sx={{ paddingTop: 2, paddingBottom: 3 }}>
         <Box display="flex" flexDirection="column" gap={2}>
@@ -126,28 +98,10 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
               fullWidth
               margin="normal"
               value={roleData?.roleName}
-              onChange={(e) =>
-                setRoleData({ ...roleData, roleName: e.target.value })
-              }
-              sx={{
-                fontSize: "14px",
-                padding: "6px",
-                boxSizing: "border-box",
-                paddingLeft: "3px",
-
-                "& .MuiOutlinedInput-input": {
-                  padding: "6px 8px 12px",
-                  fontSize: "14px",
-                  color: "#000",
-                },
-
-                "&.MuiFormControl-root": {
-                  margin: 0,
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "14px",
-                },
-              }}
+              disabled
+            // onChange={(e) =>
+            //   setRoleData({ ...roleData, roleName: e.target.value })
+            // }
             />
           </Box>
 
@@ -164,29 +118,30 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
               fullWidth
               margin="normal"
               value={roleData?.roleDescription}
-              onChange={(e) =>
-                setRoleData({ ...roleData, roleDescription: e.target.value })
-              }
-              sx={{
-                fontSize: "14px",
-                padding: "6px",
-                boxSizing: "border-box",
-                paddingLeft: "3px",
-
-                "& .MuiOutlinedInput-input": {
-                  padding: "6px 8px 12px",
-                  fontSize: "14px",
-                  color: "#000",
-                },
-
-                "&.MuiFormControl-root": {
-                  margin: 0,
-                },
-                "& .MuiInputLabel-root": {
-                  fontSize: "14px",
-                },
-              }}
+              disabled
+            // onChange={(e) =>
+            //   setRoleData({ ...roleData, roleDescription: e.target.value })
+            // }
             />
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "flex-start" }}>
+            <Typography variant="caption" sx={{ width: "30%" }}>
+              Permissions
+            </Typography>
+            <Box sx={{ maxHeight: "300px", overflowY: "auto", width: "100%", mt: "-8px" }}>
+              <FormGroup>
+                {permissionsMockData.map(elm =>
+                  <FormControlLabel
+                    key={elm}
+                    control={
+                      <Checkbox name={elm} />
+                    }
+                    label={elm}
+                  />
+                )}
+              </FormGroup>
+            </Box>
+
           </Box>
         </Box>
       </DialogContent>
@@ -194,36 +149,14 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
         <Button
           variant="outlined"
           color="primary"
-          fullWidth
           onClick={onCancel}
-          sx={{
-            border: "none",
-            color: "#000",
-            width: "fit-content",
-            textTransform: "none",
-            fontSize: "12px",
-          }}
         >
           Cancel
         </Button>
         <Button
           variant="contained"
           color="primary"
-          fullWidth
           onClick={handleSubmit}
-          sx={{
-            backgroundColor: "#192142",
-            padding: "8px",
-            width: "fit-content",
-            textTransform: "none",
-            fontSize: "12px",
-
-            "&.Mui-disabled": {
-              backgroundColor: "#192142",
-              color: "#fff",
-              opacity: 0.9,
-            },
-          }}
           loading={isLoading}
           loadingPosition="end"
         >

@@ -1,8 +1,10 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router";
+import FeatureAccessControl from "../../../../authorization/feature.access.control";
+import userAccess from "../../../../authorization/user.access.constants";
 
-const UserManagement = () => {
+const UserManagementLayout = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(
     location?.pathname?.includes("users") ? "users" : "roles"
@@ -13,7 +15,7 @@ const UserManagement = () => {
   };
   return (
     <Box sx={{ padding: "16px", bgcolor: "#F6F7FB", minHeight: "100vh" }}>
-      <Typography sx={{ fontSize: "20px" }}>User Management</Typography>
+      <Typography variant="h6" sx={{ color: "#6e6e6e" }}>User Management</Typography>
       <Tabs
         value={activeTab}
         onChange={handleTabChange}
@@ -28,6 +30,7 @@ const UserManagement = () => {
           pl: 2,
         }}
       >
+        <FeatureAccessControl requiredRoles={userAccess.VIEW_USERS}>
         <Tab
           sx={{ fontSize: "14px", padding: 0, textTransform: "none" }}
           value="users"
@@ -35,6 +38,8 @@ const UserManagement = () => {
           component={Link}
           to="/userManagement/users"
         />
+        </FeatureAccessControl>
+        <FeatureAccessControl requiredRoles={userAccess.VIEW_ROLES}>
         <Tab
           sx={{ fontSize: "14px", textTransform: "none" }}
           value="roles"
@@ -42,6 +47,7 @@ const UserManagement = () => {
           component={Link}
           to="/userManagement/roles"
         />
+        </FeatureAccessControl>
       </Tabs>
       <Box>
         <Outlet />
@@ -50,4 +56,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default UserManagementLayout;
