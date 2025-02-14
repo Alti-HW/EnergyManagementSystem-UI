@@ -1,6 +1,6 @@
 import "./Dashboard.scss";
 import { Box, Typography } from "@mui/material";
-import ChartWrapper from "./newComponents/ChartWrapper";
+import ChartWrapper from "./components/ChartWrapper";
 import Alarms from "./components/Alarms";
 
 const componentMapper = (componentData: any) => {
