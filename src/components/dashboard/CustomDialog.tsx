@@ -7,7 +7,7 @@ import {
   IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import DataTable from "./DataTable";
+import DataTable from "./components/DataTable";
 import { TableDataProps } from "./types";
 import Spinner from "./components/Spinner";
 import ErrorMessage from "./components/ErrorMessage";

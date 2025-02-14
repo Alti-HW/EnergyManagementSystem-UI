@@ -1,4 +1,6 @@
 import { axisClasses, BarChart, LineChart, PieChart } from "@mui/x-charts";
+import FullView from "./FullView";
+import { Box } from "@mui/material";
 
 interface ChartProps {
   xAxisLabel: string;
@@ -8,6 +10,9 @@ interface ChartProps {
   type: string;
   xAxisDataFormatter: string;
   yAxisDataFormatter: string;
+  fullView: boolean;
+  closeChartFullView: () => void;
+  color?: string;
 }
 
 const getFormatter = (type: string) => {
@@ -34,12 +39,15 @@ const Chart = ({
   type,
   xAxisDataFormatter,
   yAxisDataFormatter,
+  fullView,
+  closeChartFullView,
+  color,
 }: ChartProps) => {
   const renderChart = (
     xAxisLabel: string,
     yAxisLabel: string,
     type: string
-  ) => {
+  ): React.ReactNode => {
     switch (type) {
       case "bar":
         return (
@@ -59,7 +67,7 @@ const Chart = ({
                 valueFormatter: getFormatter(yAxisDataFormatter ?? "number"),
               },
             ]}
-            height={300}
+            height={!fullView ? 300 : 500}
             dataset={chartData}
             loading={loading}
             sx={{
@@ -70,6 +78,7 @@ const Chart = ({
                 transform: "translateY(5px)",
               },
             }}
+            colors={[color ?? "#59E2C2"]}
           />
         );
       case "pie":
@@ -131,9 +140,24 @@ const Chart = ({
             }}
           />
         );
+      default:
+        return <Box>Unsupported chart type</Box>;
     }
   };
-  return renderChart(xAxisLabel, yAxisLabel, type);
+  return (
+    <>
+      <Box sx={{ width: "100%", height: "100%" }}>
+        {renderChart(xAxisLabel, yAxisLabel, type)}
+      </Box>
+      {fullView && (
+        <FullView open={fullView} onClose={closeChartFullView}>
+          <Box sx={{ width: "100%", height: "100%" }}>
+            {renderChart(xAxisLabel, yAxisLabel, type)}
+          </Box>
+        </FullView>
+      )}
+    </>
+  );
 };
 
 export default Chart;
