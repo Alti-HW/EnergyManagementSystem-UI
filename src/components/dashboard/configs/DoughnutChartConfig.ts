@@ -35,9 +35,17 @@ export const getDoughnutChartData = (data: any, xAxisLabel: string) => {
   };
 };
 
-export const getDoughnutChartOptions = (fullView: boolean): any => ({
+export const getDoughnutChartOptions = (
+  fullView: boolean,
+  handleChartClick: (elements: any) => void
+): any => ({
   responsive: true,
   maintainAspectRatio: !fullView,
+  onClick: (e: any, elements: any) => {
+    if (elements.length > 0) {
+      handleChartClick(elements);
+    }
+  },
   scales: {
     x: {
       display: false,

@@ -3,18 +3,18 @@
     {
       "type": "dashboard",
       "name": "Dashboard",
-      "title": "Energy Dashboard",
+      "title": "Energy Dashboard Updated",
       "components": [
         {
           "type": "chart",
           "chartType": "line",
-          "title": "Energy usage",
+          "title": "Floor wise Energy usage",
           "dataApi": [
             {
               "url": "http://localhost:5050/api/Energy/energy-consumption",
               "userFor": "chartData",
               "method": "POST",
-              "dataPathKey": "[{floorConsumptions: [floorDetails:[]}]"
+              "dataPathKey": ["floorConsumptions", "floorDetails"]
             },
             {
               "url": "http://localhost:5050/api/Building/GetAllBuildingsWithFloors",
@@ -23,7 +23,7 @@
             }
           ],
           "xAxisKey": "timestamp",
-          "xAxisLabel": "Building name",
+          "xAxisLabel": "Date and Time",
           "yAxisKey": "energyConsumedKwh",
           "yAxisLabel": "Units consumed",
           "yAxisDataFormatter": "number",
@@ -42,7 +42,6 @@
               "filterDataValueKey": "buildingId",
               "filterDataLabelKey": "name",
               "filterId": "buildingId",
-              "isParentObject": "true",
               "dataPath": ""
             },
             {
@@ -58,12 +57,14 @@
               "dataPath": "floors"
             }
           ],
-          "enableScrollInFullview": "true"
+          "enableScrollInFullview": "true",
+          "color": "#a26cb6",
+          "exportOptions": ["PNG", "JPG"]
         },
         {
           "type": "chart",
           "chartType": "bar",
-          "title": "Energy usage 11",
+          "title": "Energy usage of all buildings",
           "dataApi": [
             {
               "url": "http://localhost:5050/api/Energy/energy-consumption",
@@ -110,14 +111,49 @@
               { "colHeading": "Floor", "dataKey": "floorId" },
               { "colHeading": "Time Window", "dataKey": "timestamp" }
             ],
-            "dataKey": "floorConsumptions.floorDetails"
+            "dataKey": ["floorConsumptions", "floorDetails"]
           },
           "enableScrollInFullview": "false"
         },
         {
           "type": "chart",
+          "chartType": "line",
+          "title": "Energy usage of all buildings test",
+          "dataApi": [
+            {
+              "url": "http://localhost:5050/api/Energy/energy-consumption",
+              "userFor": "chartData",
+              "method": "POST"
+            }
+          ],
+          "dataApiReqFormat": {
+            "startDate": "date",
+            "endDate": "date"
+          },
+          "xAxisKey": "buildingName",
+          "xAxisLabel": "Building name",
+          "yAxisKey": "totalEnergyConsumedKwh",
+          "yAxisLabel": "Units consumed",
+          "yAxisDataFormatter": "number",
+          "xAxisDataFormatter": "string",
+          "apiMethod": "POST",
+          "dateFilter": {
+            "filterType": "date",
+            "filterValues": ["1D", "1W", "1M", "3M", "6M", "1Y", "3Y"],
+            "showFilter": "true"
+          },
+          "exportOptions": ["PNG", "JPG", "PDF"],
+          "enableScrollbar": "false",
+          "color": "#a26cb6",
+          "enableDetailedView": "true",
+
+          "enableScrollInFullview": "false",
+          "width": "100%"
+        },
+        {
+          "type": "chart",
           "chartType": "doughnut",
-          "title": "Energy usage",
+          "title": "Energy usage of all buildings",
           "dataApi": [
             {
               "url": "http://localhost:5050/api/Energy/energy-consumption",
@@ -134,9 +170,10 @@
           "apiMethod": "POST",
           "dateFilter": {
             "filterType": "date",
-            "filterValues": ["1D", "1W", "1M", "3M", "6M", "1Y", "3Y"],
-            "showFilter": "true"
-          }
+            "filterValues": ["1D", "1W", "1M", "3M", "6M"],
+            "showFilter": "false"
+          },
+          "exportOptions": ["PNG", "JPG", "PDF"]
         },
 
         {

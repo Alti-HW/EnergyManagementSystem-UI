@@ -1,14 +1,18 @@
 import { getFormatter } from "../utils/chartTicksFormatter";
 
-export const getLineChartData = (data: any, xAxisLabel: string) => {
+export const getLineChartData = (
+  data: any,
+  xAxisLabel: string,
+  color: string
+) => {
   return {
     labels: data.x,
     datasets: [
       {
         label: xAxisLabel,
         data: data.y,
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(19, 114, 46, 0.2)",
+        borderColor: color ?? "rgba(75, 192, 192, 1)",
+        backgroundColor: color ?? "rgba(19, 114, 46, 0.2)",
         pointBackgroundColor: "rgb(92, 86, 87)",
         pointBorderColor: "rgb(92, 86, 87)",
         pointBorderWidth: 1,
@@ -26,11 +30,17 @@ export const getLineChartOptions = (
   fullView: boolean,
   xAxisDataFormatter: string,
   yAxisDataFormatter: string,
-  data: any
+  data: any,
+  handleChartClick: (elements: any) => void
 ): any => {
   return {
     responsive: true,
     maintainAspectRatio: !fullView,
+    onClick: (e: any, elements: any) => {
+      if (elements.length > 0) {
+        handleChartClick(elements);
+      }
+    },
     scales: {
       x: {
         ticks: {

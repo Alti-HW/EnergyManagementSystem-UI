@@ -24,6 +24,7 @@ import DateFilter from "./DateFilter";
 import ChartDetailedView from "./ChartDetailedView";
 import Spinner from "./Spinner";
 import dayjs from "dayjs";
+import { dataObj } from "./mockData";
 
 const ChartWrapper: React.FC = ({
   chartType,
@@ -43,6 +44,7 @@ const ChartWrapper: React.FC = ({
   detailedViewConfig,
   enableDetailedView,
   enableScrollInFullview,
+  width: chartWrapperWidth,
 }: any): React.ReactNode => {
   const chartRef = useRef(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -126,9 +128,6 @@ const ChartWrapper: React.FC = ({
   useEffect(() => {
     if (filtersRawData) {
       let filters = filtersConfig;
-      // let filters = filtersConfig?.filter(
-      //   (filter: any) => filter.filterType === "dropdown"
-      // );
       let [parentFilter, childFilter] = filters;
       let parentFilterOptions: any = [];
       let childFilterOptions: any = [];
@@ -165,7 +164,6 @@ const ChartWrapper: React.FC = ({
 
   useEffect(() => {
     const { start, end } = getDates(selectedDateFilter);
-    console.log(selectedDateFilter, dateFilterConfig);
     setStartDate(start);
     setEndDate(end);
   }, [selectedDateFilter]);
@@ -186,42 +184,35 @@ const ChartWrapper: React.FC = ({
     }
   }, [startDate, endDate, filters]);
 
+  const flatDataObject = (data: any, index: number, pathKeys: string[]) => {
+    let output: any;
+    if (data && Array.isArray(data)) {
+      output = [];
+      data.forEach((ele: any) => {
+        output.push(ele[pathKeys[index]]);
+      });
+    } else if (data) {
+    }
+    index++;
+    if (pathKeys[index]) {
+      return flatDataObject(output?.flat(), index, pathKeys);
+    } else {
+      return output.flat();
+    }
+  };
+
   useEffect(() => {
     let data: any = { x: [], y: [] };
     if (chartRawData) {
       if (chartDataApi?.dataPathKey) {
-        let pathKeys = ["floorConsumptions", "floorDetails"];
-        let keyIndex = 0;
-        chartRawData?.data?.forEach((element: any) => {
-          if (Array.isArray(element?.[pathKeys[keyIndex]])) {
-            let item = element?.[pathKeys[keyIndex]];
-            keyIndex = keyIndex + 1;
-
-            if (item && Array.isArray(item)) {
-              item?.forEach((nested) => {
-                let item1 = nested?.[pathKeys[keyIndex]];
-                keyIndex = keyIndex + 1;
-
-                if (item1 && Array.isArray(item1)) {
-                  console.log(item1);
-                  item1 = item1.sort((a: any, b: any) => {
-                    const dateA = new Date(a.timestamp);
-                    const dateB = new Date(b.timestamp);
-
-                    // Returning the subtraction of two dates will give the time difference in milliseconds
-                    return dateA.getTime() - dateB.getTime();
-                  });
-                  item1?.forEach((nested1: any) => {
-                    let item2 = nested1?.[pathKeys[keyIndex]];
-                    if (!item2) {
-                      data.x.push(nested1?.[xAxisKey]);
-                      data.y.push(nested1?.[yAxisKey]);
-                    }
-                  });
-                }
-              });
-            }
-          }
+        let flatdata = flatDataObject(
+          chartRawData?.data,
+          0,
+          chartDataApi?.dataPathKey
+        );
+        flatdata?.forEach((ele: any) => {
+          data.x.push(ele?.[xAxisKey]);
+          data.y.push(ele?.[yAxisKey]);
         });
       } else {
         chartRawData?.data?.forEach((obj: any) => {
@@ -262,14 +253,6 @@ const ChartWrapper: React.FC = ({
       const scrollWidth = scrollContainer.scrollWidth;
       const clientWidth = scrollContainer.clientWidth;
       const scrollLeft = scrollContainer.scrollLeft;
-      console.log(
-        "scrollLeft + clientWidth :",
-        scrollLeft + clientWidth,
-        "   scrollWidth - 10",
-        scrollWidth - 10,
-        scrollLeft,
-        loading
-      );
 
       if (scrollLeft < 10 && !loading) {
         //Left side call
@@ -288,7 +271,6 @@ const ChartWrapper: React.FC = ({
         setTimeout(() => {
           const newScrollWidth = scrollContainer.scrollWidth;
           scrollContainer.scrollLeft += newScrollWidth - oldScrollWidth - 10;
-          console.log("scrollContainer.scrollLeft", scrollContainer.scrollLeft);
         }, 100);
       }
     }
@@ -299,9 +281,11 @@ const ChartWrapper: React.FC = ({
       sx={{
         boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
         p: 2,
-        width: "calc(50% - 8px)",
+        // width: "calc(50% - 8px)",
+        width: chartWrapperWidth ?? "calc(50% - 8px)",
         boxSizing: "border-box",
         position: "relative",
+        pb: 4,
       }}
     >
       <ChartHeading
@@ -310,11 +294,14 @@ const ChartWrapper: React.FC = ({
         chartRef={chartRef}
         exportOptions={exportOptions}
       />
-      <Box sx={{ display: "flex", gap: "10px", mt: 2, p: 1 }}>
-        {filters?.length > 0 &&
-          filters.map((filter: any, index: number) => {
+      {filters?.length > 0 && (
+        <Box sx={{ gap: "10px", mt: 2, p: 1 }}>
+          {filters.map((filter: any, index: number) => {
             return (
-              <FormControl fullWidth>
+              <FormControl
+                fullWidth
+                sx={{ width: "fit-content", display: "inline-block", mr: 2 }}
+              >
                 <InputLabel
                   id={`${filter.id}label`}
                   sx={{
@@ -337,6 +324,8 @@ const ChartWrapper: React.FC = ({
                     "& .MuiSelect-select": {
                       padding: "6px",
                     },
+                    maxWidth: "fit-content",
+                    minWidth: "200px",
                   }}
                   MenuProps={{
                     PaperProps: {
@@ -356,7 +345,8 @@ const ChartWrapper: React.FC = ({
               </FormControl>
             );
           })}
-      </Box>
+        </Box>
+      )}
       <Box sx={{ minHeight: "300px" }} ref={chartRef}>
         {!chartData && <Spinner />}
         {chartData && (
@@ -403,11 +393,21 @@ const ChartWrapper: React.FC = ({
         </FullView>
       )}
       {dateFilterConfig && dateFilterConfig?.showFilter === "true" && (
-        <DateFilter
-          dateOptions={dateFilterConfig?.filterValues}
-          handleTimeFilterChange={handleTimeFilterChange}
-          selectedDateFilter={selectedDateFilter}
-        />
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: "16px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "100%",
+          }}
+        >
+          <DateFilter
+            dateOptions={dateFilterConfig?.filterValues}
+            handleTimeFilterChange={handleTimeFilterChange}
+            selectedDateFilter={selectedDateFilter}
+          />
+        </Box>
       )}
       {activeChartElement && (
         <ChartDetailedView

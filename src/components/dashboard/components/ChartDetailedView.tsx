@@ -8,7 +8,7 @@ import DataTable from "./DataTable";
 
 const ChartDetailedView = ({
   activeChartElement,
-  config,
+  config = {},
   onClose,
   startDate,
   endDate,
@@ -32,50 +32,27 @@ const ChartDetailedView = ({
     });
   }, []);
 
-  const normalizeData = (data: any, dataKey: string, secondLevel: string) => {
-    console.log(data);
-    const keys = dataKey.split(".");
-    let normalizedData: any = [];
-
-    data.forEach((item: any) => {
-      let nestedData = item;
-
-      for (let key of keys) {
-        let obj = nestedData[key];
-        if (!obj) break;
-        else nestedData = obj;
-      }
-
-      if (Array.isArray(nestedData)) {
-        nestedData.forEach((detail) => {
-          let keys = secondLevel.split(".");
-          for (let key of keys) {
-            let obj = detail[key];
-            if (!obj) break;
-            else detail = obj;
-          }
-          if (Array.isArray(detail)) {
-            detail.forEach((subDetail) => {
-              normalizedData.push({
-                ...subDetail,
-              });
-            });
-          } else {
-            normalizedData.push({
-              ...detail,
-            });
-          }
-        });
-      }
-    });
-
-    return normalizedData;
+  const flatDataObject = (data: any, index: number, pathKeys: string[]) => {
+    let output: any;
+    if (data && Array.isArray(data)) {
+      output = [];
+      data.forEach((ele: any) => {
+        output.push(ele[pathKeys[index]]);
+      });
+    } else if (data) {
+    }
+    index++;
+    if (pathKeys[index]) {
+      return flatDataObject(output?.flat(), index, pathKeys);
+    } else {
+      return output.flat();
+    }
   };
 
   useEffect(() => {
     const data = chartDetailedData?.data;
     if (data) {
-      setTableData(normalizeData(data, "floorConsumptions", "floorDetails"));
+      setTableData(flatDataObject(data, 0, dataKey) ?? []);
     }
   }, [chartDetailedData]);
 

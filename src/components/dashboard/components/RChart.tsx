@@ -66,7 +66,6 @@ const RChart = ({
     }
   };
   const renderChart = () => {
-    console.log("rerender");
     switch (type) {
       case "bar":
         return (
@@ -86,14 +85,15 @@ const RChart = ({
       case "line":
         return (
           <Line
-            data={getLineChartData(data, xAxisLabel)}
+            data={getLineChartData(data, xAxisLabel, color)}
             options={getLineChartOptions(
               xAxisLabel,
               yAxisLabel,
               fullView && enableScrollInFullview,
               xAxisDataFormatter,
               yAxisDataFormatter,
-              data
+              data,
+              handleChartClick
             )}
           />
         );
@@ -102,7 +102,8 @@ const RChart = ({
           <Doughnut
             data={getDoughnutChartData(data, xAxisLabel)}
             options={getDoughnutChartOptions(
-              fullView && enableScrollInFullview
+              fullView && enableScrollInFullview,
+              handleChartClick
             )}
           />
         );
@@ -120,13 +121,15 @@ const RChart = ({
       <div
         style={{
           width: "100%",
+          maxWidth: "400px",
           ...(type === "doughnut" ? { width: "66%", height: "100%" } : {}),
+          maxHeight: "400px",
         }}
       >
         {renderChart()}
       </div>
     </div>
-  ) : (
+  ) : enableScrollInFullview ? (
     <Box
       sx={{
         // maxWidth: 1200,
@@ -146,23 +149,39 @@ const RChart = ({
         onScroll={onScroll}
         ref={scrollContainerRef}
       >
-        {!enableScrollInFullview ? (
-          <Box sx={{ height: "100%", width: "100%" }}>{renderChart()}</Box>
-        ) : (
-          <Box
-            sx={{
-              minWidth:
-                (data.x.length - 2) * 40 > 1200
-                  ? `${(data.x.length - 2) * 40}px`
-                  : `${(data.x.length - 2) * 40 + 1200}px`,
-              height: "350px",
-            }}
-          >
-            {renderChart()}
-          </Box>
-        )}
+        <Box
+          sx={{
+            minWidth:
+              (data.x.length - 2) * 40 > 1200
+                ? `${(data.x.length - 2) * 40}px`
+                : `${(data.x.length - 2) * 40 + 1200}px`,
+            height: "350px",
+          }}
+        >
+          {renderChart()}
+        </Box>
       </Box>
     </Box>
+  ) : (
+    <div
+      style={{
+        height: "450px",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "100vw",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          ...(type === "doughnut" ? { height: "100%" } : {}),
+        }}
+      >
+        {renderChart()}
+      </div>
+    </div>
   );
 };
 
