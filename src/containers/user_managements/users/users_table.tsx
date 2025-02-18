@@ -23,7 +23,8 @@ const UsersTable = ({
   selectedUsers,
   usersRolesList,
   roleFilter = "",
-  activeTab = ""
+  activeTab = "",
+  tableLoader = false
 }: UserTableProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -92,7 +93,7 @@ const UsersTable = ({
 
           <Table sx={{ tableLayout: "fixed", backgroundColor: "#fff" }}>
             <TableBody>
-              {total <= 0
+              {tableLoader
                 ? <UsersTableShimmer />
                 : filteredUsers.length > 0 && filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: any, index: number) => (
                   row.email && (

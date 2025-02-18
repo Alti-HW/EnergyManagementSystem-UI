@@ -7,7 +7,7 @@ import sso from "./assets/sso.png";
 import microsoft from "./assets/microsoft.png";
 import { userActions } from "../../actions/users";
 import { decodeToken } from "../../utils/auth";
-import { adminRoutes, userRoutes } from "../../constants/routes";
+import { supportedRoutes } from "../../constants/routes";
 
 const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -46,7 +46,7 @@ const LoginPage: React.FC = () => {
 
   const navigateToAuthorizedRoute = (roles: any) => {
     // Combine user and admin routes into one array for loop checking
-    const routes: any = [...userRoutes, ...adminRoutes];
+    const routes: any = supportedRoutes;
 
     for (let route of routes) {
       if (hasPermission(route, roles)) {

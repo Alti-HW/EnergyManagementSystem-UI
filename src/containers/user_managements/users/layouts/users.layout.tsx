@@ -82,7 +82,7 @@ const Userlayout = ({ children, availableRoles, totalUsers, totalInvitedUsers = 
                     value="invited"
                     label={`Invited (${totalInvitedUsers()})`}
                 />
-                {overflowTabs.length > 0 && (
+                {/* {overflowTabs.length > 0 && (
                     <Tab
                         sx={{
                             fontSize: "14px",
@@ -93,7 +93,7 @@ const Userlayout = ({ children, availableRoles, totalUsers, totalInvitedUsers = 
                         label={moreTabLabel}  // Show "More" or the selected label
                         onClick={handleMoreClick}
                     />
-                )}
+                )} */}
             </Tabs>
             <Menu
                 anchorEl={anchorEl}

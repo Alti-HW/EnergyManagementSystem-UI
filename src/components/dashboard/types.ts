@@ -2,7 +2,8 @@ export interface ChartHeadingProps {
   title: string;
   onExpandIconClick: () => void;
   FilterComponent?: any;
-  chartRef?: any
+  chartRef?: any;
+  exportOptions?: string[];
 }
 
 export interface ChartProps {

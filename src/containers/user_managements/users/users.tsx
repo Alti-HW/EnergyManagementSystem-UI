@@ -13,6 +13,7 @@ import { useConfirmationDialog } from "../../../components/ui_components/confirm
 import { useLoader } from "../../../components/ui_components/full_page_loader.ui";
 import FeatureAccessControl from "../../../authorization/feature.access.control";
 import userAccess from "../../../authorization/user.access.constants";
+import { useUser } from "../../../context/user.context";
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -29,12 +30,16 @@ const Users = () => {
   const [permissions, setPermissions] = useState([])
   const { openDialog } = useConfirmationDialog();
   const { showLoader, hideLoader } = useLoader();
+  const [tableLoader, setTableLoader] = useState(false)
+  const { user } = useUser();
+
 
   const fetchUsers = () => {
     return userActions.getUsers().then((res: any) => {
       if (res) {
-        setAllUsers(res?.data);
-        setUsers(res?.data);
+        const allUsers = filterMyAccount(res?.data)
+        setAllUsers(allUsers);
+        setUsers(allUsers);
       }
     });
   }
@@ -45,11 +50,13 @@ const Users = () => {
   }
 
   useEffect(() => {
+    setTableLoader(false)
     fetchUsers()
     fetchPermissions()
     rolesActions.getAllRoles().then((res: any) => {
       setAvailableRoles(res?.data || []);
     })
+    setTableLoader(false)
   }, []);
 
   useEffect(() => {
@@ -192,6 +199,10 @@ const Users = () => {
   const findUserById = (id: string) => {
     return users.find((user: any) => user.id === id)
   }
+
+  const filterMyAccount = (users: any) => {
+    return users.filter((elm: any) => elm.email !== user.email)
+  }
   return (
     <Box sx={{ p: 4, backgroundColor: "transparent" }}>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
@@ -219,6 +230,7 @@ const Users = () => {
       </Box>
       <Userlayout availableRoles={Array.from(userFilteredRoles.entries())} totalUsers={users?.length || 0} totalInvitedUsers={getTotalInvitedUsers}>
         <UsersTable
+          tableLoader={tableLoader}
           users={users}
           total={allUsers.length}
           onSelect={handleUserSelect}

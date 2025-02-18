@@ -1,4 +1,4 @@
-import { Card } from "@mui/material";
+import { Card, Typography } from "@mui/material";
 import ChartHeading from "./ChartHeading";
 import { useState } from "react";
 import FullView from "./FullView";
@@ -12,11 +12,22 @@ const Alarms = () => {
     setOpenFullViewModal(false);
   };
   return (
-    <Card className="buildingEnergy">
-      <ChartHeading title="Alerms" onExpandIconClick={openFullView} />
-      <p className="noAlermsText">Currently no active Alarms</p>
+    <Card
+      sx={{
+        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+        p: 2,
+        width: "calc(50% - 8px)",
+        boxSizing: "border-box",
+      }}
+    >
+      <ChartHeading title="Alarms" onExpandIconClick={openFullView} />
+      <Typography sx={{ fontSize: "14px", textAlign: "center", mt: 5 }}>
+        Currently no active Alarms
+      </Typography>
       <FullView open={openFullViewModal} onClose={closeFullView}>
-        <p className="noAlermsText">Currently no active Alarms</p>
+        <Typography sx={{ fontSize: "14px", textAlign: "center" }}>
+          Currently no active Alarms
+        </Typography>
       </FullView>
     </Card>
   );

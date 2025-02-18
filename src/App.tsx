@@ -13,6 +13,8 @@ import { ConfirmationDialogProvider } from './components/ui_components/confirmat
 import { LoaderProvider } from "./components/ui_components/full_page_loader.ui";
 import UserProvider, { useUser } from "./context/user.context";
 import userAccess from "./authorization/user.access.constants";
+import config from "./configs/energyManagement.json";
+import { supportedRoutes } from "./constants/routes";
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRoles = [] }: any) {
@@ -40,6 +42,36 @@ function ProtectedRoute({ children, requiredRoles = [] }: any) {
   return children;
 }
 
+
+const routeMapper = (container: any) => {
+  switch (container?.type) {
+    case "dashboard":
+      return (
+        <Route
+          index
+          path="/dashboard"
+          element={<ProtectedRoute><Dashboard config={container} /></ProtectedRoute>}
+        />
+      );
+    case "userManagement":
+      return (
+        <Route element={<UserManagement />}>
+          <Route path="/userManagement/users" index element={<ProtectedRoute requiredRoles={userAccess.VIEW_USERS} ><Users /></ProtectedRoute>} />
+          <Route path="/userManagement/roles" element={<ProtectedRoute requiredRoles={userAccess.VIEW_ROLES} ><Roles /></ProtectedRoute>} />
+        </Route>
+      );
+    case "alerts":
+      return <Route path="/alerts" element={<div> Alerts </div>} />;
+    case "analytics":
+      <Route path="/analytics" element={<div>Analytics</div>} />;
+  }
+};
+const generateMenu = () => {
+  return config.containers.map((container: any) => {
+    return supportedRoutes?.find((route: any) => route.type === container.type);
+  });
+};
+
 function App() {
   return (
     <BrowserRouter>
@@ -52,68 +84,8 @@ function App() {
                   {/* Login route (no protection) */}
                   <Route path="/" index element={<LoginPage />} />
 
-                  {/* Protected routes */}
-                  <Route element={<Layout />}>
-                    <Route
-                      index
-                      path="/dashboard"
-                      element={
-                        <ProtectedRoute >
-                          <Dashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/alerts"
-                      element={
-                        <ProtectedRoute>
-                          <div>Alerts</div>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/reports"
-                      element={
-                        <ProtectedRoute>
-                          <div>Reports</div>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/analytics"
-                      element={
-                        <ProtectedRoute>
-                          <div>Analytics</div>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/profile"
-                      element={
-                        <ProtectedRoute>
-                          <div>My Account</div>
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route element={<UserManagement />}>
-                      <Route
-                        path="/userManagement/users"
-                        index
-                        element={
-                          <ProtectedRoute requiredRoles={userAccess.VIEW_USERS} >
-                            <Users />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/userManagement/roles"
-                        element={
-                          <ProtectedRoute requiredRoles={userAccess.VIEW_ROLES}>
-                            <Roles />
-                          </ProtectedRoute>
-                        }
-                      />
-                    </Route>
+                  <Route element={<Layout menuOptions={generateMenu()} />}>
+                    {config.containers.map((container: any) => routeMapper(container))}
                   </Route>
                 </Routes>
               </ConfirmationDialogProvider>

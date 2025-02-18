@@ -21,5 +21,6 @@ export interface UserTableProps {
   selectedUsers: string[];
   usersRolesList: any,
   roleFilter?: string,
-  activeTab?: any
+  activeTab?: any,
+  tableLoader: boolean
 }

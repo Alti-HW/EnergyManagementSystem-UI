@@ -11,7 +11,6 @@ import {
   Collapse,
 } from "@mui/material";
 import { NavLink, NavLinkRenderProps } from "react-router";
-import { adminRoutes, userRoutes } from "../../constants/routes";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClearIcon from "@mui/icons-material/Clear";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
@@ -22,7 +21,7 @@ import { HeaderProps } from "./types";
 import "./Header.scss";
 import { useUser } from "../../context/user.context";
 
-const Header = ({ onMenuExpand }: HeaderProps) => {
+const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
   const [isMenuMinimized, setIsMenuMinimized] = useState(false);
@@ -159,7 +158,7 @@ const Header = ({ onMenuExpand }: HeaderProps) => {
         <MenuList
           sx={{ "&.MuiList-root": { marginTop: isMobile ? "32px" : "0" } }}
         >
-          {userRoutes.map(({ path, label, Icon, permissions }) => (
+          {menuOptions.map(({ path, label, Icon, permissions }: any) => (
             isUserHasPermittedToRoutes(permissions) &&
             <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
               <NavLink
@@ -184,67 +183,35 @@ const Header = ({ onMenuExpand }: HeaderProps) => {
               </NavLink>
             </MenuItem>
           ))}
-          <Divider className="divider" />
-          {adminRoutes.map(({ path, label, Icon, subRoutes, permissions }) => (
-            isUserHasPermittedToRoutes(permissions) &&
-            <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
-              <NavLink
-                onClick={handleCloseDrawer}
-                className={handleActiveRoute}
-                to={path}
-              >
-                <Tooltip title={label} placement="right-start">
-                  {Icon && (
-                    <Icon sx={{ width: "16px", verticalAlign: "bottom" }} />
-                  )}
-                </Tooltip>
-                {!isMenuMinimized && (
-                  <Typography
-                    variant="body1"
-                    sx={{ display: "inline-block", ml: 1 }}
-                  >
-                    {label}
-                  </Typography>
-                )}
-              </NavLink>
-            </MenuItem>
-            // <div key={path}>
-            //     {/* <MenuItem onClick={(e) => handleParentRouteClick(e, { path, label, Icon, subRoutes })}>
-            //         <Tooltip title={label} placement="right-start">
-            //             {Icon && <Icon sx={{ width: '16px', verticalAlign: 'bottom' }} />}
-            //         </Tooltip>
-            //         {!isMenuMinimized && (
-            //             <>
-            //                 <Typography variant="body1" sx={{ display: 'inline-block', ml: 1 }}>
-            //                     {label}
-            //                 </Typography>
-            //                 <IconButton size="small" sx={{ ml: 1, color: "#fff" }}>
-            //                     {openSubNav[path] ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
-            //                 </IconButton>
-            //             </>
-            //         )}
-            //     </MenuItem>
+          {/* <Divider className="divider" />
+          {adminRoutes.map(({ path, label, Icon, subRoutes }) => (
+      <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
+        <NavLink
+          onClick={handleCloseDrawer}
+          className={handleActiveRoute}
+          to={path}
+        >
+          <Tooltip title={label} placement="right-start">
+            {Icon && (
+              <Icon sx={{ width: "16px", verticalAlign: "bottom" }} />
+            )}
+          </Tooltip>
+          {!isMenuMinimized && (
+            <Typography
+              variant="body1"
+              sx={{ display: "inline-block", ml: 1 }}
+            >
+              {label}
+            </Typography>
+          )}
+        </NavLink>
+      </MenuItem>
 
-            //     {subRoutes && (
-            //         <Collapse in={openSubNav[path]} timeout="auto" unmountOnExit>
-            //             <MenuList sx={{ backgroundColor: "#080c1f" }}>
-            //                 {subRoutes.map(({ path: subPath, label, Icon }) => (
-            //                     <MenuItem key={subPath}>
-            //                         <NavLink onClick={handleCloseDrawer} className={(props) => handleActiveRoute(props, subPath)} to={subPath}>
-            //                             <Tooltip title={label} placement="right-start">
-            //                                 {Icon && <Icon sx={{ width: '16px', verticalAlign: 'bottom' }} />}
-            //                             </Tooltip>
-            //                             {!isMenuMinimized && <Typography variant="body1" sx={{ display: 'inline-block', ml: 1 }}> {label} </Typography>}
-            //                         </NavLink>
-            //                     </MenuItem>
-            //                 ))}
-            //             </MenuList>
-            //         </Collapse>
-            //     )} */}
-            // </div>
-          ))}
-        </MenuList>
-      </Drawer>
+    ))
+  } */
+}
+        </MenuList >
+      </Drawer >
     </>
   );
 };
