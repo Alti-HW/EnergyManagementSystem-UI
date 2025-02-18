@@ -1,25 +1,46 @@
+import { Alert } from "@mui/material";
 import React, { useState } from "react";
-import { FaUser, FaLock } from "react-icons/fa"; // Importing icons for email and password fields
-import { NavLink, useNavigate } from "react-router";
+import { FaUser, FaLock } from "react-icons/fa";
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => void;
+  errorMessage: string;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onLogin, errorMessage }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  let navigate = useNavigate();
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(email, password);
-    navigate("/dashboard");
+
+    // Basic validation
+    let valid = true;
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("Please enter a valid email.");
+      valid = false;
+    } else {
+      setEmailError("");
+    }
+
+    if (!password ) {
+      setPasswordError("Password must be filled");
+      valid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    if (valid) {
+      onLogin(email, password);
+    }
   };
 
   return (
     <div className="right-side">
       <form onSubmit={handleSubmit}>
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         <div className="input-group">
           <label htmlFor="email">Email</label>
           <div className="input-wrapper">
@@ -33,6 +54,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
             />
             <FaUser className="icon" />
           </div>
+          {emailError && <div className="error-message">{emailError}</div>}
         </div>
 
         <div className="input-group">
@@ -48,7 +70,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
               required
             />
           </div>
+          {passwordError && <div className="error-message">{passwordError}</div>}
         </div>
+
         <div className="forgot-password">
           <span>Forgot Password?</span>
         </div>

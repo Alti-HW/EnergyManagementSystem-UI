@@ -11,7 +11,6 @@ import {
   Collapse,
 } from "@mui/material";
 import { NavLink, NavLinkRenderProps } from "react-router";
-import { adminRoutes, userRoutes } from "../../constants/routes";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClearIcon from "@mui/icons-material/Clear";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
@@ -20,12 +19,14 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { HeaderProps } from "./types";
 import "./Header.scss";
+import { useUser } from "../../context/user.context";
 
 const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
   const [isMenuMinimized, setIsMenuMinimized] = useState(false);
   const [openSubNav, setOpenSubNav] = useState<{ [key: string]: boolean }>({});
+  const { user } = useUser();
 
   const handleActiveRoute = (
     { isActive, href }: any,
@@ -75,6 +76,11 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
       onMenuExpand(isMenuMinimized);
     }
   }, [isMenuMinimized]);
+
+  const isUserHasPermittedToRoutes = (permissions: any) => {
+    if (permissions.length <= 0) return true
+    return permissions?.some((role: string) => user?.resource_access?.EMS?.roles?.includes(role));
+  }
 
   return (
     <>
@@ -152,7 +158,8 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
         <MenuList
           sx={{ "&.MuiList-root": { marginTop: isMobile ? "32px" : "0" } }}
         >
-          {menuOptions.map(({ path, label, Icon }: any) => (
+          {menuOptions.map(({ path, label, Icon, permissions }: any) => (
+            isUserHasPermittedToRoutes(permissions) &&
             <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
               <NavLink
                 onClick={handleCloseDrawer}
@@ -178,31 +185,33 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
           ))}
           {/* <Divider className="divider" />
           {adminRoutes.map(({ path, label, Icon, subRoutes }) => (
-            <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
-              <NavLink
-                onClick={handleCloseDrawer}
-                className={handleActiveRoute}
-                to={path}
-              >
-                <Tooltip title={label} placement="right-start">
-                  {Icon && (
-                    <Icon sx={{ width: "16px", verticalAlign: "bottom" }} />
-                  )}
-                </Tooltip>
-                {!isMenuMinimized && (
-                  <Typography
-                    variant="body1"
-                    sx={{ display: "inline-block", ml: 1 }}
-                  >
-                    {label}
-                  </Typography>
-                )}
-              </NavLink>
-            </MenuItem>
-   
-          ))} */}
-        </MenuList>
-      </Drawer>
+      <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
+        <NavLink
+          onClick={handleCloseDrawer}
+          className={handleActiveRoute}
+          to={path}
+        >
+          <Tooltip title={label} placement="right-start">
+            {Icon && (
+              <Icon sx={{ width: "16px", verticalAlign: "bottom" }} />
+            )}
+          </Tooltip>
+          {!isMenuMinimized && (
+            <Typography
+              variant="body1"
+              sx={{ display: "inline-block", ml: 1 }}
+            >
+              {label}
+            </Typography>
+          )}
+        </NavLink>
+      </MenuItem>
+
+    ))
+  } */
+}
+        </MenuList >
+      </Drawer >
     </>
   );
 };

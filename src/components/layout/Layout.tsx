@@ -1,4 +1,5 @@
 import { Outlet, useLocation } from "react-router";
+import ResponsiveAppBar from './header.layout'
 import Header from "../header/Header";
 
 import "./Layout.scss";
@@ -14,6 +15,7 @@ const Layout = ({ menuOptions }: any) => {
   };
   return (
     <div className="">
+      <ResponsiveAppBar />
       <Header onMenuExpand={onMenuExpand} menuOptions={menuOptions} />
       <Box
         sx={{

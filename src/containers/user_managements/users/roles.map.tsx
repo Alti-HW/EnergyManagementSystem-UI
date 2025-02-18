@@ -11,57 +11,86 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export default function RoleMap(props: any) {
   const {
-    roles = [], // List of all available roles
-    userSelectedRoles = [], // List of roles already selected for the user
+    roles = [],
+    userSelectedRoles = [],
     onRoleChange,
+    multiple = false, // Default is true (multiple selection)
+    newMode = false
   } = props;
 
-  // Sync selected roles with the parent data
-  const [selectedRoles, setSelectedRoles] = React.useState(userSelectedRoles);
+  const [selectedRoles, setSelectedRoles] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    setSelectedRoles(userSelectedRoles); // Sync selected roles whenever they change in the parent
-  }, [userSelectedRoles]);
+    if (newMode) {
+      return
+    }
+    if (multiple) {
+      const selectedOptions = roles.filter((role: any) =>
+        userSelectedRoles.some((selectedRole: any) => selectedRole.id === role.id)
+      );
+      setSelectedRoles(selectedOptions);
+    } else {
+      const selectedOptions = roles.filter((role: any) =>
+        userSelectedRoles[0]?.id === role?.id
+      );
+      // If not multiple, assume userSelectedRoles is a single object
+      setSelectedRoles(selectedOptions?.length > 0 ? selectedOptions[0] : []);
+    }
+  }, [userSelectedRoles, roles, multiple]);
 
   const handleChange = (event: any, newSelectedRoles: any) => {
-    // When the user selects or unselects a role, update the state and notify the parent
-    setSelectedRoles(newSelectedRoles);
+    if (multiple) {
+      setSelectedRoles(!newSelectedRoles ? [] : newSelectedRoles);
+      const newlySelected = newSelectedRoles.filter(
+        (newRole: any) =>
+          !userSelectedRoles.find((oldRole: any) => oldRole?.id === newRole?.id)
+      );
 
-    // Identify newly selected and unselected roles
-    const newlySelected = newSelectedRoles.filter(
-      (newRole: any) =>
-        !userSelectedRoles.find((oldRole: any) => oldRole.id === newRole.id)
-    );
+      const untickedRoles = userSelectedRoles.filter(
+        (oldRole: any) =>
+          !newSelectedRoles.find((newRole: any) => newRole?.id === oldRole?.id)
+      );
 
-    const untickedRoles = selectedRoles.filter(
-      (oldRole: any) =>
-        !newSelectedRoles.find((newRole: any) => newRole.id === oldRole.id)
-    );
+      if (onRoleChange) {
+        onRoleChange({ newlySelected, untickedRoles });
+      }
+    } else {
+      setSelectedRoles(!newSelectedRoles ? {} : newSelectedRoles);
+      const newlySelected = newSelectedRoles
+        ? [newSelectedRoles] // Wrap in an array for consistency
+        : [];
 
-    // Notify the parent with the selected roles
-    if (onRoleChange) {
-      onRoleChange({ newlySelected, untickedRoles });
+      const untickedRoles = newSelectedRoles?.id !== userSelectedRoles[0]?.id
+        ? userSelectedRoles.length === 1 ? [userSelectedRoles[0]] : [] // If userSelectedRoles is not empty, consider it
+        : [];
+
+      if (onRoleChange) {
+        onRoleChange({ newlySelected, untickedRoles });
+      }
     }
   };
 
   return (
     <Autocomplete
-      multiple
+      fullWidth
       id="checkboxes-tags-demo"
-      options={roles} // All available roles
-      disableCloseOnSelect
-      value={selectedRoles} // Display selected roles as chips in the TextField
-      onChange={handleChange} // Handle changes when selecting/unselecting roles
-      getOptionLabel={(option: any) => option.name} // Display name of each role
+      options={roles}
+      disableCloseOnSelect={multiple}
+      value={selectedRoles}
+      onChange={handleChange}
+      getOptionLabel={(option: any) => option?.name || ""}
+      multiple={multiple}
       renderOption={(props, option, { selected }) => {
         return (
           <li {...props} key={option.id}>
-            <Checkbox
-              icon={icon}
-              checkedIcon={checkedIcon}
-              style={{ marginRight: 8 }}
-              checked={selected} // Checkbox will be checked if selected
-            />
+            {multiple &&
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+            }
             {option.name}
           </li>
         );
@@ -75,7 +104,6 @@ export default function RoleMap(props: any) {
         />
       )}
       renderTags={(value: any, getTagProps: any) => {
-        // Render selected roles as chips
         return value.map((option: any, index: number) => (
           <Chip
             label={option.name}
