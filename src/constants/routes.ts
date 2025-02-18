@@ -71,7 +71,12 @@ export const supportedRoutes = [
     path: "/dashboard",
     label: "Dashboard",
     Icon: DashboardIcon,
-    permissions: [],
+    permissions: [
+      ...userAccess.VIEW_DASHBOARD,
+      ...userAccess.DELETE_DASHBOARD,
+      ...userAccess.EDIT_DASHBOARD,
+      ...userAccess.EXPORT_REPORTS,
+    ],
     type: "dashboard",
   },
   {
