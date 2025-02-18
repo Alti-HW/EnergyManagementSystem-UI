@@ -3,7 +3,15 @@ import ChartHeading from "./ChartHeading";
 import { useState } from "react";
 import FullView from "./FullView";
 
-const Alarms = () => {
+const Alarms = ({
+  enalbeEditDashboard,
+  onComponentDelete,
+  componentIndex,
+}: {
+  enalbeEditDashboard: boolean;
+  onComponentDelete: (index: number) => void;
+  componentIndex: number;
+}) => {
   const [openFullViewModal, setOpenFullViewModal] = useState(false);
   const openFullView = () => {
     setOpenFullViewModal(true);
@@ -20,7 +28,13 @@ const Alarms = () => {
         boxSizing: "border-box",
       }}
     >
-      <ChartHeading title="Alarms" onExpandIconClick={openFullView} />
+      <ChartHeading
+        enalbeEditDashboard={enalbeEditDashboard}
+        onComponentDelete={onComponentDelete}
+        componentIndex={componentIndex}
+        title="Alarms"
+        onExpandIconClick={openFullView}
+      />
       <Typography sx={{ fontSize: "14px", textAlign: "center", mt: 5 }}>
         Currently no active Alarms
       </Typography>

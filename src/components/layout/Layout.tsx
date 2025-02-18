@@ -1,11 +1,9 @@
 import { Outlet, useLocation } from "react-router";
-import ResponsiveAppBar from './header.layout'
+import ResponsiveAppBar from "./header.layout";
 import Header from "../header/Header";
 
-import "./Layout.scss";
 import { useState } from "react";
 import { Box } from "@mui/material";
-import Profile from "../profile/Profile";
 
 const Layout = ({ menuOptions }: any) => {
   const [isMenuMinimized, setIsMenuMinimized] = useState(false);
@@ -26,7 +24,6 @@ const Layout = ({ menuOptions }: any) => {
         }}
         className={`layoutWrapper ${isMenuMinimized ? "fullWidth" : ""}`}
       >
-        <Profile />
         <Outlet />
       </Box>
       <footer></footer>

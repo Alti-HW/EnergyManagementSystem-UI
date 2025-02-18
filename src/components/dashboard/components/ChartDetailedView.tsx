@@ -13,12 +13,10 @@ const ChartDetailedView = ({
   startDate,
   endDate,
 }: any) => {
-  console.log("config", config);
   const { dataApi = "", apiMethod, keyToBeRead, dataKey, tableConfig } = config;
   const {
     data: chartDetailedData,
     loading,
-    error,
     fetchData,
   } = useAxios(dataApi, apiMethod ?? "POST", null, POST_REQ_HEADERS, false);
 
@@ -30,7 +28,7 @@ const ChartDetailedView = ({
       endDate,
       [keyToBeRead]: activeChartElement[keyToBeRead],
     });
-  }, []);
+  }, [startDate, endDate, activeChartElement, keyToBeRead]);
 
   const flatDataObject = (data: any, index: number, pathKeys: string[]) => {
     let output: any;
@@ -54,7 +52,7 @@ const ChartDetailedView = ({
     if (data) {
       setTableData(flatDataObject(data, 0, dataKey) ?? []);
     }
-  }, [chartDetailedData]);
+  }, [chartDetailedData, dataKey]);
 
   return (
     <FullView open onClose={onClose}>

@@ -78,10 +78,13 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
   }, [isMenuMinimized]);
 
   const isUserHasPermittedToRoutes = (permissions: any) => {
-    if (permissions.length <= 0) return true
-    return permissions?.some((role: string) => user?.resource_access?.EMS?.roles?.includes(role));
-  }
+    if (permissions.length <= 0) return true;
+    return permissions?.some((role: string) =>
+      user?.resource_access?.EMS?.roles?.includes(role)
+    );
+  };
 
+  console.log(menuOptions);
   return (
     <>
       {isMobile && (
@@ -158,31 +161,33 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
         <MenuList
           sx={{ "&.MuiList-root": { marginTop: isMobile ? "32px" : "0" } }}
         >
-          {menuOptions.map(({ path, label, Icon, permissions }: any) => (
-            isUserHasPermittedToRoutes(permissions) &&
-            <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
-              <NavLink
-                onClick={handleCloseDrawer}
-                className={handleActiveRoute}
-                to={path}
-              >
-                <Tooltip title={label} placement="right-start">
-                  {Icon && (
-                    <Icon sx={{ width: "16px", verticalAlign: "bottom" }} />
-                  )}
-                </Tooltip>
-                {!isMenuMinimized && (
-                  <Typography
-                    variant="body1"
-                    sx={{ display: "inline-block", ml: 1 }}
+          {menuOptions.map(
+            ({ path, label, Icon, permissions }: any) =>
+              isUserHasPermittedToRoutes(permissions) && (
+                <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
+                  <NavLink
+                    onClick={handleCloseDrawer}
+                    className={handleActiveRoute}
+                    to={path}
                   >
-                    {" "}
-                    {label}{" "}
-                  </Typography>
-                )}
-              </NavLink>
-            </MenuItem>
-          ))}
+                    <Tooltip title={label} placement="right-start">
+                      {Icon && (
+                        <Icon sx={{ width: "16px", verticalAlign: "bottom" }} />
+                      )}
+                    </Tooltip>
+                    {!isMenuMinimized && (
+                      <Typography
+                        variant="body1"
+                        sx={{ display: "inline-block", ml: 1 }}
+                      >
+                        {" "}
+                        {label}{" "}
+                      </Typography>
+                    )}
+                  </NavLink>
+                </MenuItem>
+              )
+          )}
           {/* <Divider className="divider" />
           {adminRoutes.map(({ path, label, Icon, subRoutes }) => (
       <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
@@ -208,10 +213,9 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
       </MenuItem>
 
     ))
-  } */
-}
-        </MenuList >
-      </Drawer >
+  } */}
+        </MenuList>
+      </Drawer>
     </>
   );
 };

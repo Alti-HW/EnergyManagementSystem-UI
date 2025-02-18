@@ -1,18 +1,15 @@
 import {
   Box,
   Card,
-  Chip,
   FormControl,
   InputLabel,
   MenuItem,
   Select,
 } from "@mui/material";
-import { BarChart } from "@mui/x-charts";
 import React, { useEffect, useRef, useState } from "react";
 import ChartHeading from "./ChartHeading";
 import useAxios from "../hooks/useAxiosHook";
 import { POST_REQ_HEADERS } from "../../../constants/apis";
-import Chart from "./Chart";
 import {
   getDates,
   getUpdatedEndDate,
@@ -23,8 +20,7 @@ import FullView from "./FullView";
 import DateFilter from "./DateFilter";
 import ChartDetailedView from "./ChartDetailedView";
 import Spinner from "./Spinner";
-import dayjs from "dayjs";
-import { dataObj } from "./mockData";
+import { ChartWrapperProps, ComponentConfig } from "../types";
 
 const ChartWrapper: React.FC = ({
   chartType,
@@ -39,12 +35,14 @@ const ChartWrapper: React.FC = ({
   filters: filtersConfig,
   dateFilter: dateFilterConfig,
   exportOptions,
-  dataApiReqFormat,
   color,
   detailedViewConfig,
   enableDetailedView,
   enableScrollInFullview,
   width: chartWrapperWidth,
+  enalbeEditDashboard,
+  onComponentDelete,
+  componentIndex,
 }: any): React.ReactNode => {
   const chartRef = useRef(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -57,12 +55,13 @@ const ChartWrapper: React.FC = ({
   );
   const [chartData, setChartData] = useState(undefined);
   const [activeChartElement, setActiveChartElement] = useState<any>(null);
-  const chartDataApi = dataApi?.find((api: any) => api.userFor === "chartData");
-  const filtersDataApi = dataApi?.find((api: any) => api.userFor === "filters");
+  const chartDataApi =
+    dataApi?.find((api: any) => api.userFor === "chartData") ?? {};
+  const filtersDataApi =
+    dataApi?.find((api: any) => api.userFor === "filters") ?? {};
   const {
     data: chartRawData,
     loading,
-    error,
     fetchData,
   } = useAxios(
     chartDataApi.url,
@@ -72,12 +71,7 @@ const ChartWrapper: React.FC = ({
     false
   );
 
-  const {
-    data: filtersRawData,
-    loading: filtersLoading,
-    error: filtersError,
-    fetchData: fetchFiltersData,
-  } = useAxios(
+  const { data: filtersRawData, fetchData: fetchFiltersData } = useAxios(
     filtersDataApi?.url,
     filtersDataApi?.method ?? "POST",
     null,
@@ -86,17 +80,22 @@ const ChartWrapper: React.FC = ({
   );
 
   const initilizeFilters = (filters: any) => {
-    return filters?.map((filter: any) => {
-      return {
-        id: filter.filterId,
-        value: "",
-        options: [],
-        label: filter.filterLabel,
-        dataPath: filter.dataPath,
-        filterDataValueKey: filter.filterDataValueKey,
-        filterDataLabelKey: filter.filterDataLabelKey,
-      };
+    let output: any = [];
+    filters?.forEach((filter: any) => {
+      if (filter.showFilter === "true")
+        output.push({
+          id: filter.filterId,
+          value: filter.filterValues?.[0]?.value ?? "",
+          options: filter.filterValues ?? [],
+          label: filter.filterLabel,
+          dataPath: filter.dataPath,
+          filterDataValueKey: filter.filterDataValueKey,
+          filterDataLabelKey: filter.filterDataLabelKey,
+          isParentFilter: filter.isParentFilter === "true",
+          showFilter: filter?.showFilter === "true",
+        });
     });
+    return output;
   };
 
   const [filters, setFilters] = useState(initilizeFilters(filtersConfig));
@@ -117,50 +116,70 @@ const ChartWrapper: React.FC = ({
 
   const handleChartClick = (elements: any) => {
     if (enableDetailedView === "true") {
+      console.log(elements, chartRawData);
       setActiveChartElement(chartRawData?.data?.[elements?.[0]?.index]);
     }
   };
 
   useEffect(() => {
-    if (filtersDataApi) fetchFiltersData();
+    if (filtersDataApi?.url) fetchFiltersData();
   }, []);
 
   useEffect(() => {
-    if (filtersRawData) {
-      let filters = filtersConfig;
-      let [parentFilter, childFilter] = filters;
+    if (filtersRawData && filters?.length > 0) {
+      // let filters = filtersConfig;
+
+      let parentFilterIndex = filters?.findIndex((filter: any) => {
+        console.log(filter, "filter");
+        return filter.isParentFilter;
+      });
+      let dependentFilterIndex = filters?.findIndex(
+        (filter: any) => !filter.isParentFilter
+      );
+      let parentFilter = filters?.[parentFilterIndex];
+      let dependentFilter = filters?.[dependentFilterIndex];
+
       let parentFilterOptions: any = [];
       let childFilterOptions: any = [];
-
-      filtersRawData?.data?.map((data: any) => {
-        parentFilterOptions.push({
-          label: data[parentFilter?.filterDataLabelKey],
-          value: data[parentFilter?.filterDataValueKey],
+      if (parentFilter) {
+        filtersRawData?.data?.forEach((data: any) => {
+          parentFilterOptions.push({
+            label: data[parentFilter?.filterDataLabelKey],
+            value: data[parentFilter?.filterDataValueKey],
+          });
         });
-      });
-      filtersRawData?.data?.[0]?.[childFilter?.dataPath]?.map((data: any) => {
-        childFilterOptions.push({
-          label: data[childFilter?.filterDataLabelKey],
-          value: data[childFilter?.filterDataValueKey],
-        });
-      });
-
-      setFilters((current: any) => {
-        return [
-          {
-            ...current[0],
+        setFilters((current: any) => {
+          current[parentFilterIndex] = {
+            ...current?.[parentFilterIndex],
             value: parentFilterOptions?.[0]?.value,
             options: parentFilterOptions,
-          },
-          {
-            ...current[1],
-            value: childFilterOptions?.[0]?.value,
-            options: childFilterOptions,
-          },
-        ];
+          };
+          return [...current];
+        });
+      }
+      if (dependentFilter) {
+        filtersRawData?.data?.[0]?.[dependentFilter?.dataPath]?.forEach(
+          (data: any) => {
+            childFilterOptions.push({
+              label: data[dependentFilter?.filterDataLabelKey],
+              value: data[dependentFilter?.filterDataValueKey],
+            });
+          }
+        );
+      }
+      setFilters((current: any) => {
+        current[dependentFilterIndex] = {
+          ...current[dependentFilterIndex],
+
+          value: childFilterOptions?.[0]?.value,
+          options: childFilterOptions,
+        };
+        return [...current];
       });
     }
   }, [filtersRawData]);
+
+  console.log(filters);
 
   useEffect(() => {
     const { start, end } = getDates(selectedDateFilter);
@@ -169,17 +188,20 @@ const ChartWrapper: React.FC = ({
   }, [selectedDateFilter]);
 
   useEffect(() => {
-    if (filters?.length > 0) {
-      if (startDate && endDate && (filters?.[0].value || filters?.[1].value))
-        fetchData({
-          endDate,
-          startDate,
-          [filters[0].id]: filters[0].value,
-          [filters[1].id]: filters[1].value,
-        });
+    if (startDate && endDate && chartDataApi?.payload) {
+      let payload = chartDataApi?.payload;
+      for (let key in chartDataApi?.payload) {
+        if (key === "startDate") payload.startDate = startDate;
+        else if (key === "endDate") payload.endDate = endDate;
+        else {
+          let filter = filters?.find((filter: any) => filter.id === key);
+          payload[key] = filter?.value;
+        }
+      }
+      fetchData(payload);
     } else {
       if (startDate && endDate) {
-        fetchData({ endDate, startDate });
+        fetchData({ startDate, endDate });
       }
     }
   }, [startDate, endDate, filters]);
@@ -223,25 +245,35 @@ const ChartWrapper: React.FC = ({
       setChartData(data);
     }
   }, [chartRawData]);
-  // // console.log(chartData);
 
-  const handleFiltersChange = (event: any, index: number) => {
+  const handleFiltersChange = (
+    event: any,
+    index: number,
+    isParentFilter: boolean
+  ) => {
     const value = event?.target?.value;
     let options: any = [];
-    if (index === 0) {
+    let dependentFilterIndex = filters?.findIndex(
+      (filter: any) => !filter.isParentFilter
+    );
+    let dependentFilter = filters[dependentFilterIndex];
+    if (isParentFilter && dependentFilter && filtersRawData) {
       options = filtersRawData?.data
-        ?.find((filter: any) => filter?.[filters[0]?.id] === value)
-        ?.[filters[1]?.dataPath]?.map((filter: any) => ({
-          label: filter[filters[1]?.filterDataLabelKey],
-          value: filter[filters[1]?.filterDataValueKey],
+        ?.find((filter: any) => filter?.[filters[index]?.id] === value)
+        ?.[dependentFilter?.dataPath]?.map((filter: any) => ({
+          label: filter[dependentFilter?.filterDataLabelKey],
+          value: filter[dependentFilter?.filterDataValueKey],
         }));
     }
 
     setFilters((current: any) => {
       current[index].value = event.target.value;
-      if (index == 0) {
-        current[1].value = "";
-        current[1].options = options;
+
+      if (isParentFilter && dependentFilter) {
+        current[dependentFilterIndex].value = "";
+        if (filtersRawData) {
+          current[dependentFilterIndex].options = options;
+        }
       }
       return [...current];
     });
@@ -286,87 +318,89 @@ const ChartWrapper: React.FC = ({
         boxSizing: "border-box",
         position: "relative",
         pb: 4,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <ChartHeading
-        title={title}
-        onExpandIconClick={handleChartFullView}
-        chartRef={chartRef}
-        exportOptions={exportOptions}
-      />
-      {filters?.length > 0 && (
-        <Box sx={{ gap: "10px", mt: 2, p: 1 }}>
-          {filters.map((filter: any, index: number) => {
-            return (
-              <FormControl
-                fullWidth
-                sx={{ width: "fit-content", display: "inline-block", mr: 2 }}
-              >
-                <InputLabel
-                  id={`${filter.id}label`}
-                  sx={{
-                    top: "-10px",
-                    fontSize: "12px",
-                    "&.Mui-focused, &.MuiFormLabel-filled": { top: 0 },
-                    color: "#000",
-                  }}
-                >
-                  {filter?.label}
-                </InputLabel>
-                <Select
-                  labelId={`${filter.id}label`}
-                  id={filter.id}
-                  value={filter.value}
-                  label="Age"
-                  onChange={(e) => handleFiltersChange(e, index)}
-                  sx={{
-                    fontSize: "12px",
-                    "& .MuiSelect-select": {
-                      padding: "6px",
-                    },
-                    maxWidth: "fit-content",
-                    minWidth: "200px",
-                  }}
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        maxHeight: 200, // Set the max height here
-                        overflow: "auto", // Add scrollbar when overflow
-                      },
-                    },
-                  }}
-                >
-                  {filter?.options?.map((option: any) => (
-                    <MenuItem sx={{ fontSize: "12px" }} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            );
-          })}
-        </Box>
-      )}
-      <Box sx={{ minHeight: "300px" }} ref={chartRef}>
-        {!chartData && <Spinner />}
-        {chartData && (
-          <ChartComponent
-            data={chartData}
-            loading={loading}
-            type={chartType}
-            chartData={chartData}
-            xAxisLabel={xAxisLabel}
-            yAxisLabel={yAxisLabel}
-            yAxisDataFormatter={yAxisDataFormatter}
-            xAxisDataFormatter={xAxisDataFormatter}
-            color={color}
-            handleChartClick={handleChartClick}
-          />
+      <Box sx={{ flex: 1 }}>
+        <ChartHeading
+          title={title}
+          onExpandIconClick={handleChartFullView}
+          chartRef={chartRef}
+          exportOptions={exportOptions}
+          enalbeEditDashboard={enalbeEditDashboard}
+          onComponentDelete={onComponentDelete}
+          componentIndex={componentIndex}
+        />
+        {filters?.length > 0 && (
+          <Box sx={{ gap: "10px", mt: 2, p: 1 }}>
+            {filters.map((filter: any, index: number) => {
+              return (
+                filter?.showFilter && (
+                  <FormControl
+                    key={filter.id}
+                    fullWidth
+                    sx={{
+                      width: "fit-content",
+                      display: "inline-block",
+                      mr: 2,
+                    }}
+                  >
+                    <InputLabel
+                      id={`${filter.id}label`}
+                      sx={{
+                        top: "-10px",
+                        fontSize: "12px",
+                        "&.Mui-focused, &.MuiFormLabel-filled": { top: 0 },
+                        color: "#000",
+                      }}
+                    >
+                      {filter?.label}
+                    </InputLabel>
+                    <Select
+                      labelId={`${filter.id}label`}
+                      id={filter.id}
+                      value={filter.value}
+                      label="Age"
+                      onChange={(e) =>
+                        handleFiltersChange(e, index, filter?.isParentFilter)
+                      }
+                      sx={{
+                        fontSize: "12px",
+                        "& .MuiSelect-select": {
+                          padding: "6px",
+                        },
+                        maxWidth: "fit-content",
+                        minWidth: "200px",
+                      }}
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 200, // Set the max height here
+                            overflow: "auto", // Add scrollbar when overflow
+                          },
+                        },
+                      }}
+                    >
+                      {filter?.options?.map((option: any) => (
+                        <MenuItem
+                          key={option.value}
+                          sx={{ fontSize: "12px" }}
+                          value={option.value}
+                        >
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )
+              );
+            })}
+          </Box>
         )}
-      </Box>
-      {fullView && (
-        <FullView open={fullView} onClose={closeChartFullView}>
-          <>
+        <Box sx={{ minHeight: "300px" }} ref={chartRef}>
+          {!chartData && <Spinner />}
+          {chartData && (
             <ChartComponent
               data={chartData}
               loading={loading}
@@ -377,30 +411,48 @@ const ChartWrapper: React.FC = ({
               yAxisDataFormatter={yAxisDataFormatter}
               xAxisDataFormatter={xAxisDataFormatter}
               color={color}
-              fullView={fullView}
-              handleOnScroll={handleOnScroll}
-              scrollContainerRef={scrollContainerRef}
-              enableScrollInFullview={enableScrollInFullview === "true"}
+              handleChartClick={handleChartClick}
             />
-            {dateFilterConfig && dateFilterConfig?.showFilter === "true" && (
-              <DateFilter
-                dateOptions={dateFilterConfig?.filterValues}
-                handleTimeFilterChange={handleTimeFilterChange}
-                selectedDateFilter={selectedDateFilter}
+          )}
+        </Box>
+        {fullView && (
+          <FullView open={fullView} onClose={closeChartFullView}>
+            <>
+              <ChartComponent
+                data={chartData}
+                loading={loading}
+                type={chartType}
+                chartData={chartData}
+                xAxisLabel={xAxisLabel}
+                yAxisLabel={yAxisLabel}
+                yAxisDataFormatter={yAxisDataFormatter}
+                xAxisDataFormatter={xAxisDataFormatter}
+                color={color}
+                fullView={fullView}
+                handleOnScroll={handleOnScroll}
+                scrollContainerRef={scrollContainerRef}
+                enableScrollInFullview={enableScrollInFullview === "true"}
               />
-            )}
-          </>
-        </FullView>
-      )}
+              {dateFilterConfig && dateFilterConfig?.showFilter === "true" && (
+                <DateFilter
+                  dateOptions={dateFilterConfig?.filterValues}
+                  handleTimeFilterChange={handleTimeFilterChange}
+                  selectedDateFilter={selectedDateFilter}
+                />
+              )}
+            </>
+          </FullView>
+        )}
+      </Box>
       {dateFilterConfig && dateFilterConfig?.showFilter === "true" && (
         <Box
-          sx={{
-            position: "absolute",
-            bottom: "16px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100%",
-          }}
+        // sx={{
+        //   position: "absolute",
+        //   bottom: "16px",
+        //   left: "50%",
+        //   transform: "translateX(-50%)",
+        //   width: "100%",
+        // }}
         >
           <DateFilter
             dateOptions={dateFilterConfig?.filterValues}

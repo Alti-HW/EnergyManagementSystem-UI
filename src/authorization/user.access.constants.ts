@@ -7,14 +7,23 @@ const userAccess = {
   DELETE_ROLE: ["Delete Role"],
   EDIT_USER: ["Edit User"],
   VIEW_USERS: ["View Users"],
-  VIEW_DASHBOARD: ["View Dashboard"],
+  VIEW_DASHBOARD: [
+    "View Dashboard",
+    "Export Dashboard Data",
+    "Delete Dashboard",
+    "Edit Dashboard",
+  ],
   EDIT_ROLE: ["Edit Role"],
   BUILDING_OWNER: ["Building Owner"],
   CUSTOMIZE_DASHBOARD: ["Customize Dashboard"],
   ADD_ROLE: ["Add Role"],
-  EDIT_DASHBOARD: ["Edit Dashboard"],
+  EDIT_DASHBOARD: ["Edit Dashboard", "Delete Dashboard"],
   DELETE_DASHBOARD: ["Delete Dashboard"],
-  EXPORT_REPORTS: ["Export Dashboard Data"],
+  EXPORT_REPORTS: [
+    "Export Dashboard Data",
+    "Delete Dashboard",
+    "Edit Dashboard",
+  ],
 };
 
 export default userAccess;

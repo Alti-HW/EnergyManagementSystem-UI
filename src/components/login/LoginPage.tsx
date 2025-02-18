@@ -14,33 +14,40 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('authToken') !== null;
+    const isAuthenticated = localStorage.getItem("authToken") !== null;
     if (isAuthenticated) {
-      navigate("/dashboard");
+      const token = localStorage.getItem("authToken");
+      const user = decodeToken(token);
+      // navigate("/dashboard");
+      navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || []);
+      // navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || [])
     }
-  }, [])
+  }, []);
 
   const handleLogin = (email: string, password: string) => {
-
     // Replace with actual API call to your backend
     loginUser(email, password);
   };
 
   const loginUser = (email: string, password: string) => {
     // Simulate API login response
-    userActions.userLogin({ email, password })
+    userActions
+      .userLogin({ email, password })
       .then((response) => {
         // Assume the API returns a token
         const token = response.data;
         if (token) {
           const user = decodeToken(token);
           localStorage.setItem("authToken", token);
-          navigate("/dashboard");
-          // navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || [])
+          // navigate("/dashboard");
+          navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || []);
         }
       })
       .catch((error) => {
-        setErrorMessage(error.response?.data?.message || "Login failed. Please check your credentials.");
+        setErrorMessage(
+          error.response?.data?.message ||
+            "Login failed. Please check your credentials."
+        );
       });
   };
 
@@ -72,7 +79,9 @@ const LoginPage: React.FC = () => {
 
   const hasPermission = (route: any, roles: string[]) => {
     // Check if any of the user's roles match the route's permissions
-    return route.permissions.some((permission: string) => roles.includes(permission));
+    return route.permissions.some((permission: string) =>
+      roles.includes(permission)
+    );
   };
 
   return (

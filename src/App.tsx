@@ -51,15 +51,8 @@ const routeMapper = (container: any) => {
           index
           path="/dashboard"
           element={
-            <ProtectedRoute
-              requiredRoles={[
-                ...userAccess.VIEW_DASHBOARD,
-                ...userAccess.DELETE_DASHBOARD,
-                ...userAccess.EDIT_DASHBOARD,
-                ...userAccess.EXPORT_REPORTS,
-              ]}
-            >
-              <Dashboard config={container} />
+            <ProtectedRoute requiredRoles={[...userAccess.VIEW_DASHBOARD]}>
+              <Dashboard defaultConfig={container} />
             </ProtectedRoute>
           }
         />
