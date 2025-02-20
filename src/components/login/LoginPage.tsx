@@ -31,10 +31,11 @@ const LoginPage: React.FC = () => {
     userActions.userLogin({ email, password })
       .then((response) => {
         // Assume the API returns a token
-        const token = response.data;
+        const token = response.data.access_Token;
         if (token) {
           const user = decodeToken(token);
           localStorage.setItem("authToken", token);
+          localStorage.setItem("refreshToken", response?.data?.refresh_Token || "");
           navigate("/dashboard");
           // navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || [])
         }

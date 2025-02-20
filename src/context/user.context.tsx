@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useNavigate } from 'react-router';
+import { userActions } from '../actions/users';
 
 interface UserContextType {
   user: any;
@@ -25,6 +27,7 @@ interface UserProviderProps {
 
 const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<any>(null); // Initially, no user logged in
+  const navigate = useNavigate(); // Hook to navigate after logout
 
   const login = (user: any) => {
     setUser(user);
@@ -32,6 +35,12 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    // Clear the token or user session here
+    localStorage.removeItem('authToken');  // Assuming you're storing the token in localStorage
+    const refresh_Token: any = localStorage.getItem("refreshToken")
+    userActions.userLogout(refresh_Token)
+    // Redirect to the login page
+    navigate('/');
   };
 
   return (
