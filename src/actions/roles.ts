@@ -45,12 +45,7 @@ const updateRole = async (roleData: any) => {
     try {
         const updated: any = await axios.post(
             roles.editRoles,
-            {
-                name: roleData?.roleName,
-                description: roleData?.roleDescription,
-                composite: true,
-                clientRole: true,
-            },
+            roleData,
             {
                 headers: {
                     "Content-Type": "application/json",
