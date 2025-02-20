@@ -60,19 +60,19 @@ const Roles = () => {
     return rolesList.find((role: any) => role.id === id)
   }
 
-  const handleDeleteRole = async (index: number) => {
+  const handleDeleteRole = async (id: any) => {
     const userResponse = await openDialog(
-      `Do you really want to delete selected users`, // message
-      'Delete User' // title
+      `Do you really want to delete selected Role`, // message
+      'Delete Role' // title
     );
     if (userResponse) {
       try {
         showLoader()
-        await rolesActions.deletRole(rolesList[index].id)
+        await rolesActions.deletRole(findRoleById(id).id)
         fetchRoles()
         showSnackbar("Role deleted", "success");
       } catch (error) {
-        showSnackbar("Failed to create role", "error");
+        showSnackbar("Failed to delete role", "error");
       }
       finally {
         hideLoader()
