@@ -19,7 +19,7 @@ const getAllRoles = async () => {
 const createRole = async (roleData: any) => {
     try {
         const updated: any = await axios.post(
-            roles.editRoles,
+            roles.createRoles,
             {
                 name: roleData?.roleName,
                 description: roleData?.roleDescription,
