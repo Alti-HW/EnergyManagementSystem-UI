@@ -173,6 +173,28 @@ const userLogin = async (userData: any) => {
   }
 };
 
+const userLogout = async (refreshToken: string) => {
+  try {
+    const response = await axios.post(users.userLogout,
+      {
+        refreshToken
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    if (response) {
+      return response?.data || {};
+    } else {
+      new Error(" Failed");
+    }
+  } catch (err) {
+    console.error("Error fetching data", err);
+    throw err
+  }
+};
+
 
 
 export const userActions = {
@@ -185,5 +207,6 @@ export const userActions = {
   addRolesToUser,
   removeRolesFromUser,
   deleteAUser,
-  userLogin
+  userLogin,
+  userLogout
 };

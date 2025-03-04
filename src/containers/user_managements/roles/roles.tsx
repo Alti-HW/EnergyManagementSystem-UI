@@ -16,7 +16,7 @@ const Roles = () => {
   const [openModal, setOpenModal] = useState(false);
   const [roleAction, setRoleAction] = useState("");
   const [rolesList, setRolesList] = useState<any>([]);
-  const [activeIndex, setActiveIndex] = useState(-1);
+  const [activeIndex, setActiveIndex] = useState<any>("");
   const [permissions, setPermissions] = useState([])
   const { openDialog } = useConfirmationDialog();
   const { showLoader, hideLoader } = useLoader();
@@ -50,31 +50,37 @@ const Roles = () => {
     fetchPermissions()
   }, [])
 
-  const handleEditRole = (index: number) => {
-    setActiveIndex(index);
+  const handleEditRole = (id: string) => {
+    setActiveIndex(id);
     setRoleAction("edit");
     setOpenModal(true);
   };
-  const handleDeleteRole = async (index: number) => {
-    // rolesList[activeIndex]
+
+  const findRoleById = (id: string) => {
+    return rolesList.find((role: any) => role.id === id)
+  }
+
+  const handleDeleteRole = async (id: any) => {
     const userResponse = await openDialog(
-      `Do you really want to delete selected users`, // message
-      'Delete User' // title
+      `Do you really want to delete selected Role`, // message
+      'Delete Role' // title
     );
     if (userResponse) {
       try {
         showLoader()
-        await rolesActions.deletRole(rolesList[index].id)
+        await rolesActions.deletRole(findRoleById(id).id)
         fetchRoles()
         showSnackbar("Role deleted", "success");
       } catch (error) {
-        showSnackbar("Failed to create role", "error");
+        showSnackbar("Failed to delete role", "error");
       }
       finally {
         hideLoader()
       }
     }
   };
+
+
   return (
     <Box sx={{ p: 4, backgroundColor: "transparent" }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
@@ -107,7 +113,8 @@ const Roles = () => {
           open={true}
           onCancel={handleCloseModal}
           onRoleUpdate={refetchRoles}
-          role={rolesList[activeIndex]}
+          role={findRoleById(activeIndex)}
+          permissions={permissions}
         />
       )}
     </Box>

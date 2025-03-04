@@ -11,13 +11,15 @@ export const users = {
   addRolesToUsers: `${baseURL}/api/RollMapping/user`,
   removeRolesFromUser: `${baseURL}/api/RollMapping/user`,
   userLogin: `${baseURL}/api/auth/login`,
+  userLogout: `${baseURL}/api/auth/logout`,
   inviteUser: `${baseURL}/api/users/invite`
 };
 
 // Role API Endpoint
 export const roles = {
   allRoles: `${baseURL}/api/roles/list`,
-  editRoles: `${baseURL}/api/roles/create`,
+  createRoles: `${baseURL}/api/roles/create`,
+  editRoles: `${baseURL}/api/roles/update-rolepermissions`,
   deleteRole: `${baseURL}/api/roles/delete`,
   getPermissions: `${baseURL}/api/permissions/list`
 };

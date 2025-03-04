@@ -15,6 +15,7 @@ import UserProvider, { useUser } from "./context/user.context";
 import userAccess from "./authorization/user.access.constants";
 import config from "./configs/energyManagement.json";
 import { supportedRoutes } from "./constants/routes";
+import './authorization/axios.interceptor';
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRoles = [] }: any) {

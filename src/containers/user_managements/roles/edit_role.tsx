@@ -14,23 +14,28 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { permissionsMockData } from "./mockData";
 import rolesActions from "../../../actions/roles";
 import { useSnackbar } from "../../../components/ui_components/alert.ui";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { useUser } from "../../../context/user.context";
+import { useConfirmationDialog } from "../../../components/ui_components/confirmation_dialog.ui";
 
 interface ResponsiveDialogProps {
   open: boolean;
   onCancel: () => void;
   onRoleUpdate: () => void;
   role: any;
+  permissions: any
 }
 
 const EditRole: React.FC<ResponsiveDialogProps> = ({
   open,
   onCancel = () => { },
   onRoleUpdate = () => { },
+  permissions = [],
   role = {},
 }) => {
   const theme = useTheme();
@@ -39,14 +44,45 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
   const [roleData, setRoleData] = React.useState<any>({
     roleName: role?.name ?? "",
     roleDescription: role?.description ?? "",
+    compositeRoles: role?.compositeRoles || []
   });
   const { showSnackbar } = useSnackbar();
+  const { user, logout } = useUser()
+  const { openDialog } = useConfirmationDialog();
+  const [isUserRole, setisUserRole] = React.useState(false)
+
+  React.useEffect(() => {
+    if (role.id && user?.role?.id === role.id) {
+      sameUserRoleEdit()
+    }
+  }, [role])
+
+  const sameUserRoleEdit = async () => {
+    const userResponse = await openDialog(
+      `You are attempting to change your assigned role. This action will log you out of the system.
+      Do you wish to proceed?`, // message
+      'Edit Role ?' // title
+    );
+    if (!userResponse) {
+      onCancel()
+    } else {
+      setisUserRole(true)
+    }
+  }
 
 
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      let res = await rolesActions.updateRole(roleData)
+      const data = {
+        "name": roleData.roleName,
+        "description": roleData.roleDescription,
+        compositeRoles: roleData?.compositeRoles
+      }
+      let res = await rolesActions.updateRole(data)
+      if (isUserRole) {
+        return logout()
+      }
       onRoleUpdate();
       showSnackbar(res.message, "success");
       onCancel()
@@ -56,6 +92,7 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
       setIsLoading(false);
     }
   };
+
 
   return (
     <Dialog
@@ -130,15 +167,33 @@ const EditRole: React.FC<ResponsiveDialogProps> = ({
             </Typography>
             <Box sx={{ maxHeight: "300px", overflowY: "auto", width: "100%", mt: "-8px" }}>
               <FormGroup>
-                {permissionsMockData.map(elm =>
-                  <FormControlLabel
-                    key={elm}
-                    control={
-                      <Checkbox name={elm} />
-                    }
-                    label={elm}
-                  />
-                )}
+                {permissions.map((elm: any) => (
+                  <Box display="flex" gap="2" alignItems="center">
+                    <FormControlLabel
+                      key={elm.id}
+                      control={
+                        <Checkbox
+                          name={elm.name}
+                          checked={roleData?.compositeRoles?.some((per: any) => per.id === elm.id)}
+                          onChange={(e) => {
+                            const newPermissions = e.target.checked
+                              ? [...roleData.compositeRoles, elm]
+                              : roleData.compositeRoles.filter(
+                                (perm: any) => perm.id !== elm.id
+                              );
+                            setRoleData({ ...roleData, compositeRoles: newPermissions });
+                          }}
+                        />
+                      }
+                      label={<Typography variant="caption" sx={{ userSelect: "none" }}>{elm.name}</Typography>}
+                    />
+                    <Tooltip title={elm.description || elm?.name || ""}>
+                      <IconButton>
+                        <InfoOutlinedIcon sx={{ color: "#b0b0b0", fontSize: "18px" }} />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                ))}
               </FormGroup>
             </Box>
 

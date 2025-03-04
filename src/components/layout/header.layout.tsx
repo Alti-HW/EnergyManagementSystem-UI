@@ -14,19 +14,22 @@ import { decodeToken } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import { useUser } from '../../context/user.context';
 import userAccess from '../../authorization/user.access.constants';
+import { userActions } from '../../actions/users';
 
 const settings = ['Profile', 'Logout'];
 
 function ResponsiveAppBar() {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const { login, logout, user } = useUser();
-    const navigate = useNavigate(); // Hook to navigate after logout
 
     React.useEffect(() => {
         const token = localStorage.getItem("authToken")
         if (token) {
             const pr = decodeToken(token);
-            login(pr || {});
+            userActions.getAssignedRolesForUser(pr.sub).then((res: any) => {
+                const roles = res?.data?.clientMappings?.EMS?.mappings[0] || {}
+                login({ ...pr, role: roles });
+            })
         }
     }, []);
 
@@ -46,10 +49,6 @@ function ResponsiveAppBar() {
 
     const logoutt = () => {
         logout()
-        // Clear the token or user session here
-        localStorage.removeItem('authToken');  // Assuming you're storing the token in localStorage
-        // Redirect to the login page
-        navigate('/');
     };
 
     return (

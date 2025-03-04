@@ -161,12 +161,13 @@ const RolesTable = (props: any) => {
                       }}
                     />
                   </CustomWidthTooltip>
-                  <FeatureAccessControl requiredRoles={userAccess.ADD_ROLE}>
+                  <FeatureAccessControl requiredRoles={[...userAccess.DELETE_ROLE,...userAccess.EDIT_ROLE]}>
                     {!viewMode && ( // Only show the menu if viewMode is false
                       <PopoverWithMenu
                         onRoleEdit={onRoleEdit}
                         onRoleDelete={onRoleDelete}
                         index={index}
+                        id={role.id}
                       />
                     )}
                   </FeatureAccessControl>
