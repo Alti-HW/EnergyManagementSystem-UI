@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Bar, Doughnut, Line } from "react-chartjs-2"; // Import the Doughnut chart type from react-chartjs-2
 import {
   Chart as ChartJS,
@@ -13,7 +13,7 @@ import {
   Title,
   TimeScale,
 } from "chart.js";
-import { Box, Card } from "@mui/material";
+import { Box } from "@mui/material";
 import { getBarChartData, getBarChartOptions } from "../configs/BarChartConfig";
 import {
   getLineChartData,
@@ -23,7 +23,6 @@ import {
   getDoughnutChartData,
   getDoughnutChartOptions,
 } from "../configs/DoughnutChartConfig";
-import FullView from "./FullView";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import "chartjs-adapter-date-fns";
 // Register required chart.js components
@@ -40,8 +39,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  ChartDataLabels
-  // TimeScale
+  ChartDataLabels,
+  TimeScale
 );
 
 const RChart = ({
@@ -60,16 +59,34 @@ const RChart = ({
   scrollContainerRef,
   enableScrollInFullview,
 }: any) => {
+  const chartRef = useRef<any | null>(null);
   const onScroll = () => {
     if (enableScrollInFullview) {
       handleOnScroll();
     }
   };
+
+  useEffect(() => {
+    const chartInstance = chartRef?.current;
+    console.log("chartInstance", chartInstance);
+    return () => {
+      console.log(
+        "chartInstance from unmount",
+        chartInstance,
+        chartInstance.destroy
+      );
+      if (chartInstance) {
+        chartInstance.destroy(); // Clean up chart instance when component unmounts
+      }
+    };
+  }, []);
+
   const renderChart = () => {
     switch (type) {
       case "bar":
         return (
           <Bar
+            ref={chartRef}
             data={getBarChartData(data, xAxisLabel, color)}
             options={getBarChartOptions(
               xAxisLabel,
@@ -85,6 +102,7 @@ const RChart = ({
       case "line":
         return (
           <Line
+            ref={chartRef}
             data={getLineChartData(data, xAxisLabel, color)}
             options={getLineChartOptions(
               xAxisLabel,
@@ -100,6 +118,7 @@ const RChart = ({
       case "doughnut":
         return (
           <Doughnut
+            ref={chartRef}
             data={getDoughnutChartData(data, xAxisLabel)}
             options={getDoughnutChartOptions(
               fullView && enableScrollInFullview,
@@ -115,19 +134,11 @@ const RChart = ({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: type === "doughnut" ? 300 : 300,
+        height: type === "doughnut" ? 300 : "300px",
+        width: "100%",
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "400px",
-          ...(type === "doughnut" ? { width: "66%", height: "100%" } : {}),
-          maxHeight: "400px",
-        }}
-      >
-        {renderChart()}
-      </div>
+      {renderChart()}
     </div>
   ) : enableScrollInFullview ? (
     <Box

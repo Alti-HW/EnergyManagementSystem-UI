@@ -61,17 +61,10 @@ import userAccess from "../authorization/user.access.constants";
 
 export const supportedRoutes = [
   {
-    path: "/userManagement/users",
-    label: "User Management",
-    Icon: SupervisedUserCircleIcon,
-    permissions: [...userAccess.VIEW_ROLES, ...userAccess.VIEW_USERS],
-    type: "userManagement",
-  },
-  {
     path: "/dashboard",
     label: "Dashboard",
     Icon: DashboardIcon,
-    permissions: [],
+    permissions: [...userAccess.VIEW_DASHBOARD],
     type: "dashboard",
   },
   {
@@ -101,5 +94,12 @@ export const supportedRoutes = [
     Icon: PersonIcon,
     permissions: [],
     type: "profile",
+  },
+  {
+    path: "/userManagement/users",
+    label: "User Management",
+    Icon: SupervisedUserCircleIcon,
+    permissions: [...userAccess.VIEW_ROLES, ...userAccess.VIEW_USERS],
+    type: "userManagement",
   },
 ];

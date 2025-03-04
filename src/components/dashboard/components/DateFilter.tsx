@@ -21,6 +21,7 @@ const DateFilter = ({
     >
       {dateOptions?.map((filter: any) => (
         <Chip
+          key={filter}
           sx={{ cursor: "pointer" }}
           label={filter}
           variant={filter === selectedDateFilter ? "filled" : "outlined"}

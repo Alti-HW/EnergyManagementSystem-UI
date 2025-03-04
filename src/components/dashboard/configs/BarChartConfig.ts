@@ -49,7 +49,7 @@ export const getBarChartOptions = (
           callback: function (value: any, index: any, context: any) {
             return xAxisDataFormatter
               ? getFormatter(xAxisDataFormatter, data.x[index])
-              : `${data.x[index].toLocaleString()}`;
+              : `${data?.x[index]?.toLocaleString()}`;
           },
         },
         title: {
@@ -75,7 +75,7 @@ export const getBarChartOptions = (
           callback: function (value: any) {
             return yAxisDataFormatter
               ? getFormatter(yAxisDataFormatter, value)
-              : `${value.toLocaleString()}`;
+              : `${value?.toLocaleString()}`;
           },
         },
         title: {
