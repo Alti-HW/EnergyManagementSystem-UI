@@ -18,6 +18,7 @@ export const users = {
 // Role API Endpoint
 export const roles = {
   allRoles: `${baseURL}/api/roles/list`,
+  createRoles: `${baseURL}/api/roles/create`,
   editRoles: `${baseURL}/api/roles/update-rolepermissions`,
   deleteRole: `${baseURL}/api/roles/delete`,
   getPermissions: `${baseURL}/api/permissions/list`
