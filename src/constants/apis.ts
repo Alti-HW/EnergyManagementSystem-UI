@@ -1,6 +1,6 @@
 // Base URL defined dynamically, can be set via environment variables or defaults
 const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000"; // Default to localhost if not set
-const baseURL2 = process.env.REACT_APP_API_BASE_URL || "http://localhost:5050";
+const baseURL2 = process.env.REACT_APP_API_BASE_URL || "http://localhost:5056";
 
 // Users API Endpoints
 export const users = {
@@ -12,7 +12,7 @@ export const users = {
   removeRolesFromUser: `${baseURL}/api/RollMapping/user`,
   userLogin: `${baseURL}/api/auth/login`,
   userLogout: `${baseURL}/api/auth/logout`,
-  inviteUser: `${baseURL}/api/users/invite`
+  inviteUser: `${baseURL}/api/users/invite`,
 };
 
 // Role API Endpoint
@@ -21,13 +21,21 @@ export const roles = {
   createRoles: `${baseURL}/api/roles/create`,
   editRoles: `${baseURL}/api/roles/update-rolepermissions`,
   deleteRole: `${baseURL}/api/roles/delete`,
-  getPermissions: `${baseURL}/api/permissions/list`
+  getPermissions: `${baseURL}/api/permissions/list`,
 };
 
 // Building Data API Endpoints
 export const buildingsDataURL = `${baseURL2}/api/Energy/energy-consumption`;
 export const buidlingsAndFloorsNamesURL = `${baseURL2}/api/Building/GetAllBuildingsWithFloors`;
 export const buildingOccupancyURL = `${baseURL2}/api/Energy/GetMetrics`;
+
+export const alerts = {
+  allRules: `${baseURL2}/api/alerts/get_alert_rules`,
+  createRule: `${baseURL2}/api/alerts/create_alert_rule`,
+  updateRule: `${baseURL2}/api/alerts/update_alert_rule`,
+  deleteRule: `${baseURL2}/api/alerts/delete_alert_rule`,
+  allNotifications: `${baseURL2}/api/alerts/get_alerts`,
+};
 
 // POST Request Headers
 export const POST_REQ_HEADERS = {
