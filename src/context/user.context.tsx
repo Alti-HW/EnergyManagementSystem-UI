@@ -36,7 +36,7 @@ const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const logout = () => {
     setUser(null);
     // Clear the token or user session here
-    localStorage.removeItem('authToken');  // Assuming you're storing the token in localStorage
+    localStorage.clear();
     const refresh_Token: any = localStorage.getItem("refreshToken")
     userActions.userLogout(refresh_Token)
     // Redirect to the login page
