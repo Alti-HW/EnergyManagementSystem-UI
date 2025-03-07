@@ -14,7 +14,13 @@
               "url": "http://localhost:5050/api/Energy/energy-consumption",
               "userFor": "chartData",
               "method": "POST",
-              "dataPathKey": ["floorConsumptions", "floorDetails"]
+              "dataPathKey": ["floorConsumptions", "floorDetails"],
+              "payload": {
+                "startDate": "string",
+                "endDate": "string",
+                "buildingId": 1,
+                "floorId": 1
+              }
             },
             {
               "url": "http://localhost:5050/api/Building/GetAllBuildingsWithFloors",
@@ -36,17 +42,17 @@
           "filters": [
             {
               "filterType": "dropdown",
-              "filterValues": [],
               "showFilter": "true",
               "filterLabel": "Building",
               "filterDataValueKey": "buildingId",
               "filterDataLabelKey": "name",
               "filterId": "buildingId",
-              "dataPath": ""
+              "dataPath": "",
+              "isParentFilter": "true"
             },
             {
               "filterType": "dropdown",
-              "filterValues": [],
+
               "showFilter": "true",
               "filterLabel": "Floor",
               "filterDataValueKey": "floorId",
@@ -89,12 +95,11 @@
             "showFilter": "true"
           },
           "exportOptions": ["PNG", "JPG", "PDF"],
-          "enableScrollbar": "false",
           "color": "#a26cb6",
           "enableDetailedView": "true",
           "detailedViewConfig": {
             "dataApi": "http://localhost:5050/api/Energy/energy-consumption",
-            "dataApiReqFormat": {
+            "payload": {
               "startDate": "date",
               "endDate": "date"
             },
@@ -118,35 +123,93 @@
         {
           "type": "chart",
           "chartType": "line",
-          "title": "Energy usage of all buildings test",
+          "title": "Building wise energy consumption",
           "dataApi": [
             {
               "url": "http://localhost:5050/api/Energy/energy-consumption",
               "userFor": "chartData",
-              "method": "POST"
+              "dataPathKey": ["floorConsumptions"],
+              "method": "POST",
+              "payload": {
+                "startDate": "string",
+                "endDate": "string",
+                "buildingId": 1
+              }
             }
           ],
           "dataApiReqFormat": {
             "startDate": "date",
             "endDate": "date"
           },
-          "xAxisKey": "buildingName",
-          "xAxisLabel": "Building name",
-          "yAxisKey": "totalEnergyConsumedKwh",
+          "xAxisKey": "floorNumber",
+          "xAxisLabel": "Floor Number",
+          "yAxisKey": "energyConsumedKwh",
           "yAxisLabel": "Units consumed",
           "yAxisDataFormatter": "number",
-          "xAxisDataFormatter": "string",
+          "xAxisDataFormatter": "",
           "apiMethod": "POST",
           "dateFilter": {
             "filterType": "date",
             "filterValues": ["1D", "1W", "1M", "3M", "6M", "1Y", "3Y"],
             "showFilter": "true"
           },
+          "filters": [
+            {
+              "filterType": "dropdown",
+              "showFilter": "true",
+              "filterValues": [
+                {
+                  "label": "Building 1",
+                  "value": 1
+                },
+                {
+                  "label": "Building 2",
+                  "value": 2
+                },
+                {
+                  "label": "Building 3",
+                  "value": 3
+                },
+                {
+                  "label": "Building 4",
+                  "value": 4
+                },
+                {
+                  "label": "Building 5",
+                  "value": 5
+                },
+                {
+                  "label": "Building 6",
+                  "value": 6
+                },
+                {
+                  "label": "Building 7",
+                  "value": 7
+                },
+                {
+                  "label": "Building 8",
+                  "value": 8
+                },
+                {
+                  "label": "Building 9",
+                  "value": 9
+                },
+                {
+                  "label": "Building 10",
+                  "value": 10
+                }
+              ],
+
+              "filterLabel": "Building",
+              "filterId": "buildingId",
+              "dataPath": "",
+              "isParentFilter": "true"
+            }
+          ],
           "exportOptions": ["PNG", "JPG", "PDF"],
           "enableScrollbar": "false",
           "color": "#a26cb6",
-          "enableDetailedView": "true",
-
+          "enableDetailedView": "false",
           "enableScrollInFullview": "false",
           "width": "100%"
         },
@@ -175,11 +238,7 @@
           },
           "exportOptions": ["PNG", "JPG", "PDF"]
         },
-
-        {
-          "type": "alarms",
-          "title": "Alarms"
-        }
+        { "type": "alarms" }
       ]
     },
     {

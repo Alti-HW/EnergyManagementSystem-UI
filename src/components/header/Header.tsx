@@ -74,6 +74,7 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
     );
   };
 
+  console.log(menuOptions);
   return (
     <>
       {isMobile && (

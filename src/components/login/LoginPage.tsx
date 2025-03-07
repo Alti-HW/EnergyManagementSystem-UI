@@ -16,7 +16,11 @@ const LoginPage: React.FC = () => {
   useEffect(() => {
     const isAuthenticated = localStorage.getItem("authToken") !== null;
     if (isAuthenticated) {
-      navigate("/dashboard");
+      const token = localStorage.getItem("authToken");
+      const user = decodeToken(token);
+      // navigate("/dashboard");
+      navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || []);
+      // navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || [])
     }
   }, []);
 

@@ -5,6 +5,9 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Ar
 import { ChartHeadingProps } from "../types";
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
+import CloseIcon from "@mui/icons-material/Close";
+import FeatureAccessControl from "../../../authorization/feature.access.control";
+import userAccess from "../../../authorization/user.access.constants";
 
 const ChartHeading = ({
   title,
@@ -12,6 +15,9 @@ const ChartHeading = ({
   FilterComponent,
   chartRef,
   exportOptions = [],
+  enalbeEditDashboard,
+  onComponentDelete = () => {},
+  componentIndex,
 }: ChartHeadingProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [exportAnchorEl, setExportAnchorEl] = useState<null | HTMLElement>(
@@ -183,38 +189,58 @@ const ChartHeading = ({
       >
         {title}
       </Typography>
-      <Box display="flex" flexWrap="nowrap" gap="10px">
+      {enalbeEditDashboard ? (
         <IconButton
           size="small"
           edge="start"
           color="inherit"
           aria-label="expand chart"
-          onClick={onExpandIconClick}
+          onClick={() => {
+            console.log("called once");
+            onComponentDelete(componentIndex);
+          }}
           sx={{
             height: "16px",
             width: "16px",
             marginRight: "5px",
           }}
         >
-          <CropFreeIcon />
+          <CloseIcon />
         </IconButton>
-
-        <IconButton
-          size="small"
-          edge="start"
-          color="inherit"
-          aria-label="open config menu"
-          onClick={handleConfigIconClick}
-          sx={{
-            height: "16px",
-            width: "16px",
-            marginRight: "5px",
-          }}
-        >
-          <MoreVertIcon />
-        </IconButton>
-      </Box>
-
+      ) : (
+        <Box display="flex" flexWrap="nowrap" gap="10px">
+          <IconButton
+            size="small"
+            edge="start"
+            color="inherit"
+            aria-label="expand chart"
+            onClick={onExpandIconClick}
+            sx={{
+              height: "16px",
+              width: "16px",
+              marginRight: "5px",
+            }}
+          >
+            <CropFreeIcon />
+          </IconButton>
+          <FeatureAccessControl requiredRoles={[...userAccess.EXPORT_REPORTS]}>
+            <IconButton
+              size="small"
+              edge="start"
+              color="inherit"
+              aria-label="open config menu"
+              onClick={handleConfigIconClick}
+              sx={{
+                height: "16px",
+                width: "16px",
+                marginRight: "5px",
+              }}
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </FeatureAccessControl>
+        </Box>
+      )}
       {/* Main Menu */}
       <Menu
         anchorEl={anchorEl}
@@ -250,7 +276,7 @@ const ChartHeading = ({
           }}
         >
           {exportOptions?.map((option: any) => (
-            <MenuItem onClick={() => download(option)}>
+            <MenuItem onClick={() => download(option)} key={option}>
               <Typography variant="body2">{option}</Typography>
             </MenuItem>
           ))}
