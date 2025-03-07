@@ -28,6 +28,10 @@ const userAccess = {
     "Delete Dashboard",
     "Edit Dashboard",
   ],
+  ADD_ALERT_RULE: ["admin"],
+  EDIT_ALERT_RULE: ["admin"],
+  DELETE_ALERT_RULE: ["admin"],
+  DELETE_ALERT: ["admin"],
 };
 
 export default userAccess;

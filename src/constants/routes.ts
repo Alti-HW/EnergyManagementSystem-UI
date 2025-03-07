@@ -75,7 +75,7 @@ export const supportedRoutes = [
     type: "dashboard",
   },
   {
-    path: "/alerts/list",
+    path: "/alerts/rules",
     label: "Alerts",
     Icon: AddAlertIcon,
     permissions: [],

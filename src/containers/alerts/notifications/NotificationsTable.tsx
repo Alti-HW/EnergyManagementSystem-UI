@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, MouseEvent } from "react";
 import {
   Table,
   TableBody,
@@ -8,22 +8,12 @@ import {
   TableRow,
   Paper,
   Typography,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
-  Card,
-  CardContent,
-  Grid,
-  Stack,
   TableFooter,
   TablePagination,
   Checkbox,
   Box,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import dateNtimeUtils from "../../../utils/datentime.utils";
 import CircleIcon from "@mui/icons-material/Circle";
 interface NotificationsHistoryTableProps {
@@ -32,6 +22,8 @@ interface NotificationsHistoryTableProps {
   onSelectAll: (e: ChangeEvent<HTMLInputElement>) => void;
   selectedRows: string[];
   selectedAll: boolean;
+  onNotificationResolve: (e: MouseEvent<HTMLButtonElement>, id: string) => void;
+  onNotificatioDelete: (e: MouseEvent<HTMLButtonElement>, id: string) => void;
 }
 
 const NotificationsHistoryTable = ({
@@ -40,21 +32,11 @@ const NotificationsHistoryTable = ({
   onSelectAll,
   selectedRows,
   selectedAll,
+  onNotificationResolve: onRuleResolve,
+  onNotificatioDelete: onRuleDelete,
 }: NotificationsHistoryTableProps) => {
-  const [showDetails, setShowDetails] = useState(false);
-  const [detailsItemIndex, setDetailsItemIndex] = useState(-1);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handleNotificationsDetails = (index: number) => {
-    setShowDetails(true);
-    setDetailsItemIndex(index);
-  };
-
-  const handleNotificationsDetailsClose = () => {
-    setShowDetails(false);
-    setDetailsItemIndex(-1);
-  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -113,7 +95,7 @@ const NotificationsHistoryTable = ({
                 <TableRow
                   key={notification.id}
                   onClick={() => {
-                    handleNotificationsDetails(index);
+                    // handleNotificationsDetails(index);
                   }}
                   sx={{ cursor: "pointer" }}
                 >
@@ -140,7 +122,7 @@ const NotificationsHistoryTable = ({
                           width: "12px",
                           mr: 0.5,
                           color:
-                            notification.status === "Resolved"
+                            notification?.status?.toLowerCase() === "resolved"
                               ? "green"
                               : "red",
                         }}
@@ -155,7 +137,7 @@ const NotificationsHistoryTable = ({
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: "flex", gap: "8px" }}>
-                      {notification.status !== "Resolved" && (
+                      {notification?.status?.toLowerCase() !== "resolved" && (
                         <Button
                           sx={{
                             border: 1,
@@ -164,6 +146,10 @@ const NotificationsHistoryTable = ({
                             py: 1,
                             height: "30px",
                             minWidth: "fit-content",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRuleResolve(e, notification?.id);
                           }}
                         >
                           Resolve
@@ -177,6 +163,10 @@ const NotificationsHistoryTable = ({
                           py: 1,
                           height: "30px",
                           minWidth: "fit-content",
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRuleDelete(e, notification?.id);
                         }}
                       >
                         Delete
@@ -213,29 +203,6 @@ const NotificationsHistoryTable = ({
           </TableFooter>
         </Table>
       </TableContainer>
-      <Dialog
-        open={showDetails}
-        PaperProps={{
-          sx: { minWidth: "500px" },
-        }}
-        onClose={handleNotificationsDetailsClose}
-      >
-        <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography sx={{ textAlign: "center", flex: 1 }}>Details</Typography>
-          <IconButton
-            sx={{
-              height: "fit-content",
-              border: "1px solid #b7adad",
-              borderRadius: "50%",
-              padding: "4px",
-            }}
-            onClick={handleNotificationsDetailsClose}
-          >
-            <CloseIcon sx={{ width: "16px", height: "16px", color: "#000" }} />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent></DialogContent>
-      </Dialog>
     </>
   );
 };

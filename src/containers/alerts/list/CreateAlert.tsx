@@ -26,6 +26,7 @@ type AlertData = {
   description?: string;
   expression: string;
   threshold: string;
+  duration: string;
   enableInAppNotifications: boolean;
   enableEmailNotifications: boolean;
   enableSlackNotifications: boolean;
@@ -37,8 +38,10 @@ type CreateAlertProps = {
 };
 const severityLevels = [
   { label: "Info", value: "info" },
+  { label: "Low", value: "low" },
   { label: "Warning", value: "warning" },
   { label: "Critical", value: "critical" },
+  { label: "High", value: "high" },
 ];
 
 const expressions = [
@@ -49,20 +52,24 @@ const expressions = [
   { label: "Less than or equals to", value: "<=" },
 ];
 const metrics = [
-  { label: "Energy Consumed", value: "energy_consumed_kwh" },
-  { label: "Peak load", value: "peak_load_kw" },
-  { label: "Average temperature", value: "avg_temperature_c" },
-  { label: "CO2 Emission", value: "co2_emissions_kg" },
+  { label: "Energy Consumed", value: "energy_consumption_energy_consumed_kwh" },
+  { label: "Peak load", value: "energy_consumption_peak_load_kw" },
+  {
+    label: "Average temperature",
+    value: "energy_consumption_avg_temperature_c",
+  },
+  { label: "CO2 Emission", value: "energy_consumption_co2_emissions_kg" },
 ];
 
 const CreateAlert = ({ onCancel, onRuleCreate, rule }: CreateAlertProps) => {
   const [alertData, setAlertData] = useState<AlertData>({
-    name: rule ? rule.name : "",
+    name: rule ? rule.alert : "",
     description: rule ? rule.description : "",
     metric: rule ? rule.metric : "",
     severity: rule ? rule?.severity?.toLowerCase() : "",
     expression: rule ? rule?.expression : "",
     threshold: rule ? rule.threshold : "",
+    duration: rule ? rule.duration : "",
     enableInAppNotifications: false,
     enableEmailNotifications: false,
     enableSlackNotifications: false,
@@ -85,18 +92,23 @@ const CreateAlert = ({ onCancel, onRuleCreate, rule }: CreateAlertProps) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const payload = {
-      name: alertData.name,
+      alert: alertData.name,
       description: alertData.description,
-      metric: alertData.metric,
+      // metric: alertData.name,
       severity: alertData.severity,
-      threshold: alertData.threshold,
-      expression: alertData.expression,
-      duration: "10m",
+      // threshold: alertData.threshold,
+      expr: `${alertData.metric} ${alertData.expression} ${alertData.threshold}`,
+      // for: "10m",
+      duration: alertData.duration,
+      // isEnabled: true,
+      labels: {},
+      annotations: {},
     };
     try {
       showLoader();
       let response;
-      if (rule) response = await updateRule({ ...rule, ...payload }, rule.id);
+      if (rule)
+        response = await updateRule({ ...rule, ...payload }, rule.alert);
       else response = await createRule(payload);
       if (response) {
         showSnackbar(response?.message, "success");
@@ -305,8 +317,23 @@ const CreateAlert = ({ onCancel, onRuleCreate, rule }: CreateAlertProps) => {
               </Select>
             </FormControl>
           </Box>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Typography variant="caption" sx={{ width: "30%" }}>
+              Duration
+            </Typography>
+            <TextField
+              fullWidth
+              label="Threshold"
+              name="duration"
+              variant="outlined"
+              required
+              value={alertData.duration}
+              onChange={handleInputChange}
+              helperText={"Please enter duration in 2m, 5m, 1h, 1d format"}
+            />
+          </Box>
         </Card>
-        <Card sx={{ backgroundColor: "#F6F7FB", padding: "8px 16px", mt: 2 }}>
+        {/* <Card sx={{ backgroundColor: "#F6F7FB", padding: "8px 16px", mt: 2 }}>
           <Typography
             variant="caption"
             sx={{ fontSize: "14px", mb: 2, display: "inline-block" }}
@@ -390,7 +417,7 @@ const CreateAlert = ({ onCancel, onRuleCreate, rule }: CreateAlertProps) => {
               )}
             </Box>
           </Box>
-        </Card>
+        </Card> */}
         {/* Submit Button */}
         <Box
           sx={{

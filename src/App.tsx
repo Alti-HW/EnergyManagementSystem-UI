@@ -86,7 +86,7 @@ const routeMapper = (container: any) => {
     case "alerts":
       return (
         <Route element={<AlertsLayout />}>
-          <Route path="/alerts/list" index element={<AlertsList />} />
+          <Route path="/alerts/rules" index element={<AlertsList />} />
           <Route path="/alerts/history" element={<Notifications />} />
         </Route>
       );

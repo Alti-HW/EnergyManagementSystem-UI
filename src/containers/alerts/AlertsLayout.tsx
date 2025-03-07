@@ -7,7 +7,7 @@ import { Link, Outlet, useLocation } from "react-router";
 const AlertsLayout = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(
-    location?.pathname?.includes("list") ? "list" : "history"
+    location?.pathname?.includes("rules") ? "rules" : "history"
   );
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -35,17 +35,17 @@ const AlertsLayout = () => {
         {/* <FeatureAccessControl requiredRoles={userAccess.VIEW_USERS}> */}
         <Tab
           sx={{ fontSize: "14px", padding: 0, textTransform: "none" }}
-          value="list"
+          value="rules"
           label="Rules"
           component={Link}
-          to="/alerts/list"
+          to="/alerts/rules"
         />
         {/* </FeatureAccessControl> */}
         {/* <FeatureAccessControl requiredRoles={userAccess.VIEW_ROLES}> */}
         <Tab
           sx={{ fontSize: "14px", textTransform: "none" }}
           value="history"
-          label="Notifications history"
+          label="Alerts history"
           component={Link}
           to="/alerts/history"
         />

@@ -6,50 +6,24 @@ import RulesTable from "./RulesTable";
 import SearchBar from "../../user_managements/users/search_bar";
 import { useConfirmationDialog } from "../../../components/ui_components/confirmation_dialog.ui";
 import { deleteRule, getAllRules, updateRule } from "../../../actions/alerts";
-import { useSnackbar } from "../../../components/ui_components/alert.ui";
 import { useLoader } from "../../../components/ui_components/full_page_loader.ui";
-import RulesTabs from "./RulesTabs";
-
-const RulesList = [
-  {
-    id: 1,
-    name: "High CPU usage",
-    severity: "High",
-    channel: "In app",
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Temperature",
-    severity: "Low",
-    channel: "Email",
-    status: "Inactive",
-  },
-  {
-    id: 3,
-    name: "Low Memory",
-    severity: "Medium",
-    channel: "Slack",
-    status: "Inactive",
-  },
-];
+import FeatureAccessControl from "../../../authorization/feature.access.control";
+import userAccess from "../../../authorization/user.access.constants";
 
 const AlertsList = () => {
   const [openCreateRuleModal, setOpenCreateRuleModal] = useState(false);
   const [allRules, setAllRules] = useState<any>([]);
   const [rules, setRules] = useState<any>([]);
   const [activeRule, setActiveRule] = useState();
-  const [openDeleteRuleModal, setOpenDeleteRuleModal] = useState(false);
   const { openDialog } = useConfirmationDialog();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selecteAllRows, setSelectAllRows] = useState(false);
-  const { showSnackbar } = useSnackbar();
   const { showLoader, hideLoader } = useLoader();
 
   const fetchRules = async () => {
     return getAllRules().then((response: any) => {
-      setAllRules(response?.data);
-      setRules(response?.data);
+      setAllRules(response);
+      setRules(response);
     });
   };
 
@@ -60,8 +34,8 @@ const AlertsList = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const text = event.target.value;
     if (allRules?.length > 0) {
-      let result = allRules.filter(({ name }: any) => {
-        return name.toLowerCase().includes(text.toLowerCase());
+      let result = allRules.filter(({ alert }: any) => {
+        return alert.toLowerCase().includes(text.toLowerCase());
       });
       setRules(result);
     }
@@ -70,13 +44,13 @@ const AlertsList = () => {
     e: MouseEvent<HTMLButtonElement>,
     ruleId?: string
   ) => {
-    const rule = rules.find((rule: any) => rule.id === ruleId);
+    const rule = rules.find((rule: any) => rule.alert === ruleId);
     if (rule) {
       setActiveRule(rule);
     }
     const userResponse = await openDialog(
       `Do you really want to delete ${
-        rule ? `${rule.name} Rule` : "all Rules"
+        rule ? `${rule.alert} Rule` : "all Rules"
       }`, // message
       "Delete Rule" // title
     );
@@ -90,7 +64,7 @@ const AlertsList = () => {
   };
   const handleRuleEdit = (e: MouseEvent<HTMLButtonElement>, ruleId: string) => {
     // setActiveRule(rules[index]);
-    const rule = rules.find((rule: any) => rule.id === ruleId);
+    const rule = rules.find((rule: any) => rule.alert === ruleId);
     setActiveRule(rule);
     setOpenCreateRuleModal(true);
   };
@@ -110,7 +84,7 @@ const AlertsList = () => {
   const handleAllSelect = (event: ChangeEvent<HTMLInputElement>) => {
     setSelectAllRows(event?.target.checked);
     if (event?.target.checked) {
-      let ids = rules?.map(({ id }: { id: string }) => id);
+      let ids = rules?.map(({ alert }: { alert: string }) => alert);
       setSelectedRows([...ids]);
     } else {
       setSelectedRows([]);
@@ -151,23 +125,27 @@ const AlertsList = () => {
           Rules {rules.length}
         </Typography>
         <SearchBar onChange={handleSearchChange} />
-        <Button
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={() => setOpenCreateRuleModal(true)}
-          sx={{ ml: 1 }}
-        >
-          Add New Rule
-        </Button>
-        <Button
-          variant="outlined"
-          color="warning"
-          sx={{
-            display: selectedRows?.length > 0 ? "block" : "none",
-          }}
-          onClick={handleRuleDelete}
-        >
-          Delete
-        </Button>
+        <FeatureAccessControl requiredRoles={[...userAccess.ADD_ALERT_RULE]}>
+          <Button
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={() => setOpenCreateRuleModal(true)}
+            sx={{ ml: 1 }}
+          >
+            Add New Rule
+          </Button>
+        </FeatureAccessControl>
+        <FeatureAccessControl requiredRoles={[...userAccess.DELETE_ALERT_RULE]}>
+          <Button
+            variant="outlined"
+            color="warning"
+            sx={{
+              display: selectedRows?.length > 0 ? "block" : "none",
+            }}
+            onClick={handleRuleDelete}
+          >
+            {selectedRows?.length > 1 ? "Delete all" : "Delete"}
+          </Button>
+        </FeatureAccessControl>
       </Box>
       <RulesTable
         rules={rules}

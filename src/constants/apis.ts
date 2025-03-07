@@ -1,6 +1,6 @@
 // Base URL defined dynamically, can be set via environment variables or defaults
 const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000"; // Default to localhost if not set
-const baseURL2 = process.env.REACT_APP_API_BASE_URL || "http://localhost:5056";
+const baseURL2 = process.env.REACT_APP_API_BASE_URL || "http://localhost:5057";
 
 // Users API Endpoints
 export const users = {
@@ -30,11 +30,13 @@ export const buidlingsAndFloorsNamesURL = `${baseURL2}/api/Building/GetAllBuildi
 export const buildingOccupancyURL = `${baseURL2}/api/Energy/GetMetrics`;
 
 export const alerts = {
-  allRules: `${baseURL2}/api/alerts/get_alert_rules`,
-  createRule: `${baseURL2}/api/alerts/create_alert_rule`,
-  updateRule: `${baseURL2}/api/alerts/update_alert_rule`,
+  allRules: `${baseURL2}/api/alerts/rules`,
+  createRule: `${baseURL2}/api/alerts/rules`,
+  updateRule: `${baseURL2}/api/alerts/rules`,
   deleteRule: `${baseURL2}/api/alerts/delete_alert_rule`,
   allNotifications: `${baseURL2}/api/alerts/get_alerts`,
+  resolveNotification: `${baseURL2}/api/alerts/resolve_alert`,
+  deleteNotification: `${baseURL2}/api/alerts/delete_alert`,
 };
 
 // POST Request Headers

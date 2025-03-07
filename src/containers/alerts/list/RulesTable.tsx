@@ -12,7 +12,6 @@ import {
   TableFooter,
   TablePagination,
   Checkbox,
-  Switch,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -22,11 +21,13 @@ import {
 } from "@mui/material";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import dateNtimeUtils from "../../../utils/datentime.utils";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import InfoIcon from "@mui/icons-material/Info";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import CloseIcon from "@mui/icons-material/Close";
+import FeatureAccessControl from "../../../authorization/feature.access.control";
+import userAccess from "../../../authorization/user.access.constants";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 interface RulesTableProps {
   rules: any[];
@@ -56,6 +57,13 @@ const SeverityMapping: SeverityMappingProps = {
     ),
     color: "rgb(2, 136, 209)",
   },
+  low: {
+    label: "Low",
+    Icon: (
+      <InfoIcon sx={{ color: "rgb(2, 136, 209)", width: "20px", mr: 0.5 }} />
+    ),
+    color: "rgb(2, 136, 209)",
+  },
   warning: {
     label: "Warning",
     Icon: (
@@ -74,14 +82,23 @@ const SeverityMapping: SeverityMappingProps = {
     ),
     color: "rgb(211, 47, 47);",
   },
+  high: {
+    label: "High",
+    Icon: (
+      <DangerousIcon
+        sx={{ color: "rgb(211, 47, 47);", width: "20px", mr: 0.5 }}
+      />
+    ),
+    color: "rgb(211, 47, 47);",
+  },
 };
 
 const DetailsLabel: { [key: string]: string } = {
-  name: "Name",
+  alert: "Name",
   description: "Description",
   expression: "Expression",
   duration: "Duration",
-  isEnabled: "Is Enabled",
+  // isEnabled: "Is Enabled",
   severity: "Severity",
 };
 const RulesTable = ({
@@ -113,7 +130,7 @@ const RulesTable = ({
 
   const handleDetails = (id: string) => {
     setShowDetails(true);
-    const item = rules.find((rule: any) => rule.id === id);
+    const item = rules.find((rule: any) => rule.alert === id);
     setActiveItem(item);
   };
 
@@ -138,7 +155,7 @@ const RulesTable = ({
                   }}
                 />
               </TableCell>
-              <TableCell sx={{ width: "30%" }}>
+              <TableCell sx={{ width: "40%" }}>
                 <Typography variant="caption" sx={{ fontWeight: 600 }}>
                   Name
                 </Typography>
@@ -148,11 +165,11 @@ const RulesTable = ({
                   Severity
                 </Typography>
               </TableCell>
-              <TableCell sx={{ width: "15%" }}>
+              {/* <TableCell sx={{ width: "15%" }}>
                 <Typography variant="caption" sx={{ fontWeight: 600 }}>
                   Date added
                 </Typography>
-              </TableCell>
+              </TableCell> */}
               <TableCell />
             </TableRow>
           </TableHead>
@@ -164,20 +181,20 @@ const RulesTable = ({
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((rule, index) => (
                   <TableRow
-                    key={rule.id}
+                    key={rule.alert}
                     sx={{ cursor: "pointer" }}
-                    onClick={() => handleDetails(rule.id)}
+                    onClick={() => handleDetails(rule.alert)}
                   >
                     <TableCell sx={{ width: "45px" }}>
                       <Checkbox
                         sx={{ transform: "scale(0.8)" }}
-                        checked={selectedRows.indexOf(rule?.id) !== -1}
+                        checked={selectedRows.indexOf(rule?.alert) !== -1}
                         onClick={(event) => event.stopPropagation()}
-                        onChange={(e) => onSelect(e, rule?.id)}
+                        onChange={(e) => onSelect(e, rule?.alert)}
                       />
                     </TableCell>
                     <TableCell>
-                      <Typography variant="caption">{rule.name}</Typography>
+                      <Typography variant="caption">{rule.alert}</Typography>
                     </TableCell>
                     <TableCell>
                       <Typography
@@ -190,57 +207,77 @@ const RulesTable = ({
                               ?.color,
                         }}
                       >
-                        {SeverityMapping[rule?.severity?.toLowerCase()].Icon}
-                        {SeverityMapping[rule?.severity?.toLowerCase()].label}
+                        {SeverityMapping[rule?.severity?.toLowerCase()]?.Icon}
+                        {SeverityMapping[rule?.severity?.toLowerCase()]?.label}
                       </Typography>
                     </TableCell>
 
-                    <TableCell>
+                    {/* <TableCell>
                       <Typography variant="caption">
-                        {dateNtimeUtils.timeAgo(rule.createdAt)}
+                          {dateNtimeUtils.timeAgo(rule.createdAt)} 
                       </Typography>
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ textAlign: "center" }}>
-                      <Switch
-                        size="small"
-                        sx={{
-                          "& .MuiSwitch-switchBase.Mui-checked": {
-                            color: "#fff", // Thumb color when ON
-                            "& + .MuiSwitch-track": {
-                              backgroundColor: "green", // Green track when ON
-                              opacity: 1,
+                      <FeatureAccessControl
+                        requiredRoles={[...userAccess.EDIT_ALERT_RULE]}
+                      >
+                        {/* <Switch
+                          size="small"
+                          sx={{
+                            "& .MuiSwitch-switchBase.Mui-checked": {
+                              color: "#fff", // Thumb color when ON
+                              "& + .MuiSwitch-track": {
+                                backgroundColor: "green", // Green track when ON
+                                opacity: 1,
+                              },
                             },
-                          },
-                          "& .MuiSwitch-switchBase": {
-                            color: "#fff", // Thumb color when OFF
-                            "& + .MuiSwitch-track": {
-                              backgroundColor: "red", // Red track when OFF
-                              opacity: 1,
+                            "& .MuiSwitch-switchBase": {
+                              color: "#fff", // Thumb color when OFF
+                              "& + .MuiSwitch-track": {
+                                backgroundColor: "#a3a3a3", // Red track when OFF
+                                opacity: 1,
+                              },
                             },
-                          },
-                        }}
-                        checked={rule.isEnabled}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) => onRuleStatusUpdate(e, rule.id)}
-                      />
+                          }}
+                          checked={rule.isEnabled}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => onRuleStatusUpdate(e, rule.alert)}
+                        /> */}
+
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRuleEdit(e, rule.alert);
+                          }}
+                        >
+                          <BorderColorIcon
+                            sx={{ width: "12px", height: "12px" }}
+                          />
+                        </IconButton>
+                      </FeatureAccessControl>
+                      <FeatureAccessControl
+                        requiredRoles={[...userAccess.DELETE_ALERT_RULE]}
+                      >
+                        <IconButton
+                          sx={{ color: "red" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRuleDelete(e, rule.alert);
+                          }}
+                        >
+                          <DeleteOutlineIcon
+                            sx={{ width: "16px", height: "16px" }}
+                          />
+                        </IconButton>
+                      </FeatureAccessControl>
                       <IconButton
+                        sx={{ color: "#1836d4" }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onRuleEdit(e, rule.id);
+                          window.open("http://localhost:9090/alerts");
                         }}
                       >
-                        <BorderColorIcon
-                          sx={{ width: "12px", height: "12px" }}
-                        />
-                      </IconButton>
-                      <IconButton
-                        sx={{ color: "red" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onRuleDelete(e, rule.id);
-                        }}
-                      >
-                        <DeleteOutlineIcon
+                        <VisibilityIcon
                           sx={{ width: "16px", height: "16px" }}
                         />
                       </IconButton>
@@ -250,7 +287,7 @@ const RulesTable = ({
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={5}>
+              <TableCell colSpan={4}>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 15]}
                   component="div"
