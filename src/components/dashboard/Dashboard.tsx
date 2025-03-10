@@ -58,7 +58,7 @@ const Dashboard = ({ defaultConfig }: any) => {
         >
           {config?.title}
         </Typography>
-        {!deleteDashboard && (
+        {/* {!deleteDashboard && (
           <>
             <FeatureAccessControl
               requiredRoles={[...userAccess.EDIT_DASHBOARD]}
@@ -97,7 +97,7 @@ const Dashboard = ({ defaultConfig }: any) => {
               </Button>
             </FeatureAccessControl>
           </>
-        )}
+        )} */}
       </Box>
 
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>

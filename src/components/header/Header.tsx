@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
 import {
   AppBar,
-  Divider,
   Drawer,
   IconButton,
   MenuItem,
   MenuList,
   Tooltip,
   Typography,
-  Collapse,
 } from "@mui/material";
-import { NavLink, NavLinkRenderProps } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import MenuIcon from "@mui/icons-material/Menu";
 import ClearIcon from "@mui/icons-material/Clear";
 import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
 import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import { HeaderProps } from "./types";
 import "./Header.scss";
 import { useUser } from "../../context/user.context";
@@ -27,13 +23,14 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
   const [isMenuMinimized, setIsMenuMinimized] = useState(false);
   const [openSubNav, setOpenSubNav] = useState<{ [key: string]: boolean }>({});
   const { user } = useUser();
+  const location = useLocation();
 
   const handleActiveRoute = (
     { isActive, href }: any,
-    basePath: string = ""
+    basePath: string
   ): string => {
     // Check if the current href starts with the base path (e.g., /userManagement, /admin)
-    const isInBasePath = href?.startsWith(basePath);
+    const isInBasePath = location?.pathname?.startsWith(basePath);
     return `menu ${isActive || isInBasePath ? "activeMenu" : ""}`;
   };
 
@@ -51,13 +48,6 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
       ...prevState,
       [routeName]: !prevState[routeName],
     }));
-  };
-
-  const handleParentRouteClick = (event: React.MouseEvent, route: any) => {
-    event.preventDefault();
-    if (route.subRoutes) {
-      toggleSubNav(route.path);
-    }
   };
 
   useEffect(() => {
@@ -162,12 +152,12 @@ const Header = ({ onMenuExpand, menuOptions }: HeaderProps) => {
           sx={{ "&.MuiList-root": { marginTop: isMobile ? "32px" : "0" } }}
         >
           {menuOptions.map(
-            ({ path, label, Icon, permissions }: any) =>
+            ({ path, label, Icon, permissions, basePath }: any) =>
               isUserHasPermittedToRoutes(permissions) && (
                 <MenuItem key={path} sx={{ marginLeft: "-10px" }}>
                   <NavLink
                     onClick={handleCloseDrawer}
-                    className={handleActiveRoute}
+                    className={(e) => handleActiveRoute(e, basePath)}
                     to={path}
                   >
                     <Tooltip title={label} placement="right-start">

@@ -17,8 +17,8 @@ const LoginPage: React.FC = () => {
   useEffect(() => {
     const authorizationCode = getAuthorizationCode();
     if (authorizationCode?.token && authorizationCode?.refresh_token) {
-      handleRedirect()
-      return
+      handleRedirect();
+      return;
     }
     const isAuthenticated = localStorage.getItem("authToken") !== null;
     if (isAuthenticated) {
@@ -28,12 +28,9 @@ const LoginPage: React.FC = () => {
 
   const afterUserAuthentication = (access: string, refresh: string) => {
     localStorage.setItem("authToken", access);
-    localStorage.setItem(
-      "refreshToken",
-      refresh || ""
-    );
+    localStorage.setItem("refreshToken", refresh || "");
     navigate("/dashboard");
-  }
+  };
 
   const handleLogin = (email: string, password: string) => {
     // Replace with actual API call to your backend
@@ -48,14 +45,14 @@ const LoginPage: React.FC = () => {
         // Assume the API returns a token
         const token = response.data.access_Token;
         if (token) {
-          afterUserAuthentication(token, response?.data?.refresh_Token)
+          afterUserAuthentication(token, response?.data?.refresh_Token);
           // navigateToAuthorizedRoute(user?.resource_access?.EMS?.roles || [])
         }
       })
       .catch((error) => {
         setErrorMessage(
           error.response?.data?.message ||
-          "Login failed. Please check your credentials."
+            "Login failed. Please check your credentials."
         );
       });
   };
@@ -94,31 +91,34 @@ const LoginPage: React.FC = () => {
   };
 
   function ssoLogin() {
-    window.location.href = 'http://localhost:5000/api/sso/login'
+    window.location.href = "http://localhost:5000/api/sso/login";
   }
 
   function googleLogin() {
-    window.location.href = 'http://localhost:5000/api/sso/login?provider=Google'
-  }
-  
-  function githubLogin() {
-    window.location.href = 'http://localhost:5000/api/sso/login?provider=GitHub'
+    window.location.href =
+      "http://localhost:5000/api/sso/login?provider=Google";
   }
 
+  function githubLogin() {
+    window.location.href =
+      "http://localhost:5000/api/sso/login?provider=GitHub";
+  }
 
   function getAuthorizationCode() {
     const urlParams = new URLSearchParams(window.location.search);
-    return { token: urlParams.get('token') || "", refresh_token: urlParams.get('refreshToken') || "" };
+    return {
+      token: urlParams.get("token") || "",
+      refresh_token: urlParams.get("refreshToken") || "",
+    };
   }
-
 
   async function handleRedirect() {
     const authorizationCode = getAuthorizationCode();
-    afterUserAuthentication(authorizationCode.token, authorizationCode.refresh_token)
+    afterUserAuthentication(
+      authorizationCode.token,
+      authorizationCode.refresh_token
+    );
   }
-
-
-
 
   return (
     <div className="login-page">
@@ -126,13 +126,13 @@ const LoginPage: React.FC = () => {
         <button className="sso" onClick={ssoLogin}>
           <img src={sso} alt="sso" width={24} height={24} /> Continue with SSO
         </button>
-        <button className="google"  onClick={googleLogin}>
+        <button className="google" onClick={googleLogin}>
           <img src={google} alt="google" width={24} height={24} /> Sign in with
           Google
         </button>
         <button className="Github" onClick={githubLogin}>
-          <img src={gitub} alt="Github" width={24} height={24} /> Sign in
-          with Github
+          <img src={gitub} alt="Github" width={24} height={24} /> Sign in with
+          Github
         </button>
       </div>
 

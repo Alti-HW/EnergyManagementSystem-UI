@@ -17,10 +17,10 @@ const Roles = () => {
   const [roleAction, setRoleAction] = useState("");
   const [rolesList, setRolesList] = useState<any>([]);
   const [activeIndex, setActiveIndex] = useState<any>("");
-  const [permissions, setPermissions] = useState([])
+  const [permissions, setPermissions] = useState([]);
   const { openDialog } = useConfirmationDialog();
   const { showLoader, hideLoader } = useLoader();
-  const { showSnackbar } = useSnackbar()
+  const { showSnackbar } = useSnackbar();
 
   const handleOpenModal = () => {
     setRoleAction("add");
@@ -28,7 +28,7 @@ const Roles = () => {
   };
   const handleCloseModal = (event?: any, message?: string) => {
     setRoleAction("");
-    setOpenModal(false)
+    setOpenModal(false);
   };
   const fetchRoles = async () => {
     const roles = await rolesActions.getAllRoles();
@@ -41,14 +41,14 @@ const Roles = () => {
   };
 
   const fetchPermissions = async () => {
-    const perms = await rolesActions.getAllPermissions()
-    setPermissions(perms?.data)
-  }
+    const perms = await rolesActions.getAllPermissions();
+    setPermissions(perms?.data);
+  };
 
   useEffect(() => {
-    refetchRoles()
-    fetchPermissions()
-  }, [])
+    refetchRoles();
+    fetchPermissions();
+  }, []);
 
   const handleEditRole = (id: string) => {
     setActiveIndex(id);
@@ -57,29 +57,27 @@ const Roles = () => {
   };
 
   const findRoleById = (id: string) => {
-    return rolesList.find((role: any) => role.id === id)
-  }
+    return rolesList.find((role: any) => role.id === id);
+  };
 
   const handleDeleteRole = async (id: any) => {
     const userResponse = await openDialog(
       `Do you really want to delete selected Role`, // message
-      'Delete Role' // title
+      "Delete Role" // title
     );
     if (userResponse) {
       try {
-        showLoader()
-        await rolesActions.deletRole(findRoleById(id).id)
-        fetchRoles()
+        showLoader();
+        await rolesActions.deletRole(findRoleById(id).id);
+        fetchRoles();
         showSnackbar("Role deleted", "success");
       } catch (error) {
         showSnackbar("Failed to delete role", "error");
-      }
-      finally {
-        hideLoader()
+      } finally {
+        hideLoader();
       }
     }
   };
-
 
   return (
     <Box sx={{ p: 4, backgroundColor: "transparent" }}>

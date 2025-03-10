@@ -68,11 +68,12 @@ export const supportedRoutes = [
     type: "dashboard",
   },
   {
-    path: "/alerts",
+    path: "/alerts/rules",
     label: "Alerts",
     Icon: AddAlertIcon,
     permissions: [],
     type: "alerts",
+    basePath: "/alerts",
   },
   {
     path: "/reports",

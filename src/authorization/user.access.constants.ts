@@ -17,13 +17,21 @@ const userAccess = {
   BUILDING_OWNER: ["Building Owner"],
   CUSTOMIZE_DASHBOARD: ["Customize Dashboard"],
   ADD_ROLE: ["Add Role"],
-  EDIT_DASHBOARD: ["Edit Dashboard", "Delete Dashboard"],
-  DELETE_DASHBOARD: ["Delete Dashboard"],
+  EDIT_DASHBOARD: [
+    "Export Dashboard Data",
+    "Edit Dashboard",
+    "Delete Dashboard",
+  ],
+  DELETE_DASHBOARD: ["Export Dashboard Data", "Delete Dashboard"],
   EXPORT_REPORTS: [
     "Export Dashboard Data",
     "Delete Dashboard",
     "Edit Dashboard",
   ],
+  ADD_ALERT_RULE: ["admin"],
+  EDIT_ALERT_RULE: ["admin"],
+  DELETE_ALERT_RULE: ["admin"],
+  DELETE_ALERT: ["admin"],
 };
 
 export default userAccess;

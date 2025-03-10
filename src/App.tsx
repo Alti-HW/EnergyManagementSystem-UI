@@ -15,7 +15,10 @@ import UserProvider, { useUser } from "./context/user.context";
 import userAccess from "./authorization/user.access.constants";
 import config from "./configs/energyManagement.json";
 import { supportedRoutes } from "./constants/routes";
-import './authorization/axios.interceptor';
+import "./authorization/axios.interceptor";
+import AlertsLayout from "./containers/alerts/AlertsLayout";
+import AlertsList from "./containers/alerts/list/AlertsList";
+import Notifications from "./containers/alerts/notifications/Notifications";
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRoles = [] }: any) {
@@ -81,7 +84,12 @@ const routeMapper = (container: any) => {
         </Route>
       );
     case "alerts":
-      return <Route path="/alerts" element={<div> Alerts </div>} />;
+      return (
+        <Route element={<AlertsLayout />}>
+          <Route path="/alerts/rules" index element={<AlertsList />} />
+          <Route path="/alerts/history" element={<Notifications />} />
+        </Route>
+      );
     case "analytics":
       <Route path="/analytics" element={<div>Analytics</div>} />;
   }
