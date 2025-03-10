@@ -8,6 +8,7 @@ import sso from "./assets/sso.png";
 import { userActions } from "../../actions/users";
 // import { decodeToken } from "../../utils/auth";
 import { supportedRoutes } from "../../constants/routes";
+import gitub from "./assets/github.png";
 
 const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -93,6 +94,16 @@ const LoginPage: React.FC = () => {
     window.location.href = "http://localhost:5000/api/sso/login";
   }
 
+  function googleLogin() {
+    window.location.href =
+      "http://localhost:5000/api/sso/login?provider=Google";
+  }
+
+  function githubLogin() {
+    window.location.href =
+      "http://localhost:5000/api/sso/login?provider=GitHub";
+  }
+
   function getAuthorizationCode() {
     const urlParams = new URLSearchParams(window.location.search);
     return {
@@ -115,14 +126,14 @@ const LoginPage: React.FC = () => {
         <button className="sso" onClick={ssoLogin}>
           <img src={sso} alt="sso" width={24} height={24} /> Continue with SSO
         </button>
-        {/* <button className="google">
+        <button className="google" onClick={googleLogin}>
           <img src={google} alt="google" width={24} height={24} /> Sign in with
           Google
-        </button> */}
-        {/* <button className="microsoft">
-          <img src={microsoft} alt="microsoft" width={24} height={24} /> Sign in
-          with Microsoft
-        </button> */}
+        </button>
+        <button className="Github" onClick={githubLogin}>
+          <img src={gitub} alt="Github" width={24} height={24} /> Sign in with
+          Github
+        </button>
       </div>
 
       {/* Middle Line */}
