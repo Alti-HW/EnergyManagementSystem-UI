@@ -18,6 +18,7 @@ import {
   Card,
   CardContent,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -221,7 +222,8 @@ const RulesTable = ({
                       <FeatureAccessControl
                         requiredRoles={[...userAccess.EDIT_ALERT_RULE]}
                       >
-                        {/* <Switch
+                        <Tooltip title="Edit Rule">
+                          {/* <Switch
                           size="small"
                           sx={{
                             "& .MuiSwitch-switchBase.Mui-checked": {
@@ -244,43 +246,48 @@ const RulesTable = ({
                           onChange={(e) => onRuleStatusUpdate(e, rule.alert)}
                         /> */}
 
-                        <IconButton
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onRuleEdit(e, rule.alert);
-                          }}
-                        >
-                          <BorderColorIcon
-                            sx={{ width: "12px", height: "12px" }}
-                          />
-                        </IconButton>
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRuleEdit(e, rule.alert);
+                            }}
+                          >
+                            <BorderColorIcon
+                              sx={{ width: "12px", height: "12px" }}
+                            />
+                          </IconButton>
+                        </Tooltip>
                       </FeatureAccessControl>
                       <FeatureAccessControl
                         requiredRoles={[...userAccess.DELETE_ALERT_RULE]}
                       >
+                        <Tooltip title="Delete Rule">
+                          <IconButton
+                            sx={{ color: "red" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onRuleDelete(e, rule.alert);
+                            }}
+                          >
+                            <DeleteOutlineIcon
+                              sx={{ width: "16px", height: "16px" }}
+                            />
+                          </IconButton>
+                        </Tooltip>
+                      </FeatureAccessControl>
+                      <Tooltip title="View Rule details">
                         <IconButton
-                          sx={{ color: "red" }}
+                          sx={{ color: "#1836d4" }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            onRuleDelete(e, rule.alert);
+                            window.open("http://localhost:9090/alerts");
                           }}
                         >
-                          <DeleteOutlineIcon
+                          <VisibilityIcon
                             sx={{ width: "16px", height: "16px" }}
                           />
                         </IconButton>
-                      </FeatureAccessControl>
-                      <IconButton
-                        sx={{ color: "#1836d4" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open("http://localhost:9090/alerts");
-                        }}
-                      >
-                        <VisibilityIcon
-                          sx={{ width: "16px", height: "16px" }}
-                        />
-                      </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}
