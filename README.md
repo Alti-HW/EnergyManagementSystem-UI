@@ -1,4 +1,4 @@
-# Energy Management system
+# Energy Management System
 
 The EMS UI is an interactive platform designed to streamline energy monitoring and 
 management processes. This documentation provides an in-depth guide to understanding 
