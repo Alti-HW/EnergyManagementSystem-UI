@@ -1,33 +1,163 @@
-# Energy Management System
+# Energy Management System (EMS) UI
 
-The EMS UI is an interactive platform designed to streamline energy monitoring and 
-management processes. This documentation provides an in-depth guide to understanding 
-the structure, functionality, and implementation details of the EMS UI.
-## Run Locally
+## Introduction  
+The EMS UI is an interactive platform designed to streamline energy monitoring and management processes. This documentation provides an in-depth guide to understanding the structure, functionality, and implementation details of the EMS UI.  
 
-Clone the project
+## Technology Stack  
+- **Frontend:** React.js (CRA)  
+- **State Management:** React Context  
+- **UI Framework:** Material-UI  
+- **API Calls:** Axios  
+- **Testing:** Jest, React Testing Library  
+- **Containerization:** Docker  
 
-```bash
- https://github.com/Alti-HW/EnergyManagementSystem-UI.git
+## Installation Setup and Run  
+Follow these steps to run the project locally:  
+
+### Clone the project:
+```sh
+ git clone https://github.com/Alti-HW/EnergyManagementSystem-UI.git
 ```
 
-Go to the project directory
-
-```bash
-  cd EnergyManagementSystem-UI
+### Navigate to the project directory:
+```sh
+ cd EnergyManagementSystem-UI
 ```
 
-Install dependencies
-
-```bash
-  npm install
+### Install dependencies:
+```sh
+ npm install
 ```
 
-Start the server
-
-```bash
-  npm run start
+### Start the server:
+```sh
+ npm run start
 ```
+
+## Project Structure  
+```
+EnergyManagementSystem-UI/
+├── .gitignore
+├── README.md
+├── package-lock.json
+├── package.json
+├── public/
+│   ├── favicon.ico
+│   ├── index.html
+│   └── manifest.json
+├── src/
+│   ├── App.css
+│   ├── App.tsx
+│   ├── authorization/
+│   │   ├── FeatureAccessControl.tsx
+│   │   ├── user.access.constants.ts
+│   ├── components/
+│   │   ├── auth/
+│   │   │   ├── Login.tsx
+│   │   │   ├── PrivateRoute.tsx
+│   │   ├── dashboard/
+│   │   │   ├── CustomDialog.tsx
+│   │   │   ├── Dashboard.css
+│   │   │   ├── Dashboard.tsx
+│   │   │   ├── components/
+│   │   │   │   ├── Alarms.tsx
+│   │   │   │   ├── ChartHeading.tsx
+│   │   │   │   ├── ChartWrapper.tsx
+│   │   ├── user-management/
+│   │       ├── AddUserModal.tsx
+│   │       ├── DeleteUserModal.tsx
+│   │       ├── EditUserModal.tsx
+│   │       ├── UserTable.tsx
+│   ├── configs/
+│   │   ├── energyManagement.json
+│   ├── constants/
+│   │   ├── routes.ts
+│   ├── context/
+│   │   ├── AuthContext.tsx
+│   ├── react-app-env.d.ts
+│   ├── reportWebVitals.ts
+│   ├── setupTests.ts
+│   ├── types/
+│   │   ├── dashboard.types.ts
+├── tsconfig.json
+└── yarn.lock
+```
+
+## Project Architecture  
+
+### Pages  
+- **Dashboard:** Displays energy consumption metrics, including real-time data and historical trends.  
+- **Alerts:** Sends notifications of anomalies or critical energy usage events.  
+- **User Management:** Enables administrators to manage users, assign roles, and control access.  
+
+### Authentication  
+This section describes the authentication flow for the Energy Management System, covering login and logout processes, including:
+- **Standard username/password login**  
+- **Social media login (Google)**  
+- **Active Directory Single Sign-On (SSO)**  
+
+#### Functionality  
+- **Login:** Users can log in to the system using several methods:
+  - **Standard Credentials:** Username/email and password. Successful login establishes a user session.
+  - **Social Media (Google):** Users can authenticate using their Google accounts.
+  - **Active Directory SSO:** Users can authenticate using their existing Active Directory credentials via Single Sign-On (SSO).
+- **Logout:** Users can log out, terminating their session.
+- **Session Management:** The system manages user sessions using cookies or local storage.
+- **Protected Routes:** Requires users to be authenticated before access.
+- **Token Management:** Uses JWT for authentication.
+
+### Components  
+- **Login:** `src/components/auth/Login.tsx`
+- **AuthContext:** `src/context/AuthContext.tsx`
+- **PrivateRoute:** `src/components/auth/PrivateRoute.tsx`
+
+## Dashboard  
+
+### Functionality  
+- **Data Visualization:** Displays charts (bar, line, doughnut) via `ChartWrapper`.
+- **Customization:** Users can edit the dashboard layout.
+- **Real-time Monitoring:** Updates dynamically.
+- **Full View Mode:** Dashboard components can be viewed in full screen.
+- **Scrollable Charts:** Supports horizontal scrolling for time-series data.
+- **Export Chart Data:** Supports export to PDF, PNG, JPG.
+
+### Components  
+- **Dashboard:** `src/components/dashboard/Dashboard.tsx`
+- **ChartWrapper:** `src/components/dashboard/components/ChartWrapper.tsx`
+- **ChartHeading:** Handles chart titles and controls.
+
+## User Management  
+
+### Functionality  
+- **User Creation:** Add new users.
+- **User Editing:** Modify user details.
+- **User Deletion:** Remove users.
+- **Role Management:** Assign and edit roles.
+- **Permissions Management:** Control feature access.
+
+### Components  
+- `UserTable.tsx`: Displays users.
+- `EditUserModal.tsx`: Edits user details.
+- `DeleteUserModal.tsx`: Confirms user deletion.
+- `AddUserModal.tsx`: Adds new users.
+- `FeatureAccessControl.tsx`: Controls access based on user roles.
+
+### Permissions  
+- **`VIEW_USERS`**: View user list.
+- **`ADD_USER`**: Create users.
+- **`EDIT_USER`**: Edit users.
+- **`DELETE_USER`**: Remove users.
+- **`VIEW_ROLES`**: View roles.
+- **`ADD_ROLE`**: Create roles.
+- **`EDIT_ROLE`**: Edit roles.
+- **`DELETE_ROLE`**: Remove roles.
+
+## Plugins and Modules Used  
+- **React Router:** Routing.
+- **Axios:** API calls.
+- **React Chart.js 2:** Chart rendering.
+- **React Context API:** State management.
+- **Material UI (MUI):** UI elements and icons.
 
 ## Configuration Support
 
