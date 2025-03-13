@@ -84,7 +84,7 @@ EnergyManagementSystem-UI/
 ```
 
 ## Project Architecture  
-
+![EMS UI Dashboard](https://fastly.picsum.photos/id/214/200/300.jpg?hmac=XWc2pr4xabaprbyVoKEw9VsBDZ0ibySoVWMJaKokGRU)
 ### Pages  
 - **Dashboard:** Displays energy consumption metrics, including real-time data and historical trends.  
 - **Alerts:** Sends notifications of anomalies or critical energy usage events.  
